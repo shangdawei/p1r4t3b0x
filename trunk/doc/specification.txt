@@ -1,0 +1,29 @@
+
+*************     Description     *************
+
+This application should be able to offer anyone who is connected by wifi to the phone where it is installed to access a certain folder for reading.
+
+
+**********     V1 specifications     **********
+
+The application generates a web page to send to the connected device trying to access any page on internet.
+The generated page contains a list of links to the files inside the defined folder.
+
+The application HMI should provide a way to enable / disable the system and modify the shared folder.
+
+The wifi hotspot management is not within the scope of this version.
+
+
+**********     V2 specifications     **********
+
+When enabled, the application will generate a wifi hotspot with a custom name (ie P1r4t3b0x).
+The application should be able to reset the parameters to their original value when the application is disabled.
+
+
+**********     V3 specifications     **********
+
+The application is able to look for other P1r4t3b0x networks and add their files to its list.
+The files located on other devices should be annotated on the webpage (for instance with the mention "remote located")
+If a client ask for a remote located file, the application must download the application from its original source and provide this downloaded file to
+the client. The application should transfer the file gradually as it is received.
+An option should allow the user to specify if the downloaded remote file should be kept in the shared folder or not.
