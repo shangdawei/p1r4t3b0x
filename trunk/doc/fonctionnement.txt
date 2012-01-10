@@ -1,0 +1,5 @@
+Ouvre un réseau WiFi P1R@T3B0X
+Serveur qui fourni, pour chaque tentative d'accès internet une page avec les dl proposés
+
+(opt)Scanne les réseaux P1R@T3B0X alentours et ajoute leur fichiers à la liste (une demande de téléchargement de fichier sur un réseau séparé télécharge
+le fichier depuis ce réseau avant de l'envoyer au demandeur)
