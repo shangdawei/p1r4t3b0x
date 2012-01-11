@@ -1,0 +1,53 @@
+<html>
+<head>
+<script>
+  function switchBlockDisplay(a) {
+    content = a.parentNode.getElementsByClassName("folder")[0];
+    content.style.display = content.style.display == "block" ? "none" : "block";
+  }
+</script>
+
+<style>
+  .folderLink {
+    font-weight: bold;
+  }
+
+  .folder {
+    display: none;
+  }
+</style>
+
+</head>
+
+<body>
+
+<h1>Available files:</h1>
+
+<ul>
+<li><a href='bla1.asd'>bla1.asd (2.5MB)</a></li>
+<li><a href='bla2.asd'>bla2.asd (2.5MB)</a></li>
+<li><a href='bla3.asd'>bla3.asd (2.5MB)</a></li>
+<li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
+  <ul class="folder">
+    <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
+    <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
+  </ul>
+</li>
+<li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
+  <ul class="folder">
+    <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
+    <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
+    <li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
+      <ul class="folder">
+        <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
+        <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+<li><a href='bla4.asd'>bla2.asd (2.5MB)</a></li>
+<li><a href='bla5.asd'>bla3.asd (2.5MB)</a></li>
+</ul>
+
+</body>
+</html>

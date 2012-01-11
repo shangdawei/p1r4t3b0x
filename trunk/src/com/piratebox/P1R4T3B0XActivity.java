@@ -35,7 +35,7 @@ public class P1R4T3B0XActivity extends Activity {
         		server.shutdown();
         	}
         	
-        	server = new Server(getBaseContext());
+        	server = new Server();
         	startBtn.setEnabled(false);
         	stopBtn.setEnabled(true);
         }
