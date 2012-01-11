@@ -2,7 +2,6 @@ package com.piratebox.server;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -73,7 +72,7 @@ public class Connection extends Thread {
 	        
 	        //read in file
 	        
-	        if (!f.canRead()) {
+	        if (!f.canRead() || f.isDirectory()) {
 	        	sendDefaultPage();
 				return;
 	        }
@@ -104,39 +103,12 @@ public class Connection extends Thread {
         out.println("Content-type: text/html\n\n");
         
         // send content
-        out.print(generateFile());
+        out.print(new GeneratedPage(rootDir));
         
 		try {
 			client.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    }
-    
-    private String generateFile() {
-    	StringBuilder page = new StringBuilder();
-    	page.append("<html><head><title>Hello</title></head><body>");
-    	page.append("<h1>File list:</h1>");
-    	page.append("<ul>");
-    	
-    	FileFilter filter = new FileFilter() {
-			public boolean accept(File f) {
-    	        return !f.getName().startsWith(".") && !f.isDirectory();
-    	    }
-    	};
-    	
-    	File[] children = rootDir.listFiles(filter);
-    	
-    	if (children != null) {
-	    	for (File file : children) {
-	    		page.append("<li><a href='").append(file.getName()).append("'>").append(file.getName()).append("</a></li>");
-	    	}
-    	}
-    	
-    	// TODO folder management, retrict access to files that are under rootDir
-    	
-    	page.append("</ul>");
-    	page.append("</body></html>");
-    	return page.toString();
     }
 }
