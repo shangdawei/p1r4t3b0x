@@ -10,6 +10,7 @@ The application generates a web page to send to the connected device trying to a
 The generated page contains a list of links to the files inside the defined folder.
 
 The application HMI should provide a way to enable / disable the system and modify the shared folder.
+A widget must allow to turn the system on and off.
 
 The wifi hotspot management is not within the scope of this version.
 
