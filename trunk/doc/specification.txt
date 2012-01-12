@@ -10,7 +10,6 @@ The application generates a web page to send to the connected device trying to a
 The generated page contains a list of links to the files inside the defined folder.
 
 The application HMI should provide a way to enable / disable the system and modify the shared folder.
-A widget must allow to turn the system on and off.
 
 The wifi hotspot management is not within the scope of this version.
 
@@ -28,3 +27,13 @@ The files located on other devices should be annotated on the webpage (for insta
 If a client ask for a remote located file, the application must download the application from its original source and provide this downloaded file to
 the client. The application should transfer the file gradually as it is received.
 An option should allow the user to specify if the downloaded remote file should be kept in the shared folder or not.
+
+
+
+**********         Optionnal        ***********
+A widget must allow to turn the system on and off.
+Config options:
+- Add more folder to analyse
+- keep track of downloaded files
+- keep remote downloaded file
+- turn off when low battery

@@ -4,5 +4,11 @@
     <string name="app_name">P1R4T3B0X</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="settings">Settings</string>
+    
+    <string-array name="settings_items">
+        <item>Set shared folder</item>
+    </string-array>
 
+    <string name="restart_server">You have to restart the server for changes to be applied.</string>
 </resources>

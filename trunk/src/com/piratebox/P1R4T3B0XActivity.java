@@ -1,12 +1,13 @@
 package com.piratebox;
 
-import com.piratebox.server.Server;
-
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import com.piratebox.server.Server;
 
 public class P1R4T3B0XActivity extends Activity {
 	
@@ -26,6 +27,9 @@ public class P1R4T3B0XActivity extends Activity {
         stopBtn = (Button)findViewById(R.id.stopBtn);
         stopBtn.setOnClickListener(stopBtnListener);
         stopBtn.setEnabled(false);
+        
+        Button settingsBtn = (Button)findViewById(R.id.settings);
+        settingsBtn.setOnClickListener(settingsBtnListener);
     }
  
     private OnClickListener startBtnListener = new OnClickListener() {
@@ -51,6 +55,12 @@ public class P1R4T3B0XActivity extends Activity {
         	server = null;
         	startBtn.setEnabled(true);
         	stopBtn.setEnabled(false);
+        }
+    };
+ 
+    private OnClickListener settingsBtnListener = new OnClickListener() {
+        public void onClick(View v) {
+        	P1R4T3B0XActivity.this.startActivity(new Intent(P1R4T3B0XActivity.this, SettingsActivity.class));
         }
     };
 }
