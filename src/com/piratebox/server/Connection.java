@@ -35,7 +35,7 @@ public class Connection extends Thread {
 			return;
 		}
 		
-		rootDir = new File(ServerConfiguration.ROOT_DIR);
+		rootDir = new File(ServerConfiguration.rootDir);
 		if (! rootDir.canRead()) {
 			rootDir.mkdir();
 		}
@@ -68,7 +68,7 @@ public class Connection extends Thread {
 	        st.nextToken();
 	        requestedFile = st.nextToken();
 	        //create File object
-	        File f = new File(ServerConfiguration.ROOT_DIR + requestedFile);
+	        File f = new File(ServerConfiguration.rootDir + requestedFile);
 	        
 	        //read in file
 	        
