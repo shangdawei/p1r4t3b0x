@@ -1,5 +1,7 @@
 package com.piratebox;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,6 +48,7 @@ public class P1R4T3B0XActivity extends Activity {
         	}
         	
         	server = new Server();
+        	startRedirection();
         	startBtn.setEnabled(false);
         	stopBtn.setEnabled(true);
         }
@@ -57,7 +60,8 @@ public class P1R4T3B0XActivity extends Activity {
         	if (server != null) {
         		server.shutdown();
         	}
-        	
+
+        	stopRedirection();
         	server = null;
         	startBtn.setEnabled(true);
         	stopBtn.setEnabled(false);
@@ -69,4 +73,18 @@ public class P1R4T3B0XActivity extends Activity {
 //            P1R4T3B0XActivity.this.startActivity(new Intent(P1R4T3B0XActivity.this, SettingsActivity.class));
 //        }
 //    };
+    
+    private void startRedirection() {
+    	try {
+			Runtime.getRuntime().exec("su");
+			Runtime.getRuntime().exec("/system/bin/iptables --help");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    private void stopRedirection() {
+    	
+    }
+    
 }
