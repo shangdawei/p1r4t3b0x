@@ -7,9 +7,9 @@ This application should be able to offer anyone who is connected by wifi to the 
 **********     V1 specifications     **********
 
 The application generates a web page to send to the connected device trying to access any page on internet.
-The generated page contains a list of links to the files inside the defined folder.
+The generated page contains a list of links to the files inside the defined folder (/sdcard/piratebox).
 
-The application HMI should provide a way to enable / disable the system and modify the shared folder.
+The application HMI should provide a way to enable / disable the system.
 
 The wifi hotspot management is not within the scope of this version.
 
@@ -33,7 +33,8 @@ An option should allow the user to specify if the downloaded remote file should 
 **********         Optionnal        ***********
 A widget must allow to turn the system on and off.
 Config options:
-- Add more folder to analyse
+- modify the shared folder.
+- add more folder to analyse
 - keep track of downloaded files
 - keep remote downloaded file
 - turn off when low battery
