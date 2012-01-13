@@ -1,7 +1,6 @@
 package com.piratebox;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,9 +10,9 @@ import com.piratebox.server.Server;
 
 public class P1R4T3B0XActivity extends Activity {
 	
-	Server server;
-	Button startBtn;
-	Button stopBtn;
+	public static Server server;
+	private Button startBtn;
+	private Button stopBtn;
 	
     /** Called when the activity is first created. */
     @Override
@@ -26,10 +25,17 @@ public class P1R4T3B0XActivity extends Activity {
         
         stopBtn = (Button)findViewById(R.id.stopBtn);
         stopBtn.setOnClickListener(stopBtnListener);
-        stopBtn.setEnabled(false);
         
-        Button settingsBtn = (Button)findViewById(R.id.settings);
-        settingsBtn.setOnClickListener(settingsBtnListener);
+        if (server == null) {
+        	startBtn.setEnabled(true);
+        	stopBtn.setEnabled(false);
+        } else {
+        	startBtn.setEnabled(false);
+        	stopBtn.setEnabled(true);
+        }
+        
+//        Button settingsBtn = (Button)findViewById(R.id.settings);
+//        settingsBtn.setOnClickListener(settingsBtnListener);
     }
  
     private OnClickListener startBtnListener = new OnClickListener() {
@@ -58,9 +64,9 @@ public class P1R4T3B0XActivity extends Activity {
         }
     };
  
-    private OnClickListener settingsBtnListener = new OnClickListener() {
-        public void onClick(View v) {
-        	P1R4T3B0XActivity.this.startActivity(new Intent(P1R4T3B0XActivity.this, SettingsActivity.class));
-        }
-    };
+//    private OnClickListener settingsBtnListener = new OnClickListener() {
+//        public void onClick(View v) {
+//            P1R4T3B0XActivity.this.startActivity(new Intent(P1R4T3B0XActivity.this, SettingsActivity.class));
+//        }
+//    };
 }
