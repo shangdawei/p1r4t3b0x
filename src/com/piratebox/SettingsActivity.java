@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import com.piratebox.server.ServerConfiguration;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -61,7 +62,7 @@ public class SettingsActivity extends ListActivity {
 			FilenameFilter filter = new FilenameFilter(){
 				public boolean accept(File dir, String filename){
 					File sel = new File(dir, filename);
-					return filename.contains(FTYPE) || sel.isDirectory();
+					return sel.isDirectory();
 				}
 			};
 			mFileList = mPath.list(filter);
@@ -73,11 +74,11 @@ public class SettingsActivity extends ListActivity {
 
 	protected Dialog onCreateDialog(int id){
 		 Dialog dialog = null;
-		 AlertDialog.Builder builder = new Builder(this);
+		 AlertDialog.Builder builder = new Builder(getApplicationContext());
 
 		 switch(id){
 		 case DIALOG_LOAD_FILE:
-			 builder.setTitle("Choose your file");
+			 builder.setTitle("Choose your directory");
 			 if(mFileList == null) {
 				 dialog = builder.create();
 				 return dialog;
