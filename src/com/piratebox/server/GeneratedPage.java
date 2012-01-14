@@ -4,11 +4,6 @@ import java.io.File;
 import java.io.FileFilter;
 
 public class GeneratedPage {
-
-	public static final String READABLE_B = "B";
-	public static final String READABLE_KB = "KB";
-	public static final String READABLE_MB = "MB";
-	public static final String READABLE_GB = "GB";
 	
 	private String header = "" +
 			"<html>" +
@@ -63,9 +58,9 @@ public class GeneratedPage {
 	    	for (File file : children) {
 	    		if (file.isFile()) {
 	    			str.append("<li><a href='").append(folderPath + file.getName()).append("'>").append(file.getName())
-	    				.append("</a> (").append(getReadableFileSize(file)).append(")</li>");
+	    				.append("</a> <font size=2>(").append(getReadableFileSize(file)).append(")</font></li>");
 	    		} else {
-	    			str.append("<li><a class='folderLink' onclick=switchBlockDisplay(this) href='").append(folderPath + file.getName()).append("'>")
+	    			str.append("<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'>")
 	    				.append(file.getName()).append("</a>");
 	    			str.append("<ul class='folder'>");
 	    			listFilesFromFolder(file, str, folderPath + file.getName() + "/");
@@ -77,15 +72,16 @@ public class GeneratedPage {
 	
 	private String getReadableFileSize(File f) {
 		long len = f.length();
-		if (len > 1024*1024*1024) {
-			return len + " " + READABLE_GB;
-		} else if (len > 1024*1024) {
-			return len + " " + READABLE_MB;
-		} else if (len > 1024) {
-			return len + " " + READABLE_KB;
+		StringBuilder result = new StringBuilder();
+		if (len < 1024) {
+			result.append(f.length() + " bytes");
+		} else if (len < 1024 * 1024) {
+			result.append(Math.round(f.length()*100 / 1024.)/100. + " KB");
 		} else {
-			return len + " " + READABLE_B;
+			result.append(Math.round(f.length()*100 / 1024. / 1024.)/100. + " MB");
 		}
+		
+		return result.toString();
 	}
 	
 	@Override

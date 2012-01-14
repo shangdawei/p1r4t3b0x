@@ -11,6 +11,7 @@ public class Server extends Thread {
 	ArrayList<Connection> connections = new ArrayList<Connection>(); 
 	
 	public Server() {
+		
 		try {
 			listenSocket = new ServerSocket(ServerConfiguration.PORT);
 		} catch (IOException e) {
@@ -34,6 +35,9 @@ public class Server extends Thread {
 	
 	public void shutdown() {
 		try {
+			for (Connection conn : connections) {
+				conn.destroy();
+			}
 			listenSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
