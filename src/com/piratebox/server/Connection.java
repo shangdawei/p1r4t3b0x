@@ -120,33 +120,6 @@ public class Connection extends Thread {
 			}
 			out.flush();
 			out.close();
-
-			// out.println("HTTP/1.0 200 OK");
-			// out.println("Content-type: " + getMIMEType(f) + "\n\n");
-			//
-			// FileInputStream fis = new FileInputStream(f);
-			//
-			// byte[] buff = new byte[2048];
-			// while (true) {
-			// int read = fis.read(buff, 0, 2048);
-			// if (read <= 0)
-			// break;
-			// out.write(buff, 0, read);
-			// }
-
-			// // read in file
-			// FileInputStream fis = new FileInputStream(f);
-			// DataInputStream fdis = new DataInputStream(fis);
-			//
-			// // send file to client
-			// line = fdis.readLine();
-			// while (line != null && line.length() > 0) {
-			// out.print(line);
-			// line = fdis.readLine();
-			// }
-
-			out.flush();
-			out.close();
 			fis.close();
 
 		} catch (IOException e) {
