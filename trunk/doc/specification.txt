@@ -32,9 +32,10 @@ An option should allow the user to specify if the downloaded remote file should 
 
 **********         Optionnal        ***********
 A widget must allow to turn the system on and off.
-Write access
+Display use stats on home page (file accessed, data downloaded, uptime...)
+Write access to the folder.
 Config options:
-- modify the shared folder.
+- modify the shared folder
 - add more folder to analyse
 - keep track of downloaded files
 - keep remote downloaded file

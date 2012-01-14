@@ -1,6 +1,13 @@
 package com.piratebox;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import android.app.Activity;
+import android.content.res.Resources;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +21,9 @@ import com.piratebox.wifiap.WifiApManager;
 public class P1R4T3B0XActivity extends Activity {
 
 	public static Server server;
+	
+	private static String iptables;
+	
 	private Button startBtn;
 	private Button stopBtn;
 	private WifiConfiguration config;
@@ -85,8 +95,8 @@ public class P1R4T3B0XActivity extends Activity {
 
 	private void startRedirection() {
 		try {
-			Runtime.getRuntime().exec("su");
-			Runtime.getRuntime().exec("/system/bin/iptables --help");
+			iptables = loadIptables();
+			Runtime.getRuntime().exec(iptables + " --version");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,6 +106,28 @@ public class P1R4T3B0XActivity extends Activity {
 
 	}
 
+	private String loadIptables() throws IOException {
+		InputStream is = Resources.getSystem().openRawResource(R.raw.iptables);
+		File f = new File("/tmp/piratebox/iptables");
+		f.createNewFile();
+		
+		OutputStream out = new FileOutputStream(f);
+
+		byte[] buff = new byte[2048];
+		while (true) {
+			int read = is.read(buff, 0, 2048);
+			if (read <= 0)
+				break;
+			out.write(buff, 0, read);
+		}
+		out.flush();
+		out.close();
+		is.close();
+		
+		return f.getAbsolutePath();
+	}
+	
+	
 	private void startHotspot() {
 		new WifiApManager(this).setWifiApEnabled(config, true);
 	}
