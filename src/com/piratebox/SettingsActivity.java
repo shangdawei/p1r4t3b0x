@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -56,7 +57,7 @@ public class SettingsActivity extends ListActivity {
 			mPath.mkdirs();
 		}
 		catch(SecurityException e){
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 		if(mPath.exists()){
 			FilenameFilter filter = new FilenameFilter(){

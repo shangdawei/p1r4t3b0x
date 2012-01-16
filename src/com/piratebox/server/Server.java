@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class Server extends Thread {
 	
 	ServerSocket listenSocket;
@@ -15,7 +17,7 @@ public class Server extends Thread {
 		try {
 			listenSocket = new ServerSocket(ServerConfiguration.PORT);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 		this.start();
 	}
@@ -29,7 +31,7 @@ public class Server extends Thread {
 			}
 		}
 		catch(IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 	}
 	
@@ -40,7 +42,7 @@ public class Server extends Thread {
 			}
 			listenSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 		stop();
 	}
