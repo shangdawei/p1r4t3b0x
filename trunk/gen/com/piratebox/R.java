@@ -31,7 +31,8 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
-        public static final int restart_server=0x7f050004;
+        public static final int error_redirect=0x7f050004;
+        public static final int restart_server=0x7f050005;
         public static final int settings=0x7f050003;
         public static final int start=0x7f050001;
         public static final int stop=0x7f050002;
