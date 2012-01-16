@@ -5,9 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.NetworkInterface;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -102,11 +105,14 @@ public class P1R4T3B0XActivity extends Activity {
 			StringBuilder script = new StringBuilder();
 			script.append(iptables).append(" --version\n");
 
+			WifiManager mgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+			String interfaceName = NetworkInterface.getByInetAddress(socket.getInetAddress()).getName();
 			// TODO Add lines !!!!
 
 			int res = runScript(script.toString());
-			Toast.makeText(getBaseContext(), "return: " + res,
-					Toast.LENGTH_LONG).show();
+			if (res != 1) {
+				Toast.makeText(getBaseContext(), R.string.error_redirect, Toast.LENGTH_LONG).show();
+			}
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
@@ -121,8 +127,9 @@ public class P1R4T3B0XActivity extends Activity {
 			// TODO Add lines !!!!
 
 			int res = runScript(script.toString());
-			Toast.makeText(getBaseContext(), "return: " + res,
-					Toast.LENGTH_LONG).show();
+			if (res != 1) {
+				Toast.makeText(getBaseContext(), R.string.error_redirect, Toast.LENGTH_LONG).show();
+			}
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
