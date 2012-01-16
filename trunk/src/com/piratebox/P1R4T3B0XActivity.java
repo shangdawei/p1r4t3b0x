@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
@@ -20,13 +21,15 @@ import com.piratebox.wifiap.WifiApManager;
 
 public class P1R4T3B0XActivity extends Activity {
 
+	public static final String TEMP_SCRIPT = "tmp_script";
+	public static final String IPTABLES = "iptables";
+
 	public static Server server;
-	
-	private static String iptables;
-	
+
 	private Button startBtn;
 	private Button stopBtn;
 	private WifiConfiguration config;
+	private WifiConfiguration savedConfig;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -95,44 +98,89 @@ public class P1R4T3B0XActivity extends Activity {
 
 	private void startRedirection() {
 		try {
-			iptables = loadIptables();
-			Runtime.getRuntime().exec(iptables + " --version");
+			String iptables = loadIptables();
+			StringBuilder script = new StringBuilder();
+			script.append(iptables).append(" --version\n");
+
+			// TODO Add lines !!!!
+
+			int res = runScript(script.toString());
+			Toast.makeText(getBaseContext(), "return: " + res,
+					Toast.LENGTH_LONG).show();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 	}
 
 	private void stopRedirection() {
+		try {
+			String iptables = loadIptables();
+			StringBuilder script = new StringBuilder();
+			script.append(iptables).append(" --version\n");
 
+			// TODO Add lines !!!!
+
+			int res = runScript(script.toString());
+			Toast.makeText(getBaseContext(), "return: " + res,
+					Toast.LENGTH_LONG).show();
+		} catch (Exception e) {
+			Log.e(this.getClass().getName(), e.toString());
+		}
 	}
 
 	private String loadIptables() throws IOException {
-		InputStream is = Resources.getSystem().openRawResource(R.raw.iptables);
-		File f = new File("/tmp/piratebox/iptables");
-		f.createNewFile();
-		
-		OutputStream out = new FileOutputStream(f);
+		File tmpFolder = getDir("tmp", MODE_PRIVATE);
 
-		byte[] buff = new byte[2048];
-		while (true) {
-			int read = is.read(buff, 0, 2048);
-			if (read <= 0)
-				break;
-			out.write(buff, 0, read);
-		}
-		out.flush();
-		out.close();
+		File f = new File(tmpFolder, IPTABLES);
+		f.setExecutable(true);
+		f.deleteOnExit();
+
+		InputStream is = getResources().openRawResource(R.raw.iptables);
+		byte[] buff = new byte[is.available()];
+		is.read(buff);
 		is.close();
-		
+
+		FileOutputStream out = new FileOutputStream(f);
+		out.write(buff);
+		out.close();
 		return f.getAbsolutePath();
 	}
-	
-	
+
+	private int runScript(String script) throws IOException,
+			InterruptedException {
+
+		File tmpFolder = getDir("tmp", MODE_PRIVATE);
+
+		File f = new File(tmpFolder, TEMP_SCRIPT);
+		f.setExecutable(true);
+		f.deleteOnExit();
+
+		// Write the script to be executed
+		PrintWriter out = new PrintWriter(new FileOutputStream(f));
+		if (new File("/system/bin/sh").exists()) {
+			out.write("#!/system/bin/sh\n");
+		}
+		out.write(script);
+		if (!script.endsWith("\n")) {
+			out.write("\n");
+		}
+		out.write("exit\n");
+		out.flush();
+		out.close();
+		Process exec = Runtime.getRuntime()
+				.exec("su -c " + f.getAbsolutePath());
+		return exec.waitFor();
+	}
+
 	private void startHotspot() {
-		new WifiApManager(this).setWifiApEnabled(config, true);
+		WifiApManager mgr = new WifiApManager(this);
+		savedConfig = mgr.getWifiApConfiguration();
+		mgr.setWifiApEnabled(config, true);
 	}
 
 	private void stopHotspot() {
-		new WifiApManager(this).setWifiApEnabled(config, false);
+		WifiApManager mgr = new WifiApManager(this);
+		mgr.setWifiApEnabled(config, false);
+		mgr.setWifiApConfiguration(savedConfig);
 	}
 }

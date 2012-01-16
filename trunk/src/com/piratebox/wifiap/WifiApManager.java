@@ -46,4 +46,20 @@ public class WifiApManager {
 			return WIFI_AP_STATE_FAILED;
 		}
 	}
+	
+	public WifiConfiguration getWifiApConfiguration() {
+		try {
+			Method method = mWifiManager.getClass().getMethod(
+					"getWifiApConfiguration", WifiConfiguration.class,
+					boolean.class);
+			return (WifiConfiguration) method.invoke(mWifiManager, new Object[]{});
+		} catch (Exception e) {
+			Log.e(this.getClass().getName(), e.toString());
+			return null;
+		}
+	}
+	
+	public void setWifiApConfiguration(WifiConfiguration config) {
+		setWifiApEnabled(config, getWifiApState() == WifiManager.WIFI_STATE_ENABLED);
+	}
 }

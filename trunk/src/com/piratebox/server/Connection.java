@@ -11,6 +11,8 @@ import java.net.URLDecoder;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import android.util.Log;
+
 public class Connection extends Thread {
 
 	private Socket client;
@@ -22,22 +24,22 @@ public class Connection extends Thread {
 	@SuppressWarnings("serial")
 	private static Hashtable<String, String> mimeTypes = new Hashtable<String, String>() {
 		{
-			this.put("htm", "text/html");
-			this.put("html", "text/html");
-			this.put("txt", "text/plain");
-			this.put("asc", "text/plain");
-			this.put("gif", "image/gif");
-			this.put("jpg", "image/jpeg");
-			this.put("jpeg", "image/jpeg");
-			this.put("png", "image/png");
-			this.put("mp3", "audio/mpeg");
-			this.put("m3u", "audio/mpeg-url");
-			this.put("pdf", "application/pdf");
-			this.put("doc", "application/msword");
-			this.put("ogg", "application/x-ogg");
-			this.put("zip", "application/octet-stream");
-			this.put("exe", "application/octet-stream");
-			this.put("class", "application/octet-stream");
+			put("htm", "text/html");
+			put("html", "text/html");
+			put("txt", "text/plain");
+			put("asc", "text/plain");
+			put("gif", "image/gif");
+			put("jpg", "image/jpeg");
+			put("jpeg", "image/jpeg");
+			put("png", "image/png");
+			put("mp3", "audio/mpeg");
+			put("m3u", "audio/mpeg-url");
+			put("pdf", "application/pdf");
+			put("doc", "application/msword");
+			put("ogg", "application/x-ogg");
+			put("zip", "application/octet-stream");
+			put("exe", "application/octet-stream");
+			put("class", "application/octet-stream");
 		}
 	};
 
@@ -49,7 +51,7 @@ public class Connection extends Thread {
 			in = new DataInputStream(client.getInputStream());
 			out = new PrintStream(client.getOutputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 			try {
 				client.close();
 			} catch (IOException e2) {
@@ -94,14 +96,10 @@ public class Connection extends Thread {
 					+ requestedFile);
 			File f = new File(filePath);
 
-			// read in file
-
 			if (!f.canRead() || f.isDirectory()) {
 				sendDefaultPage();
 				return;
 			}
-
-			// send response headers
 
 			PrintWriter pw = new PrintWriter(out);
 			pw.print("HTTP/1.0 200 \r\n");
@@ -114,8 +112,9 @@ public class Connection extends Thread {
 			byte[] buff = new byte[2048];
 			while (true) {
 				int read = fis.read(buff, 0, 2048);
-				if (read <= 0)
+				if (read <= 0) {
 					break;
+				}
 				out.write(buff, 0, read);
 			}
 			out.flush();
@@ -123,7 +122,7 @@ public class Connection extends Thread {
 			fis.close();
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 	}
 
@@ -138,12 +137,11 @@ public class Connection extends Thread {
 		try {
 			client.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 	}
 
 	private String getMIMEType(File f) {
-		// Get MIME type from file name extension, if possible
 		String mime = null;
 		int index = -1;
 		String ext = null;
@@ -151,7 +149,7 @@ public class Connection extends Thread {
 			index = f.getCanonicalPath().lastIndexOf('.');
 			ext = f.getCanonicalPath().substring(index + 1).toLowerCase();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(this.getClass().getName(), e.toString());
 		}
 
 		if (ext != null) {
