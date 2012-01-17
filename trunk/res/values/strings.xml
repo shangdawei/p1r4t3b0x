@@ -13,4 +13,7 @@
     </string-array>
 
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
+    
+    
+    <string name="widget_name">P1R4T3B0X Widget</string>
 </resources>

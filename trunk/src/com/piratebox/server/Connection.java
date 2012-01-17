@@ -20,7 +20,8 @@ public class Connection extends Thread {
 	private DataInputStream in;
 	private String requestedFile;
 	private File rootDir;
-
+	private Server server;
+	
 	@SuppressWarnings("serial")
 	private static Hashtable<String, String> mimeTypes = new Hashtable<String, String>() {
 		{
@@ -43,8 +44,9 @@ public class Connection extends Thread {
 		}
 	};
 
-	public Connection(Socket clientSocket) {
+	public Connection(Socket clientSocket, Server server) {
 		client = clientSocket;
+		this.server = server;
 
 		// create input and output streams for conversation with client
 		try {
@@ -56,7 +58,7 @@ public class Connection extends Thread {
 				client.close();
 			} catch (IOException e2) {
 			}
-
+			
 			return;
 		}
 
@@ -72,12 +74,13 @@ public class Connection extends Thread {
 		String line = null; // read buffer
 		String req = null; // first line of request
 		// OutputStream os;
+		server.addConnectedUser();
 
 		try {
+			
 			// read HTTP request -- the request comes in
 			// on the first line, and is of the form:
 			// GET <filename> HTTP/1.x
-
 			req = in.readLine();
 
 			// loop through and discard rest of request
@@ -98,6 +101,7 @@ public class Connection extends Thread {
 
 			if (!f.canRead() || f.isDirectory()) {
 				sendDefaultPage();
+				server.removeConnectedUser();
 				return;
 			}
 
@@ -124,6 +128,8 @@ public class Connection extends Thread {
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
+		
+		server.removeConnectedUser();
 	}
 
 	private void sendDefaultPage() {

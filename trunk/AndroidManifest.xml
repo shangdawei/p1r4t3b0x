@@ -5,8 +5,9 @@
     android:versionName="2.0" >
 
     <uses-sdk android:minSdkVersion="9" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -20,10 +21,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity"
+        <!--
+        activity android:name=".SettingsActivity"
 		    android:label="@string/app_name">
 		
-		</activity>
+		</activity
+        -->
+
+        <receiver
+            android:name=".P1R4T3B0XWidget"
+            android:label="@string/widget_name" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
     </application>
 
 </manifest>
