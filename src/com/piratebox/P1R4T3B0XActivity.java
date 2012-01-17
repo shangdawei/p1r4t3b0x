@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 import android.app.Activity;
-import android.content.Context;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -69,6 +70,17 @@ public class P1R4T3B0XActivity extends Activity {
 				server.shutdown();
 			}
 
+			try {
+				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+				ArrayList<String> interfaceNames = new ArrayList<String>();
+				while (interfaces.hasMoreElements()) {
+					interfaceNames.add(interfaces.nextElement().getName());
+				}
+				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
+			} catch (SocketException e) {
+				e.printStackTrace();
+			}
+
 			server = new Server();
 			startRedirection();
 			startHotspot();
@@ -104,9 +116,6 @@ public class P1R4T3B0XActivity extends Activity {
 			String iptables = loadIptables();
 			StringBuilder script = new StringBuilder();
 			script.append(iptables).append(" --version\n");
-
-			WifiManager mgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-			String interfaceName = NetworkInterface.getByInetAddress(socket.getInetAddress()).getName();
 			// TODO Add lines !!!!
 
 			int res = runScript(script.toString());
