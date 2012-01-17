@@ -66,8 +66,8 @@ public class P1R4T3B0XActivity extends Activity {
 	private OnClickListener startBtnListener = new OnClickListener() {
 
 		public void onClick(View v) {
-			if (server != null) {
-				server.shutdown();
+			if (server == null) {
+				server = new Server();
 			}
 
 			try {
@@ -81,7 +81,7 @@ public class P1R4T3B0XActivity extends Activity {
 				e.printStackTrace();
 			}
 
-			server = new Server();
+			server.start();
 			startRedirection();
 			startHotspot();
 			startBtn.setEnabled(false);
@@ -98,7 +98,6 @@ public class P1R4T3B0XActivity extends Activity {
 
 			stopHotspot();
 			stopRedirection();
-			server = null;
 			startBtn.setEnabled(true);
 			stopBtn.setEnabled(false);
 		}

@@ -9,8 +9,16 @@ import android.util.Log;
 
 public class Server extends Thread {
 	
-	ServerSocket listenSocket;
-	ArrayList<Connection> connections = new ArrayList<Connection>(); 
+	public static enum ServerState {
+		STATE_OFF,
+		STATE_WAITING,
+		STATE_SENDING
+	}
+	
+	private ServerSocket listenSocket;
+	private ArrayList<Connection> connections = new ArrayList<Connection>(); 
+	private ServerState state;
+	private int connectedUsers = 0;
 	
 	public Server() {
 		
@@ -19,7 +27,8 @@ public class Server extends Thread {
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
-		this.start();
+		
+		state = ServerState.STATE_OFF;
 	}
 	
 	public void run() {
@@ -27,7 +36,8 @@ public class Server extends Thread {
 			while(true)
 			{
 				Socket clientSocket = listenSocket.accept();
-                connections.add(new Connection (clientSocket));
+				removeConnectedUser();
+                connections.add(new Connection (clientSocket, this));
 			}
 		}
 		catch(IOException e) {
@@ -45,5 +55,23 @@ public class Server extends Thread {
 			Log.e(this.getClass().getName(), e.toString());
 		}
 		stop();
+		
+		state = ServerState.STATE_OFF;
+	}
+	
+	public ServerState getServerState() {
+		return state;
+	}
+	
+	public void addConnectedUser() {
+		connectedUsers++;
+		state = ServerState.STATE_SENDING;
+	}
+	
+	public void removeConnectedUser() {
+		if (connectedUsers-- <= 0) {
+			connectedUsers = 0;
+			state = ServerState.STATE_WAITING;
+		}
 	}
 }

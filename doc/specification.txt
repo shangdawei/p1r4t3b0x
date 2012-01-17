@@ -41,3 +41,4 @@ Config options:
 - keep remote downloaded file
 - turn off when low battery
 - modify widget parameters
+- reset stats
