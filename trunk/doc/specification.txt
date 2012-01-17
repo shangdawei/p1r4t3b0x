@@ -40,3 +40,4 @@ Config options:
 - keep track of downloaded files
 - keep remote downloaded file
 - turn off when low battery
+- modify widget parameters
