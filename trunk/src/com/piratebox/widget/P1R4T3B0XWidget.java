@@ -1,8 +1,5 @@
 package com.piratebox.widget;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -11,8 +8,8 @@ import android.widget.RemoteViews;
 import com.piratebox.R;
 
 public class P1R4T3B0XWidget extends AppWidgetProvider {
-	DateFormat df = new SimpleDateFormat("hh:mm:ss");
-
+	
+	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		
@@ -25,12 +22,15 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 			RemoteViews views = new RemoteViews(context.getPackageName(),
 					R.layout.widget);
 			
-			// switch serverState, set text accordingly
+			String display = context.getString(R.string.widget_system_off);
 			
-			views.setTextViewText(R.id.widgetlabel, "");
+			views.setTextViewText(R.id.widgetlabel, display);
 			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
-			//http://buildmobile.com/how-to-code-an-android-widget/
 		}
 	}
+	
+//	public void setButtonState(Boolean state) {
+//		
+//	}
 }

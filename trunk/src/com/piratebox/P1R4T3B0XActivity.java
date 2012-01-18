@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
+import com.piratebox.server.Server.ServerState;
 import com.piratebox.wifiap.WifiApManager;
 
 public class P1R4T3B0XActivity extends Activity {
@@ -40,10 +41,11 @@ public class P1R4T3B0XActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		server = new Server(this);
 
 		config = new WifiConfiguration();
 		config.SSID = ServerConfiguration.WIFI_AP_NAME;
-		// config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
 
 		startBtn = (Button) findViewById(R.id.startBtn);
 		startBtn.setOnClickListener(startBtnListener);
@@ -51,7 +53,7 @@ public class P1R4T3B0XActivity extends Activity {
 		stopBtn = (Button) findViewById(R.id.stopBtn);
 		stopBtn.setOnClickListener(stopBtnListener);
 
-		if (server == null) {
+		if (ServerState.STATE_OFF.equals(server.getServerState())) {
 			startBtn.setEnabled(true);
 			stopBtn.setEnabled(false);
 		} else {
@@ -66,10 +68,6 @@ public class P1R4T3B0XActivity extends Activity {
 	private OnClickListener startBtnListener = new OnClickListener() {
 
 		public void onClick(View v) {
-			if (server == null) {
-				server = new Server();
-			}
-
 			try {
 				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 				ArrayList<String> interfaceNames = new ArrayList<String>();
@@ -92,10 +90,7 @@ public class P1R4T3B0XActivity extends Activity {
 	private OnClickListener stopBtnListener = new OnClickListener() {
 
 		public void onClick(View v) {
-			if (server != null) {
-				server.shutdown();
-			}
-
+			server.shutdown();
 			stopHotspot();
 			stopRedirection();
 			startBtn.setEnabled(true);
