@@ -18,12 +18,11 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int Corners=0x7f080005;
+        public static final int Corners=0x7f080004;
         public static final int list=0x7f080002;
         public static final int startBtn=0x7f080000;
         public static final int stopBtn=0x7f080001;
-        public static final int widgetToggleButton=0x7f080003;
-        public static final int widgetlabel=0x7f080004;
+        public static final int widgetlabel=0x7f080003;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -42,6 +41,9 @@ public final class R {
         public static final int start=0x7f060001;
         public static final int stop=0x7f060002;
         public static final int widget_name=0x7f060006;
+        public static final int widget_system_off=0x7f060007;
+        public static final int widget_system_sending=0x7f060009;
+        public static final int widget_system_waiting=0x7f060008;
     }
     public static final class xml {
         public static final int widget_info=0x7f040000;

@@ -16,4 +16,7 @@
     
     
     <string name="widget_name">P1R4T3B0X Widget</string>
+    <string name="widget_system_off">Off</string>
+    <string name="widget_system_waiting">Online</string>
+    <string name="widget_system_sending">Sending...</string>
 </resources>
