@@ -1,16 +1,15 @@
 package com.piratebox.widget;
 
-import com.piratebox.P1R4T3B0XActivity;
-import com.piratebox.R;
-import com.piratebox.server.Server;
-import com.piratebox.server.Server.ServerState;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
+
+import com.piratebox.R;
+import com.piratebox.System;
+import com.piratebox.System.ServerState;
 
 public class P1R4T3B0XWidget extends AppWidgetProvider {
 
@@ -20,17 +19,12 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		
-		Server server = P1R4T3B0XActivity.getServer();
+		System system = System.getInstance(context);
 		final int N = appWidgetIds.length;
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget);
 		
-		if (server != null) {
-			server.updateWidgets();
-		} else {
-			String display = context.getString(R.string.widget_system_off);
-			views.setTextViewText(R.id.widgetlabel, display);
-		}
+		system.updateWidgets();
 		
 		for (int i = 0; i < N; i++) {
             int appWidgetId = appWidgetIds[i];
@@ -48,12 +42,11 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		if (ACTION_WIDGET_RECEIVER.equals(intent.getAction())) {
-			Server server = P1R4T3B0XActivity.getServer();
-			if (server == null || ServerState.STATE_OFF.equals(server.getServerState())) {
-				server = new Server(context);
+			System system = System.getInstance(context);
+			if (ServerState.STATE_OFF.equals(system.getServerState())) {
+				system.start();
 			} else {
-				server.shutdown();
-				server = null;
+				system.stop();
 			}
 		}
 	}
