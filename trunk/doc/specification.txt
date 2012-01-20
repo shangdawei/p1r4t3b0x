@@ -42,3 +42,4 @@ Config options:
 - turn off when low battery
 - modify widget parameters
 - reset stats
+- notification when piratebox network on range
