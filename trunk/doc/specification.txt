@@ -31,13 +31,17 @@ An option should allow the user to specify if the downloaded remote file should 
 
 
 **********         Optionnal        ***********
-A widget must allow to turn the system on and off.
-Display use stats on home page (file accessed, data downloaded, uptime...)
-Write access to the folder.
+/ A widget must allow to turn the system on and off.
+
+Display use stats on home page:
+- uptime
+- n of files downloaded
+- top 5 files dl
+- current activity
+
 Config options:
 - modify the shared folder
 - add more folder to analyse
-- keep track of downloaded files
 - keep remote downloaded file
 - turn off when low battery
 - modify widget parameters
