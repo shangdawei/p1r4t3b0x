@@ -35,15 +35,15 @@ An option should allow the user to specify if the downloaded remote file should 
 
 Display use stats on home page:
 - uptime
-- n of files downloaded
+- n of files downloaded (from uptime)
 - top 5 files dl
 - current activity
 
 Config options:
 - modify the shared folder
+- notification when piratebox network on range
+- turn off when low battery
+- reset stats
+
 - add more folder to analyse
 - keep remote downloaded file
-- turn off when low battery
-- modify widget parameters
-- reset stats
-- notification when piratebox network on range

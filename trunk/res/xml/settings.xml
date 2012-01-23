@@ -1,51 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory
-        android:summary="Brief summary of category"
-        android:title="Settings" >
-        <ListPreference
-            android:dialogTitle="Name of the dialog that pops up"
-            android:key="settingName"
-            android:title="Main text for option" />
+    <Preference
+        android:key="select_dir"
+        android:persistent="true"
+        android:summary=""
+        android:title="@string/settings_set_dir" />
 
-        <EditTextPreference
-            android:dialogTitle="Text dialog title"
-            android:key="edittext_preference"
-            android:summary="Text summary"
-            android:title="Text title" />
+    <CheckBoxPreference
+        android:key="notification"
+        android:persistent="true"
+        android:summary="@string/settings_notification_summary"
+        android:title="@string/settings_notification" />
 
-        <PreferenceScreen
-            android:summary="Summary of screen"
-            android:title="Main name of sub screen" >
-            <CheckBoxPreference
-                android:key="settingName"
-                android:summary="A brief summary of the option/setting"
-                android:title="Main Title of Preference" />
-        </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:summary="Brief summary of category"
-        android:title="Settings" >
-        <ListPreference
-            android:dialogTitle="Name of the dialog that pops up"
-            android:key="settingName"
-            android:title="Main text for option" />
+    <ListPreference
+        android:dialogTitle="@string/settings_low_bat_dialog"
+        android:entries="@array/battery_threshold_readable"
+        android:entryValues="@array/battery_threshold"
+        android:key="low_bat"
+        android:persistent="true"
+        android:summary=""
+        android:title="@string/settings_low_bat" />
 
-        <EditTextPreference
-            android:dialogTitle="Text dialog title"
-            android:key="edittext_preference"
-            android:summary="Text summary"
-            android:title="Text title" />
+    <Preference
+        android:key="reset_stat"
+        android:title="@string/settings_reset_stats" />
 
-        <PreferenceScreen
-            android:summary="Summary of screen"
-            android:title="Main name of sub screen" >
-            <CheckBoxPreference
-                android:key="settingName"
-                android:summary="A brief summary of the option/setting"
-                android:title="Main Title of Preference" />
-        </PreferenceScreen>
+    <PreferenceCategory android:title="Credits" >
+        <Preference
+            android:key="help"
+            android:title="@string/settings_help" />
+        <Preference
+            android:key="beer"
+            android:title="@string/settings_beer" />
     </PreferenceCategory>
 
 </PreferenceScreen>
