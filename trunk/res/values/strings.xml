@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- General -->
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="settings">Settings</string>
     <string name="current">Current:</string>
+    <string name="validate">Validate</string>
     
+    <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
     
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
     
-    
+    <!-- Widget -->
     <string name="widget_name">P1R4T3B0X Widget</string>
     <string name="widget_system_off">Off</string>
     <string name="widget_system_waiting">Online</string>
     <string name="widget_system_sending">Sending&#8230;</string>
     
+    <!-- Settings Activity -->
     <string name="settings_set_dir">Set shared folder</string>
     <string name="settings_notification">Notification</string>
     <string name="settings_notification_summary">Notify when P1R4T3B0X network found</string>
@@ -39,4 +43,7 @@
         <item>10</item>
         <item>0</item>
     </string-array>
+    
+    <!-- Choose folder activity -->
+    <string name="newFolder">New folder</string>
 </resources>

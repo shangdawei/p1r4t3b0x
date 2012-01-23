@@ -75,6 +75,8 @@ public class System {
 				updateWidgets();
 			}
 		};
+		
+		//TODO create folder if not exists
 	}
 	
 	public void start() {
