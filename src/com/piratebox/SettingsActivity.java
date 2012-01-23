@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -86,7 +87,9 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 	
 	private void GoToDonateVersion() {
-		// TODO open market to donate version
+	    Intent intent = new Intent(Intent.ACTION_VIEW);
+	    intent.setData(Uri.parse(getResources().getString(R.string.donate_app)));
+	    startActivity(intent);
 	}
 	
 	@Override

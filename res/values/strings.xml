@@ -50,6 +50,8 @@
     
     <string name="help_content">blabla help</string>
     
+    <string name="donate_app">market://details?id=com.android.example</string>
+    
     <!-- Choose folder activity -->
     <string name="new_folder">New folder</string>
     <string name="new_folder_dialog">Type the name of the folder you want to create:</string>
