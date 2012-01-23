@@ -1,6 +1,7 @@
 package com.piratebox;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -76,7 +77,12 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 	
 	private void openHelp() {
-		// TODO open help dialog
+	    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(getResources().getString(R.string.help));
+        alert.setMessage(getResources().getString(R.string.help_content));
+        alert.setPositiveButton(R.string.close, null);
+        alert.setCancelable(true);
+        alert.show();
 	}
 	
 	private void GoToDonateVersion() {

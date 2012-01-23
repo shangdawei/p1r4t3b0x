@@ -62,13 +62,13 @@ public class DirectoryChooserActivity extends ListActivity {
 		public void onClick(View v) {
 			
 			AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
-	        alert.setTitle("New folder");
-	        alert.setMessage("Type the name of the folder you want to create:");
+	        alert.setTitle(getResources().getString(R.string.new_folder));
+	        alert.setMessage(getResources().getString(R.string.new_folder_dialog));
 	        
 	        final EditText inputName = new EditText(ctx);  
 	        alert.setView(inputName);
 
-	        alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {  
+	        alert.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {  
 	        	public void onClick(DialogInterface dialog, int whichButton) {  
 	        		String newFolder = inputName.getText().toString();
 	        		File folder = new File(currentFolder, newFolder);
