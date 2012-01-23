@@ -72,11 +72,11 @@ public class DirectoryChooserActivity extends ListActivity {
 	        	public void onClick(DialogInterface dialog, int whichButton) {  
 	        		String newFolder = inputName.getText().toString();
 	        		File folder = new File(currentFolder, newFolder);
-	        		if (folder.mkdir()) {
+	        		if (folder.mkdirs()) {
 	        			goInDir(folder);
 	        		} else {
 						try {
-						    Runtime.getRuntime().exec("mkdir " + folder.getAbsolutePath()).waitFor();
+						    Runtime.getRuntime().exec("su -c mkdir " + folder.getAbsolutePath()).waitFor();
 	                        goInDir(folder);
 						} catch (Exception e) {
 							Log.e(this.getClass().getName(), e.toString());
