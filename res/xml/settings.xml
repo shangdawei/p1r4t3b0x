@@ -26,7 +26,7 @@
         android:key="reset_stat"
         android:title="@string/settings_reset_stats" />
 
-    <PreferenceCategory android:title="Credits" >
+    <PreferenceCategory android:title="@string/other" >
         <Preference
             android:key="help"
             android:title="@string/settings_help" />

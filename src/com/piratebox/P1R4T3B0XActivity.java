@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,7 +57,7 @@ public class P1R4T3B0XActivity extends Activity {
 				}
 				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
 			} catch (SocketException e) {
-				e.printStackTrace();
+				Log.e(this.getClass().getName(), e.toString());
 			}
 
 			system.start();

@@ -3,7 +3,6 @@ package com.piratebox;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -14,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -54,6 +54,7 @@ public class DirectoryChooserActivity extends ListActivity {
 	private OnClickListener validBtnListener = new OnClickListener() {
 		public void onClick(View v) {
 			setResult(RESULT_OK, new Intent(currentFolder.getAbsolutePath()));
+			finish();
 		}
 	};
 	
@@ -61,8 +62,8 @@ public class DirectoryChooserActivity extends ListActivity {
 		public void onClick(View v) {
 			
 			AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
-	        alert.setTitle("Title");
-	        alert.setMessage("Message");
+	        alert.setTitle("New folder");
+	        alert.setMessage("Type the name of the folder you want to create:");
 	        
 	        final EditText inputName = new EditText(ctx);  
 	        alert.setView(inputName);
@@ -73,8 +74,15 @@ public class DirectoryChooserActivity extends ListActivity {
 	        		File folder = new File(currentFolder, newFolder);
 	        		if (folder.mkdir()) {
 	        			goInDir(folder);
+	        		} else {
+						try {
+						    Runtime.getRuntime().exec("mkdir " + folder.getAbsolutePath()).waitFor();
+	                        goInDir(folder);
+						} catch (Exception e) {
+							Log.e(this.getClass().getName(), e.toString());
+						}
 	        		}
-	        	}	
+	        	}
 	        });
 	        
 	        alert.setCancelable(true);
@@ -86,14 +94,18 @@ public class DirectoryChooserActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		String folder = directories.get(position);
-		goInDir(new File(currentFolder, folder));
+		if ("..".equals(folder)) {
+		    goInDir(currentFolder.getParentFile());
+		} else {
+		    goInDir(new File(currentFolder, folder));
+		}
 	}
 	
 	private void goInDir(File folder) {
 		currentFolder = folder;
 
 		TextView currentFolderTxt = (TextView) findViewById(R.id.currentFolder);
-		currentFolderTxt.setText(folder.getName());
+		currentFolderTxt.setText(currentFolder.getAbsolutePath());
 		
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
@@ -101,8 +113,16 @@ public class DirectoryChooserActivity extends ListActivity {
 			}
 		};
 		
-    	directories = new ArrayList<String>(Arrays.asList(folder.list(filter)));
-    	directories.add(0, "..");
-    	setListAdapter(new ArrayAdapter<String>(this, R.layout.folder_item, directories));
-	}
+		String[] dirs = currentFolder.list(filter);
+    	directories = new ArrayList<String>();
+    	if (currentFolder.getParent() != null) {
+    	    directories.add(0, "..");
+    	}
+    	if (dirs != null) {
+    	    for (String dir : dirs) {
+    	        directories.add(dir);
+    	    }
+    	}
+        setListAdapter(new ArrayAdapter<String>(this, R.layout.folder_item, directories));
+    }
 }
