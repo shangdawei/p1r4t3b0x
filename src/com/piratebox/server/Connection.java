@@ -62,7 +62,7 @@ public class Connection extends Thread {
 			return;
 		}
 
-		rootDir = new File(ServerConfiguration.rootDir);
+		rootDir = new File(ServerConfiguration.getRootDir());
 		if (!rootDir.canRead()) {
 			rootDir.mkdir();
 		}
@@ -95,7 +95,7 @@ public class Connection extends Thread {
 			st.nextToken();
 			requestedFile = st.nextToken();
 			// create File object
-			String filePath = URLDecoder.decode(ServerConfiguration.rootDir
+			String filePath = URLDecoder.decode(ServerConfiguration.getRootDir()
 					+ requestedFile);
 			File f = new File(filePath);
 

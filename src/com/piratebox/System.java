@@ -23,6 +23,7 @@ import com.piratebox.wifiap.WifiApManager;
 public class System {
 	public static final String TEMP_SCRIPT = "tmp_script";
 	public static final String IPTABLES = "iptables";
+	public static final String PREF_SETTINGS = "settings";
 
 	private WifiConfiguration config;
 	private WifiConfiguration savedConfig;

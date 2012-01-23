@@ -4,6 +4,9 @@ public class ServerConfiguration {
 
 	public static final int PORT = 1337;
 	public static final String WIFI_AP_NAME = "P1R4T3B0X";
-
-	public static String rootDir = "/sdcard/piratebox/";
+	public static final String DEFAULT_ROOT_DIR = "/sdcard/piratebox";
+	
+	public static String getRootDir() {
+		return "/sdcard/piratebox/";
+	}
 }
