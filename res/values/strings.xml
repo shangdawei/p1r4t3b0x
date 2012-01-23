@@ -7,6 +7,9 @@
     <string name="other">Other</string>
     <string name="current">Current:</string>
     <string name="validate">Validate</string>
+    <string name="create">Create</string>
+    <string name="help">Help</string>
+    <string name="close">Close</string>
     
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
@@ -45,6 +48,9 @@
         <item>0</item>
     </string-array>
     
+    <string name="help_content">blabla help</string>
+    
     <!-- Choose folder activity -->
-    <string name="newFolder">New folder</string>
+    <string name="new_folder">New folder</string>
+    <string name="new_folder_dialog">Type the name of the folder you want to create:</string>
 </resources>
