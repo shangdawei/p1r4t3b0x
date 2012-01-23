@@ -34,16 +34,9 @@ public class GeneratedPage {
 	private String footer = "" +
 			"</body>" +
 			"</html>";
-	
-	private FileFilter filter;
-	
+		
 	public GeneratedPage(File rootDir) {
 
-    	filter = new FileFilter() {
-			public boolean accept(File f) {
-    	        return !f.getName().startsWith(".");
-    	    }
-    	};
     	
     	StringBuilder contentSb = new StringBuilder().append(content);
     	listFilesFromFolder(rootDir, contentSb, "/");
@@ -52,6 +45,13 @@ public class GeneratedPage {
 	}
 
 	private void listFilesFromFolder(File folder, StringBuilder str, String folderPath) {
+
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File f) {
+    	        return !f.getName().startsWith(".");
+    	    }
+    	};
+    	
     	File[] children = folder.listFiles(filter);
     	
     	if (children != null) {

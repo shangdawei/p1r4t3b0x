@@ -11,16 +11,12 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import com.piratebox.server.ServerConfiguration;
+import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.Utils;
 
 public class SettingsActivity extends PreferenceActivity {
 	
 	private final int DIRECTORY_CHOOSE_ACTIVITY_CODE = 0;
-	private final String KEY_SELECT_DIR = "select_dir";
-	private final String KEY_LOW_BAT = "low_bat";
-	private final String KEY_RESET_STAT = "reset_stat";
-	private final String KEY_HELP = "help";
-	private final String KEY_BEER = "beer";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,13 +32,13 @@ public class SettingsActivity extends PreferenceActivity {
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
 			Preference preference) {
 		
-		if (preference.equals(getPreferenceScreen().findPreference(KEY_SELECT_DIR))) {
+		if (preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR))) {
 			openSelectDir();
-		} else if(preference.equals(getPreferenceScreen().findPreference(KEY_RESET_STAT))) {
+		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.RESET_STAT))) {
 			resetStats();
-		} else if(preference.equals(getPreferenceScreen().findPreference(KEY_HELP))) {
+		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
 			openHelp();
-		} else if(preference.equals(getPreferenceScreen().findPreference(KEY_BEER))) {
+		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.BEER))) {
 			GoToDonateVersion();
 		}
 		
@@ -53,8 +49,8 @@ public class SettingsActivity extends PreferenceActivity {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		String summary = getResources().getString(R.string.current);
-		summary += " " + settings.getString(KEY_SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR);
-		getPreferenceScreen().findPreference(KEY_SELECT_DIR).setSummary(summary);
+		summary += " " + settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR);
+		getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR).setSummary(summary);
 	}
 	
 	private void setLowBatSummary() {
@@ -62,13 +58,13 @@ public class SettingsActivity extends PreferenceActivity {
 		CharSequence[] array = getResources().getTextArray(R.array.battery_threshold);
 		CharSequence[] arrayReadable = getResources().getTextArray(R.array.battery_threshold_readable);
 		
-		String value = settings.getString(KEY_LOW_BAT, "0");
+		String value = settings.getString(PreferencesKeys.LOW_BAT, "0");
 		int index = Utils.indexOf(value, array);
 		CharSequence readable = arrayReadable[index];
 		
 		String summary = getResources().getString(R.string.current);
 		summary += " " + readable;
-		getPreferenceScreen().findPreference(KEY_LOW_BAT).setSummary(summary);
+		getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT).setSummary(summary);
 	}
 	
 	private void openSelectDir() {
@@ -91,10 +87,10 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_CODE) {
+		if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_CODE && resultCode == RESULT_OK) {
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 			Editor edit = settings.edit();
-			edit.putString(KEY_SELECT_DIR, data.getDataString());
+			edit.putString(PreferencesKeys.SELECT_DIR, data.getAction());
 			edit.commit();
 			setSelectDirSummary();
 		}
