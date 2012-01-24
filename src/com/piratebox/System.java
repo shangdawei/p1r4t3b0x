@@ -17,6 +17,7 @@ public class System {
 
     private WifiConfiguration config;
     private WifiConfiguration savedConfig;
+    private long startTime;
 
     private ArrayList<Callback> listeners = new ArrayList<Callback>();
     
@@ -54,6 +55,8 @@ public class System {
 
     private System(Context ctx) {
         this.ctx = ctx;
+        
+        startTime = java.lang.System.currentTimeMillis();
         
         iptablesRunner = new IptablesRunner(ctx);
 
@@ -100,6 +103,10 @@ public class System {
 
     public ServerState getServerState() {
         return state;
+    }
+    
+    public long getStartTime() {
+        return startTime;
     }
 
     private void startHotspot() {

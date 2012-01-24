@@ -27,14 +27,13 @@ public class P1R4T3B0XActivity extends Activity {
 
 	private Button startStopBtn;
 	
-	private long start;
 	private Handler updateHandler = new Handler();
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		start = java.lang.System.currentTimeMillis();
+		
 		setContentView(R.layout.main);
 		
 		startStopBtn = (Button) findViewById(R.id.startStopBtn);
@@ -52,10 +51,11 @@ public class P1R4T3B0XActivity extends Activity {
         system.addStateChangeListener(callback);
         callback.call(system.getServerState());
 
+        //TODO uptime should be calculated only when service is online
         Runnable updateUptimeTask = new Runnable() {
             public void run() {
                 
-                long milis = java.lang.System.currentTimeMillis() - start;
+                long milis = java.lang.System.currentTimeMillis() - system.getStartTime();
                 int sec = (int)((milis / 1000) % 60);
                 int min = (int)((milis / 1000 / 60) % 60);
                 int hour = (int)((milis / 1000 / 60 / 60) % 24);
@@ -69,8 +69,7 @@ public class P1R4T3B0XActivity extends Activity {
                 TextView statusTxt = (TextView) findViewById(R.id.uptime_value);
                 statusTxt.setText(timeStr.toString());
                 
-                updateHandler.postAtTime(this, start + milis + 1000);
-                Log.d(this.getClass().getName(), java.lang.System.currentTimeMillis() + " " + (start + milis + 1000));
+                updateHandler.postDelayed(this, 200);
             }
         };
 
