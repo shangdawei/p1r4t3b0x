@@ -17,6 +17,7 @@
     <string name="filesdl"># files downloaded:</string>
     <string name="topdl">Files most downloaded:</string>
     <string name="status">Current status:</string>
+    <string name="not_running">Not running</string>
     
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>

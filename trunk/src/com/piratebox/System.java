@@ -2,24 +2,26 @@ package com.piratebox;
 
 import java.util.ArrayList;
 
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.IptablesRunner;
+import com.piratebox.widget.P1R4T3B0XWidget;
 import com.piratebox.wifiap.WifiApManager;
 
 public class System {
 
-    private WifiConfiguration config;
-    private WifiConfiguration savedConfig;
-    private long startTime;
 
-    private ArrayList<Callback> listeners = new ArrayList<Callback>();
+    private ArrayList<Callback> stateChangeListeners = new ArrayList<Callback>();
     
     public static enum ServerState {
         STATE_OFF(R.string.widget_system_off),
@@ -38,11 +40,13 @@ public class System {
     }
 
     private ServerState state;
-
+    private WifiConfiguration config;
+    private WifiConfiguration savedConfig;
     private Server server;
     private Context ctx;
     private Handler handler;
     private IptablesRunner iptablesRunner;
+    private long startTime = 0L;
 
     private static System instance = null;
 
@@ -55,8 +59,6 @@ public class System {
 
     private System(Context ctx) {
         this.ctx = ctx;
-        
-        startTime = java.lang.System.currentTimeMillis();
         
         iptablesRunner = new IptablesRunner(ctx);
 
@@ -75,6 +77,15 @@ public class System {
                 }
             }
         };
+
+        Intent intent = new Intent(ctx, P1R4T3B0XWidget.class);
+        intent.setAction(P1R4T3B0XWidget.WIDGET_RECEIVER_INIT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, 0, intent, 0);
+        try {
+            pendingIntent.send();
+        } catch (CanceledException e) {
+            Log.e(this.getClass().getName(), e.toString());
+        }
         
         // TODO create folder if not exists
     }
@@ -87,9 +98,12 @@ public class System {
         server = new Server();
         server.addConnectedUsersListener(handler);
         server.start();
+        startTime = java.lang.System.currentTimeMillis();
     }
 
     public void stop() {
+        startTime = 0L;
+        
         stopHotspot();
         iptablesRunner.teardown();
         setServerState(ServerState.STATE_OFF);
@@ -122,15 +136,15 @@ public class System {
     }
 
     public void addStateChangeListener(Callback c) {
-        listeners.add(c);
+        stateChangeListeners.add(c);
     }
     
     public void removeStateChangeListener(Callback c) {
-        listeners.remove(c);
+        stateChangeListeners.remove(c);
     }
     
     private void callStateChangeListeners() {
-        for (Callback c : listeners) {
+        for (Callback c : stateChangeListeners) {
             c.call(getServerState());
         }
     }
