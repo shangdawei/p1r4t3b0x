@@ -15,8 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/uptime"
-        android:layout_toRightOf="@id/uptime"
-        android:text="bla" />
+        android:layout_toRightOf="@id/uptime" />
 
     <TextView
         android:id="@+id/filesdl"
@@ -30,9 +29,8 @@
         android:id="@+id/filesdl_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/filesdl"
         android:layout_alignTop="@id/filesdl"
-        android:text="bla" />
+        android:layout_toRightOf="@id/filesdl" />
 
     <TextView
         android:id="@+id/topdl"
@@ -47,40 +45,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/topdl"
-        android:layout_below="@id/topdl"
-        android:text="bla" />
+        android:layout_below="@id/topdl" />
 
     <TextView
         android:id="@+id/topdl2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/topdl"
-        android:layout_below="@id/topdl1"
-        android:text="bla" />
+        android:layout_below="@id/topdl1" />
 
     <TextView
         android:id="@+id/topdl3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/topdl"
-        android:layout_below="@id/topdl2"
-        android:text="bla" />
+        android:layout_below="@id/topdl2" />
 
     <TextView
         android:id="@+id/topdl4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/topdl"
-        android:layout_below="@id/topdl3"
-        android:text="bla" />
+        android:layout_below="@id/topdl3" />
 
     <TextView
         android:id="@+id/topdl5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/topdl"
-        android:layout_below="@id/topdl4"
-        android:text="bla" />
+        android:layout_below="@id/topdl4" />
 
     <TextView
         android:id="@+id/status"
@@ -95,8 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/status"
-        android:layout_toRightOf="@id/status"
-        android:text="bla" />
+        android:layout_toRightOf="@id/status" />
 
     <Button
         android:id="@+id/startStopBtn"
