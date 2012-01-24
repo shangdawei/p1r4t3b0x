@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.piratebox.System.ServerState;
@@ -35,10 +36,12 @@ public class P1R4T3B0XActivity extends Activity {
 		startStopBtn.setOnClickListener(startStopBtnListener);
 
 		system = System.getInstance(this);
-		system.addStateChangedListener(new Callback() { 
+		system.addStateChangeListener(new Callback() { 
             @Override
             public void call(Object arg) {
                 setButtonState();
+                TextView statusTxt = (TextView) findViewById(R.id.status_value);
+                statusTxt.setText(getResources().getString(((ServerState) arg).val()));
             }
         });
 	}

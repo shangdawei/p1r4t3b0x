@@ -16,7 +16,7 @@ import com.piratebox.utils.Callback;
 public class P1R4T3B0XWidget extends AppWidgetProvider {
 
 	private static final String ACTION_WIDGET_RECEIVER = "ActionReceiverWidget";
-	private static boolean addedListenner = false;
+	private boolean initialized = false;
 	
 	@Override
 	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
@@ -26,19 +26,25 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget);
 		
-		if (!addedListenner) {
-	        System system = System.getInstance(context);
-    		system.addStateChangedListener(new Callback() {
-                @Override
-                public void call(Object arg) {
-                    ServerState state = (ServerState) arg;
-                    int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
-                    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-                    views.setTextViewText(R.id.widgetlabel, context.getString(state.val()));
-                    appWidgetManager.updateAppWidget(ids, views);
-                }
-            });
-		}
+        System system = System.getInstance(context);
+        Callback callback = new Callback() {
+            @Override
+            public void call(Object arg) {
+                int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
+
+                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+
+                views.setTextViewText(R.id.widgetlabel, context.getString(((ServerState) arg).val()));
+
+                appWidgetManager.updateAppWidget(ids, views);
+            }
+        };
+        
+        callback.call(system.getServerState());
+        if (!initialized) {
+            system.addStateChangeListener(callback);
+            initialized = true;
+        }
 		
 		for (int i = 0; i < N; i++) {
             int appWidgetId = appWidgetIds[i];
