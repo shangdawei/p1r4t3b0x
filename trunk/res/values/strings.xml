@@ -13,6 +13,10 @@
     
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
+    <string name="uptime">Uptime:</string>
+    <string name="filesdl"># files downloaded:</string>
+    <string name="topdl">Files most downloaded:</string>
+    <string name="status">Current status:</string>
     
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>

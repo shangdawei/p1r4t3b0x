@@ -40,7 +40,7 @@ Display use stats on home page:
 - current activity
 
 Config options:
-- modify the shared folder
+/ - modify the shared folder
 - notification when piratebox network on range
 - turn off when low battery
 - reset stats
