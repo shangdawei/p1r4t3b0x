@@ -15,8 +15,12 @@ import com.piratebox.utils.Callback;
 
 public class P1R4T3B0XWidget extends AppWidgetProvider {
 
-	private static final String ACTION_WIDGET_RECEIVER = "ActionReceiverWidget";
+    public static final String WIDGET_RECEIVER_INIT = "WidgetReceiverInit";
+    
+	private static final String WIDGET_RECEIVER_CLICK = "WidgetReceiverClick";
+	
 	private boolean initialized = false;
+	private Callback updateWidgetsCallback;
 	
 	@Override
 	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
@@ -25,31 +29,15 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 		final int N = appWidgetIds.length;
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget);
-		
+
+        init(context);
         System system = System.getInstance(context);
-        Callback callback = new Callback() {
-            @Override
-            public void call(Object arg) {
-                int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
-
-                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-
-                views.setTextViewText(R.id.widgetlabel, context.getString(((ServerState) arg).val()));
-
-                appWidgetManager.updateAppWidget(ids, views);
-            }
-        };
-        
-        callback.call(system.getServerState());
-        if (!initialized) {
-            system.addStateChangeListener(callback);
-            initialized = true;
-        }
+        updateWidgetsCallback.call(system.getServerState());
 		
 		for (int i = 0; i < N; i++) {
             int appWidgetId = appWidgetIds[i];
             Intent intent = new Intent(context, P1R4T3B0XWidget.class);
-            intent.setAction(ACTION_WIDGET_RECEIVER);
+            intent.setAction(WIDGET_RECEIVER_CLICK);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
             views.setOnClickPendingIntent(R.id.widgetlabel, pendingIntent);
@@ -61,17 +49,38 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
-		if (ACTION_WIDGET_RECEIVER.equals(intent.getAction())) {
+		if (WIDGET_RECEIVER_CLICK.equals(intent.getAction())) {
 			System system = System.getInstance(context);
 			if (ServerState.STATE_OFF.equals(system.getServerState())) {
 				system.start();
 			} else {
 				system.stop();
 			}
+		} else if (WIDGET_RECEIVER_INIT.equals(intent.getAction())) {
+		    init(context);
 		}
 	}
 
-	// public void setButtonState(Boolean state) {
-	//
-	// }
+	private void init(final Context context) {
+        if (!initialized) {
+            final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            System system = System.getInstance(context);
+            updateWidgetsCallback = new Callback() {
+                @Override
+                public void call(Object arg) {
+                    int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
+
+                    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+
+                    views.setTextViewText(R.id.widgetlabel, context.getString(((ServerState) arg).val()));
+
+                    appWidgetManager.updateAppWidget(ids, views);
+                }
+            };
+            
+            system.addStateChangeListener(updateWidgetsCallback);
+            updateWidgetsCallback.call(system.getServerState());
+            initialized = true;
+        }
+	}
 }

@@ -36,23 +36,13 @@ public class P1R4T3B0XActivity extends Activity {
 		
 		setContentView(R.layout.main);
 		
+		system = System.getInstance(this);
+        
 		startStopBtn = (Button) findViewById(R.id.startStopBtn);
 		startStopBtn.setOnClickListener(startStopBtnListener);
 
-		system = System.getInstance(this);
-		Callback callback = new Callback() { 
-            @Override
-            public void call(Object arg) {
-                setButtonState();
-                TextView statusTxt = (TextView) findViewById(R.id.status_value);
-                statusTxt.setText(getResources().getString(((ServerState) arg).val()));
-            }
-        };
-        system.addStateChangeListener(callback);
-        callback.call(system.getServerState());
-
-        //TODO uptime should be calculated only when service is online
-        Runnable updateUptimeTask = new Runnable() {
+		
+        final Runnable updateUptimeTask = new Runnable() {
             public void run() {
                 
                 long milis = java.lang.System.currentTimeMillis() - system.getStartTime();
@@ -66,16 +56,33 @@ public class P1R4T3B0XActivity extends Activity {
                 .append(min).append("m")
                 .append(sec).append("s");
 
-                TextView statusTxt = (TextView) findViewById(R.id.uptime_value);
-                statusTxt.setText(timeStr.toString());
+                TextView uptimeTxt = (TextView) findViewById(R.id.uptime_value);
+                uptimeTxt.setText(timeStr.toString());
                 
                 updateHandler.postDelayed(this, 200);
             }
         };
-
         updateHandler.removeCallbacks(updateUptimeTask);
-        updateHandler.postDelayed(updateUptimeTask, 100);
-
+        
+        Callback onStateChange = new Callback() { 
+            @Override
+            public void call(Object arg) {
+                ServerState state = (ServerState) arg;
+                setButtonState();
+                TextView statusTxt = (TextView) findViewById(R.id.status_value);
+                statusTxt.setText(getResources().getString(state.val()));
+                
+                if (ServerState.STATE_OFF.equals(state)) {
+                    updateHandler.removeCallbacks(updateUptimeTask);
+                    TextView uptimeTxt = (TextView) findViewById(R.id.uptime_value);
+                    uptimeTxt.setText(R.string.not_running);
+                } else {
+                    updateHandler.postDelayed(updateUptimeTask, 100);
+                }
+            }
+        };
+        system.addStateChangeListener(onStateChange);
+        onStateChange.call(system.getServerState());
 	}
 	
 	private OnClickListener startStopBtnListener = new OnClickListener() {
