@@ -18,12 +18,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.piratebox.System.ServerState;
+import com.piratebox.utils.Callback;
 
 public class P1R4T3B0XActivity extends Activity {
 	private System system;
 
-	private Button startBtn;
-	private Button stopBtn;
+	private Button startStopBtn;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -31,23 +31,19 @@ public class P1R4T3B0XActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		startBtn = (Button) findViewById(R.id.startBtn);
-		startBtn.setOnClickListener(startBtnListener);
-
-		stopBtn = (Button) findViewById(R.id.stopBtn);
-		stopBtn.setOnClickListener(stopBtnListener);
+		startStopBtn = (Button) findViewById(R.id.startStopBtn);
+		startStopBtn.setOnClickListener(startStopBtnListener);
 
 		system = System.getInstance(this);
+		system.addStateChangedListener(new Callback() { 
+            @Override
+            public void call(Object arg) {
+                setButtonState();
+            }
+        });
 	}
 	
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		setButtonsState();
-	}
-	
-	private OnClickListener startBtnListener = new OnClickListener() {
+	private OnClickListener startStopBtnListener = new OnClickListener() {
 		public void onClick(View v) {
 			try {
 				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -60,27 +56,19 @@ public class P1R4T3B0XActivity extends Activity {
 				Log.e(this.getClass().getName(), e.toString());
 			}
 
-			system.start();
-			
-			setButtonsState();
+	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
+	            system.start();
+	        } else {
+	            system.stop();
+	        }
 		}
 	};
 
-	private OnClickListener stopBtnListener = new OnClickListener() {
-		public void onClick(View v) {
-			system.stop();
-			
-			setButtonsState();
-		}
-	};
-
-	private void setButtonsState() {
+	private void setButtonState() {
 		if (ServerState.STATE_OFF.equals(system.getServerState())) {
-			startBtn.setEnabled(true);
-			stopBtn.setEnabled(false);
+			startStopBtn.setText(getResources().getString(R.string.start));
 		} else {
-			startBtn.setEnabled(false);
-			stopBtn.setEnabled(true);
+            startStopBtn.setText(getResources().getString(R.string.stop));
 		}
 	}
 	
