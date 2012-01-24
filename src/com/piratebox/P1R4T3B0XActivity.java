@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,25 +26,57 @@ public class P1R4T3B0XActivity extends Activity {
 	private System system;
 
 	private Button startStopBtn;
+	
+	private long start;
+	private Handler updateHandler = new Handler();
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		start = java.lang.System.currentTimeMillis();
 		setContentView(R.layout.main);
 		
 		startStopBtn = (Button) findViewById(R.id.startStopBtn);
 		startStopBtn.setOnClickListener(startStopBtnListener);
 
 		system = System.getInstance(this);
-		system.addStateChangeListener(new Callback() { 
+		Callback callback = new Callback() { 
             @Override
             public void call(Object arg) {
                 setButtonState();
                 TextView statusTxt = (TextView) findViewById(R.id.status_value);
                 statusTxt.setText(getResources().getString(((ServerState) arg).val()));
             }
-        });
+        };
+        system.addStateChangeListener(callback);
+        callback.call(system.getServerState());
+
+        Runnable updateUptimeTask = new Runnable() {
+            public void run() {
+                
+                long milis = java.lang.System.currentTimeMillis() - start;
+                int sec = (int)((milis / 1000) % 60);
+                int min = (int)((milis / 1000 / 60) % 60);
+                int hour = (int)((milis / 1000 / 60 / 60) % 24);
+                int day = (int)(milis / 1000 / 60 / 60 / 24);
+                StringBuilder timeStr = new StringBuilder();
+                timeStr.append(day).append("d")
+                .append(hour).append("h")
+                .append(min).append("m")
+                .append(sec).append("s");
+
+                TextView statusTxt = (TextView) findViewById(R.id.uptime_value);
+                statusTxt.setText(timeStr.toString());
+                
+                updateHandler.postAtTime(this, start + milis + 1000);
+                Log.d(this.getClass().getName(), java.lang.System.currentTimeMillis() + " " + (start + milis + 1000));
+            }
+        };
+
+        updateHandler.removeCallbacks(updateUptimeTask);
+        updateHandler.postDelayed(updateUptimeTask, 100);
+
 	}
 	
 	private OnClickListener startStopBtnListener = new OnClickListener() {
@@ -95,5 +128,5 @@ public class P1R4T3B0XActivity extends Activity {
 	
 	private void openSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
-	}
+	}	
 }
