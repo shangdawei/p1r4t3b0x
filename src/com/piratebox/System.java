@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,11 +27,12 @@ public class System {
     private WifiConfiguration config;
     private WifiConfiguration savedConfig;
 
-    private ArrayList<Callback> statusChangeListeners = new ArrayList<Callback>();
-
+    private ArrayList<Callback> listeners = new ArrayList<Callback>();
+    
     public static enum ServerState {
-        STATE_OFF(R.string.widget_system_off), STATE_WAITING(R.string.widget_system_waiting), STATE_SENDING(
-                R.string.widget_system_sending);
+        STATE_OFF(R.string.widget_system_off),
+        STATE_WAITING(R.string.widget_system_waiting),
+        STATE_SENDING(R.string.widget_system_sending);
 
         private final int value;
 
@@ -46,7 +49,7 @@ public class System {
 
     private Server server;
     private Context ctx;
-    private Callback callback;
+    private Handler handler;
 
     private static System instance = null;
 
@@ -65,10 +68,10 @@ public class System {
 
         setServerState(ServerState.STATE_OFF);
 
-        callback = new Callback() {
+        handler = new Handler() {
             @Override
-            public void call(Object arg) {
-                if ((Integer) arg <= 0) {
+            public void handleMessage(Message msg) {
+                if ((Integer) msg.obj <= 0) {
                     setServerState(ServerState.STATE_WAITING);
                 } else {
                     setServerState(ServerState.STATE_SENDING);
@@ -83,21 +86,19 @@ public class System {
         startRedirection();
         startHotspot();
         setServerState(ServerState.STATE_WAITING);
-
+        
         server = new Server();
-        server.addConnectedUsersListener(callback);
+        server.addConnectedUsersListener(handler);
         server.start();
     }
 
     public void stop() {
-
         stopHotspot();
         stopRedirection();
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
     }
-
     public void setServerState(ServerState state) {
         this.state = state;
         callStateChangeListeners();
@@ -105,14 +106,6 @@ public class System {
 
     public ServerState getServerState() {
         return state;
-    }
-
-    public boolean addStateChangedListener(Callback c) {
-        return statusChangeListeners.add(c);
-    }
-
-    public boolean removeStateChangedListener(Callback c) {
-        return statusChangeListeners.remove(c);
     }
 
     private void startRedirection() {
@@ -202,8 +195,16 @@ public class System {
         mgr.setWifiApConfiguration(savedConfig);
     }
 
+    public void addStateChangeListener(Callback c) {
+        listeners.add(c);
+    }
+    
+    public void removeStateChangeListener(Callback c) {
+        listeners.remove(c);
+    }
+    
     private void callStateChangeListeners() {
-        for (Callback c : statusChangeListeners) {
+        for (Callback c : listeners) {
             c.call(getServerState());
         }
     }

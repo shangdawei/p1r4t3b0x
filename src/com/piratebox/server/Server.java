@@ -6,9 +6,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-
-import com.piratebox.utils.Callback;
 
 public class Server extends Thread {
 
@@ -16,7 +16,7 @@ public class Server extends Thread {
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	private int connectedUsers = 0;
 	
-	private ArrayList<Callback> listeners = new ArrayList<Callback>();
+	private ArrayList<Handler> listeners = new ArrayList<Handler>();
 	
 	public Server() {
 		try {
@@ -68,17 +68,19 @@ public class Server extends Thread {
 		callListeners();
 	}
 	
-	public boolean addConnectedUsersListener(Callback c) {
-		return listeners.add(c);
+	public boolean addConnectedUsersListener(Handler h) {
+		return listeners.add(h);
 	}
 	
-	public boolean removeConnectedUsersListener(Callback c) {
-		return listeners.remove(c);
+	public boolean removeConnectedUsersListener(Handler h) {
+		return listeners.remove(h);
 	}
 	
 	private void callListeners() {
-		for (Callback c : listeners) {
-			c.call(connectedUsers);
+		for (Handler h : listeners) {
+		    Message msg = new Message();
+		    msg.obj = connectedUsers;
+			h.sendMessage(msg);
 		}
 	}
 }
