@@ -2,6 +2,7 @@ package com.piratebox;
 
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -11,6 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.PreferencesKeys;
@@ -74,7 +76,19 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 	
 	private void resetStats() {
-		// TODO dialog confirm + reset data
+        AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+        confirm.setTitle(getResources().getString(R.string.confirm_title))
+        .setMessage(getResources().getString(R.string.reset_confirm))
+        .setCancelable(true)
+        .setNegativeButton(R.string.no, null)
+        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            
+            public void onClick(DialogInterface dialog, int which) {
+                System.getInstance(SettingsActivity.this).resetAllStats();
+                Toast.makeText(SettingsActivity.this, R.string.reset_done, Toast.LENGTH_SHORT).show();
+            }
+        })
+        .show();
 	}
 	
 	private void openHelp() {

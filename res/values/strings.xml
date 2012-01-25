@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- General -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="settings">Settings</string>
@@ -10,6 +12,7 @@
     <string name="create">Create</string>
     <string name="help">Help</string>
     <string name="close">Close</string>
+    <string name="confirm_title">Confirmation</string>
     
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
@@ -54,6 +57,8 @@
     </string-array>
     
     <string name="help_content">blabla help</string>
+    <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
+    <string name="reset_done">All statistics reset.</string>
     
     <string name="donate_app">market://details?id=com.android.example</string>
     

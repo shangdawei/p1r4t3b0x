@@ -64,13 +64,6 @@ public class System {
         return instance;
     }
     
-    public static System getInstance() {
-        if (instance == null) {
-            throw new RuntimeException("System not initialized.");
-        }
-        return instance;
-    }
-
     private System(final Context ctx) {
         this.ctx = ctx;
         
@@ -151,6 +144,11 @@ public class System {
     
     public long getStartTime() {
         return startTime;
+    }
+    
+    public void resetAllStats() {
+        StatUtils.resetAllStats(ctx);
+        dispatchEvent(EVENT_STATISTIC_UPDATE);
     }
     
 

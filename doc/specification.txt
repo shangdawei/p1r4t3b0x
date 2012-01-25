@@ -22,7 +22,7 @@ The application should be able to reset the parameters to their original value w
 
 **********     V3 specifications     **********
 
-The application is able to look for other P1r4t3b0x networks and add their files to its list.
+The application is able to look for other P1r4t3b0x networks and add their files to its list. (checkbox option)
 The files located on other devices should be annotated on the webpage (for instance with the mention "remote located")
 If a client ask for a remote located file, the application must download the application from its original source and provide this downloaded file to
 the client. The application should transfer the file gradually as it is received.
@@ -30,20 +30,23 @@ An option should allow the user to specify if the downloaded remote file should 
 
 
 
-**********         Optionnal        ***********
+**********           Other           ***********
+V2:
 / A widget must allow to turn the system on and off.
 
-Display use stats on home page:
-- uptime
-- n of files downloaded (from uptime)
-- top 5 files dl
-- current activity
+/Display use stats on home page:
+/- uptime
+/- n of files downloaded (from uptime)
+/- top 5 files dl
+/- current activity
 
 Config options:
 / - modify the shared folder
 - notification when piratebox network on range
 - turn off when low battery
-- reset stats
+/- reset stats
 
+V3:
+Config options:
 - add more folder to analyse
 - keep remote downloaded file
