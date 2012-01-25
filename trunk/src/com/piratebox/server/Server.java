@@ -1,5 +1,6 @@
 package com.piratebox.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,8 +16,9 @@ public class Server extends Thread {
 	private ServerSocket listenSocket;
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	private int connectedUsers = 0;
-	
-	private ArrayList<Handler> listeners = new ArrayList<Handler>();
+
+    private Handler connectedUsersHandler = new Handler();
+    private Handler addStatHandler = new Handler();
 	
 	public Server() {
 		try {
@@ -57,7 +59,7 @@ public class Server extends Thread {
 	
 	public void addConnectedUser() {
 		connectedUsers++;
-		callListeners();
+		callConnectedUserHandler();
 	}
 	
 	public void removeConnectedUser() {
@@ -65,22 +67,26 @@ public class Server extends Thread {
 		if (connectedUsers < 0) {
 			connectedUsers = 0;
 		}
-		callListeners();
+		callConnectedUserHandler();
 	}
 	
-	public boolean addConnectedUsersListener(Handler h) {
-		return listeners.add(h);
+	public void addStatForFile(File f) {
+	    Message msg = new Message();
+	    msg.obj = f;
+	    addStatHandler.sendMessage(msg);
 	}
+    
+    public void setConnectedUsersHandler(Handler h) {
+        connectedUsersHandler = h;
+    }
+    
+    public void setAddStatHandler(Handler h) {
+        addStatHandler = h;
+    }
 	
-	public boolean removeConnectedUsersListener(Handler h) {
-		return listeners.remove(h);
-	}
-	
-	private void callListeners() {
-		for (Handler h : listeners) {
-		    Message msg = new Message();
-		    msg.obj = connectedUsers;
-			h.sendMessage(msg);
-		}
+	private void callConnectedUserHandler() {
+	    Message msg = new Message();
+	    msg.obj = connectedUsers;
+		connectedUsersHandler.sendMessage(msg);
 	}
 }

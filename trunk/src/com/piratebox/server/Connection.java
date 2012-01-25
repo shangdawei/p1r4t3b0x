@@ -124,7 +124,8 @@ public class Connection extends Thread {
 			out.flush();
 			out.close();
 			fis.close();
-
+			
+			server.addStatForFile(f);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}

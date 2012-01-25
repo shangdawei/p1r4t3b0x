@@ -7,6 +7,7 @@ import java.util.Enumeration;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
+import com.piratebox.utils.StatUtils;
 
 public class P1R4T3B0XActivity extends Activity {
 	private System system;
@@ -41,7 +43,11 @@ public class P1R4T3B0XActivity extends Activity {
 		startStopBtn = (Button) findViewById(R.id.startStopBtn);
 		startStopBtn.setOnClickListener(startStopBtnListener);
 
-		
+        
+        addCallbacks();
+	}
+	
+	private void addCallbacks() {
         final Runnable updateUptimeTask = new Runnable() {
             public void run() {
                 
@@ -64,6 +70,7 @@ public class P1R4T3B0XActivity extends Activity {
         };
         updateHandler.removeCallbacks(updateUptimeTask);
         
+        
         Callback onStateChange = new Callback() { 
             @Override
             public void call(Object arg) {
@@ -81,8 +88,35 @@ public class P1R4T3B0XActivity extends Activity {
                 }
             }
         };
-        system.addStateChangeListener(onStateChange);
+        system.addEventListener(System.EVENT_STATE_CHANGE, onStateChange);
         onStateChange.call(system.getServerState());
+        
+
+        Callback onUpdateStatistic = new Callback() { 
+            @Override
+            public void call(Object arg) {
+                TextView filesDl = (TextView) findViewById(R.id.filesdl_value);
+                TextView topDl1 = (TextView) findViewById(R.id.topdl1);
+                TextView topDl2 = (TextView) findViewById(R.id.topdl2);
+                TextView topDl3 = (TextView) findViewById(R.id.topdl3);
+                TextView topDl4 = (TextView) findViewById(R.id.topdl4);
+                TextView topDl5 = (TextView) findViewById(R.id.topdl5);
+
+                SharedPreferences stats = getSharedPreferences(StatUtils.STATS_STORAGE, 0);
+                int statFilesDl = stats.getInt(StatUtils.STAT_FILE_DL, 0);
+                int statFilesDlSession = stats.getInt(StatUtils.STAT_FILE_DL_SESSION, 0);
+                String[] topDls = StatUtils.getTopDls(P1R4T3B0XActivity.this);
+                
+                filesDl.setText(statFilesDl + " (" + statFilesDlSession + ")");
+                topDl1.setText(topDls[0]);
+                topDl2.setText(topDls[1]);
+                topDl3.setText(topDls[2]);
+                topDl4.setText(topDls[3]);
+                topDl5.setText(topDls[4]);
+            }
+        };
+        system.addEventListener(System.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
+        onUpdateStatistic.call(null);
 	}
 	
 	private OnClickListener startStopBtnListener = new OnClickListener() {
