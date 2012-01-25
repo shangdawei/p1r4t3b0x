@@ -78,7 +78,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
                 }
             };
             
-            system.addStateChangeListener(updateWidgetsCallback);
+            system.addEventListener(System.EVENT_STATE_CHANGE, updateWidgetsCallback);
             updateWidgetsCallback.call(system.getServerState());
             initialized = true;
         }
