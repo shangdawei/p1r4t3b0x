@@ -34,6 +34,11 @@ public class StatUtils {
         edit.putInt(key, 0).commit();
     }
     
+    public static void resetAllStats(Context ctx) {
+        SharedPreferences stats = ctx.getSharedPreferences(STATS_STORAGE, 0);
+        stats.edit().clear().commit();
+    }
+    
     public static void addStatForFile(Context ctx, File f) {
         addStat(ctx, StatUtils.STAT_FILE_DL);
         addStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
