@@ -85,7 +85,7 @@ public class SettingsActivity extends PreferenceActivity {
         CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
         CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
         
-        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, "0");
+        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
         int index = Utils.indexOf(value, array);
         CharSequence readable = arrayReadable[index];
         
