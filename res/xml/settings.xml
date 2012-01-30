@@ -7,11 +7,33 @@
         android:summary=""
         android:title="@string/settings_set_dir" />
 
-    <CheckBoxPreference
-        android:key="notification"
-        android:persistent="true"
-        android:summary="@string/settings_notification_summary"
-        android:title="@string/settings_notification" />
+    <PreferenceScreen android:title="@string/settings_notification" >
+        <CheckBoxPreference
+            android:key="notification"
+            android:persistent="true"
+            android:summary="@string/settings_notification_summary"
+            android:title="@string/settings_notification" />
+
+        <ListPreference
+            android:dialogTitle="@string/settings_notification_frequency_dialog"
+            android:entries="@array/notification_frequency_readable"
+            android:entryValues="@array/notification_frequency"
+            android:key="notification_frequency"
+            android:persistent="true"
+            android:title="@string/settings_notification_frequency" />
+
+        <CheckBoxPreference
+            android:key="notification_vibrate"
+            android:persistent="true"
+            android:title="@string/settings_notification_vibrate" />
+
+        <RingtonePreference
+            android:key="notification_ringtone"
+            android:persistent="true"
+            android:ringtoneType="notification"
+            android:showSilent="true"
+            android:title="@string/settings_notification_ringtone" />
+    </PreferenceScreen>
 
     <ListPreference
         android:dialogTitle="@string/settings_low_bat_dialog"
@@ -19,7 +41,6 @@
         android:entryValues="@array/battery_threshold"
         android:key="low_bat"
         android:persistent="true"
-        android:summary=""
         android:title="@string/settings_low_bat" />
 
     <Preference

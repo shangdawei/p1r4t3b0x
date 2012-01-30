@@ -6,12 +6,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.provider.MediaStore.Audio.Media;
 import android.widget.Toast;
 
 import com.piratebox.server.ServerConfiguration;
@@ -30,6 +33,10 @@ public class SettingsActivity extends PreferenceActivity {
 		
 		setSelectDirSummary();
 		setLowBatSummary();
+		setNotificationsFrequencySummary();
+		setNotificationsRingtoneSummary();
+		
+		setNotificationMenusStates();
 	}
 	
 	@Override
@@ -42,8 +49,10 @@ public class SettingsActivity extends PreferenceActivity {
 			resetStats();
 		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
 			openHelp();
-		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.BEER))) {
-			GoToDonateVersion();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.BEER))) {
+            goToDonateVersion();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION))) {
+            setNotificationMenusStates();
 		}
 		
 		return true;
@@ -70,9 +79,47 @@ public class SettingsActivity extends PreferenceActivity {
 		summary += " " + readable;
 		getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT).setSummary(summary);
 	}
+    
+    private void setNotificationsFrequencySummary() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
+        CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
+        
+        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, "0");
+        int index = Utils.indexOf(value, array);
+        CharSequence readable = arrayReadable[index];
+        
+        String summary = getResources().getString(R.string.current);
+        summary += " " + readable;
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setSummary(summary);
+    }
+    
+    private void setNotificationsRingtoneSummary() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, getResources().getString(R.string.none));
+        if ("".equals(ringtone)) {
+            ringtone = getResources().getString(R.string.silent);
+        } else if (!getResources().getString(R.string.none).equals(ringtone)) {
+            ringtone = RingtoneManager.getRingtone(this, Media.getContentUri(ringtone)).getTitle(this);
+        }
+        
+        
+        String summary = getResources().getString(R.string.current);
+        summary += " " + ringtone;
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setSummary(summary);
+    }
 	
 	private void openSelectDir() {
 		startActivityForResult(new Intent(this, DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_CODE);
+	}
+	
+	private void setNotificationMenusStates() {
+	    CheckBoxPreference pref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION);
+	    boolean checked = pref.isChecked();
+
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setEnabled(checked);
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
 	}
 	
 	private void resetStats() {
@@ -100,7 +147,7 @@ public class SettingsActivity extends PreferenceActivity {
         alert.show();
 	}
 	
-	private void GoToDonateVersion() {
+	private void goToDonateVersion() {
 	    Intent intent = new Intent(Intent.ACTION_VIEW);
 	    intent.setData(Uri.parse(getResources().getString(R.string.donate_app)));
 	    startActivity(intent);
