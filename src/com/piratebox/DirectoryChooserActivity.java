@@ -1,3 +1,20 @@
+/**
+ * This is a file from P1R4T3B0X, a program that lets you share files with everyone.
+ * Copyright (C) 2012 by Aylatan
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * The GNU General Public License can be found at http://www.gnu.org/licenses.
+ */
+
 package com.piratebox;
 
 import java.io.File;
@@ -25,12 +42,34 @@ import android.widget.TextView;
 import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.PreferencesKeys;
 
+/**
+ * This class describes an {@link Activity} that allows the user to browse to a folder.
+ * The root folder is either the preference stored in {@link PreferencesKeys.SELECT_DIR} if set, or
+ * {@link ServerConfiguration.DEFAULT_ROOT_DIR}.
+ * 
+ * @author Aylatan
+ */
+/**
+ * @author Aylatan
+ *
+ */
+/**
+ * @author Aylatan
+ *
+ */
 public class DirectoryChooserActivity extends ListActivity {
 
 	private File currentFolder;
 	private List<String> directories;
+	
+	// Need a Context variable to be accessed in sub-classes.
 	private Context ctx;
 	
+	/**
+	 * Initialises the {@link Activity} and display content of the default folder.
+	 * 
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +90,10 @@ public class DirectoryChooserActivity extends ListActivity {
 		goInDir(new File(folder));
 	}
 	
+	/**
+	 * Listener for the "Validate" button.
+	 * Returns the path to the selected folder to the calling Activity.
+	 */
 	private OnClickListener validBtnListener = new OnClickListener() {
 		public void onClick(View v) {
 			setResult(RESULT_OK, new Intent(currentFolder.getAbsolutePath()));
@@ -58,9 +101,14 @@ public class DirectoryChooserActivity extends ListActivity {
 		}
 	};
 	
+	/**
+	 * Listener for the "New" button.
+	 * Creates a dialog to ask the user for the name of the new folder, and then create it.
+	 */
 	private OnClickListener newBtnListener = new OnClickListener() {
 		public void onClick(View v) {
 			
+		    //Prompt the user for the name of the new folder
 			AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
 	        alert.setTitle(getResources().getString(R.string.new_folder));
 	        alert.setMessage(getResources().getString(R.string.new_folder_dialog));
@@ -72,9 +120,11 @@ public class DirectoryChooserActivity extends ListActivity {
 	        	public void onClick(DialogInterface dialog, int whichButton) {  
 	        		String newFolder = inputName.getText().toString();
 	        		File folder = new File(currentFolder, newFolder);
+	        		//Try to create the folder
 	        		if (folder.mkdirs()) {
 	        			goInDir(folder);
 	        		} else {
+	        		    // If fail, it may be because we don't have sufficient rights, so try with root rights
 						try {
 						    Runtime.getRuntime().exec("su -c mkdir " + folder.getAbsolutePath()).waitFor();
 	                        goInDir(folder);
@@ -91,6 +141,11 @@ public class DirectoryChooserActivity extends ListActivity {
 		}
 	};
 	
+	/**
+	 * On list item click, display content of the click folder.
+	 * 
+	 * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View, int, long)
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		String folder = directories.get(position);
@@ -101,12 +156,17 @@ public class DirectoryChooserActivity extends ListActivity {
 		}
 	}
 	
+	/**
+	 * Goes into a folder and display all folders inside it, plus the ".." folder.
+	 * @param folder The folder to go into
+	 */
 	private void goInDir(File folder) {
 		currentFolder = folder;
 
 		TextView currentFolderTxt = (TextView) findViewById(R.id.currentFolder);
 		currentFolderTxt.setText(currentFolder.getAbsolutePath());
-		
+
+		//Show only directories
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
 				return new File(dir, filename).isDirectory();
@@ -115,8 +175,10 @@ public class DirectoryChooserActivity extends ListActivity {
 		
 		String[] dirs = currentFolder.list(filter);
     	directories = new ArrayList<String>();
+    	
+    	//If it is not the root, add the ".." folder
     	if (currentFolder.getParent() != null) {
-    	    directories.add(0, "..");
+    	    directories.add("..");
     	}
     	if (dirs != null) {
     	    for (String dir : dirs) {

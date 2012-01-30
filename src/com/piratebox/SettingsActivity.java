@@ -1,3 +1,20 @@
+/**
+ * This is a file from P1R4T3B0X, a program that lets you share files with everyone.
+ * Copyright (C) 2012 by Aylatan
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * The GNU General Public License can be found at http://www.gnu.org/licenses.
+ */
+
 package com.piratebox;
 
 
@@ -21,10 +38,32 @@ import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.Utils;
 
+/**
+ * This class describes the {@link Activity} for the settings.
+ * From this {@link Activity} the user can define his preferences.
+ * This includes:
+ * <li>Changing the current shared directory</li>
+ * <li>Change the notifications settings</li>
+ * <li>Change the low battery behaviour</li>
+ * <li>Reset all statistics</li>
+ * <li>Show the help</li>
+ * <li>Access to the "Donate" version</li>
+ * 
+ * @author Aylatan
+ */
+/**
+ * @author Aylatan
+ *
+ */
 public class SettingsActivity extends PreferenceActivity {
 	
 	private final int DIRECTORY_CHOOSE_ACTIVITY_CODE = 0;
 	
+	/**
+	 * Initialises the {@link Activity}.
+	 * 
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,13 +71,17 @@ public class SettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.settings);
 		
 		setSelectDirSummary();
-		setLowBatSummary();
 		setNotificationsFrequencySummary();
 		setNotificationsRingtoneSummary();
 		
 		setNotificationMenusStates();
 	}
 	
+	/**
+	 * Defines the actions to be performed when the user clicks an item of the preferences.
+	 * 
+	 * @see android.preference.PreferenceActivity#onPreferenceTreeClick(android.preference.PreferenceScreen, android.preference.Preference)
+	 */
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
 			Preference preference) {
@@ -58,6 +101,10 @@ public class SettingsActivity extends PreferenceActivity {
 		return true;
 	}
 	
+	/**
+	 * Sets the summary of the list item for the directory selection.
+	 * The summary shows the current selected directory.
+	 */
 	private void setSelectDirSummary() {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -65,41 +112,42 @@ public class SettingsActivity extends PreferenceActivity {
 		summary += " " + settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR);
 		getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR).setSummary(summary);
 	}
-	
-	private void setLowBatSummary() {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		CharSequence[] array = getResources().getTextArray(R.array.battery_threshold);
-		CharSequence[] arrayReadable = getResources().getTextArray(R.array.battery_threshold_readable);
-		
-		String value = settings.getString(PreferencesKeys.LOW_BAT, "0");
-		int index = Utils.indexOf(value, array);
-		CharSequence readable = arrayReadable[index];
-		
-		String summary = getResources().getString(R.string.current);
-		summary += " " + readable;
-		getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT).setSummary(summary);
-	}
     
+    /**
+     * Sets the summary of the list item for the notification frequency.
+     * The summary shows the current set frequency.
+     */
     private void setNotificationsFrequencySummary() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
         CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
         
+        //Get the currently selected value.
         String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
+        //Get its index in the R.array.notification_frequency array.
         int index = Utils.indexOf(value, array);
+        //Retrieve the readable value from the index in the R.array.notification_frequency_readable array.
         CharSequence readable = arrayReadable[index];
         
         String summary = getResources().getString(R.string.current);
         summary += " " + readable;
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setSummary(summary);
     }
-    
+
+    /**
+     * Sets the summary of the list item for the notification ringtone.
+     * The summary shows the current set ringtone name.
+     */
     private void setNotificationsRingtoneSummary() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        //Get the current ringtone URI.
         String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, getResources().getString(R.string.none));
+        
+        //If the ringtone is "Silent" then the URI is "".
         if ("".equals(ringtone)) {
             ringtone = getResources().getString(R.string.silent);
         } else if (!getResources().getString(R.string.none).equals(ringtone)) {
+            //Else get the ringtone name.
             ringtone = RingtoneManager.getRingtone(this, Media.getContentUri(ringtone)).getTitle(this);
         }
         
@@ -109,10 +157,16 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setSummary(summary);
     }
 	
+	/**
+	 * Opens the {@link DirectoryChooserActivity}.
+	 */
 	private void openSelectDir() {
 		startActivityForResult(new Intent(this, DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_CODE);
 	}
 	
+	/**
+	 * Sets the state of the list items of the notification menu according to the state of the main item.
+	 */
 	private void setNotificationMenusStates() {
 	    CheckBoxPreference pref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION);
 	    boolean checked = pref.isChecked();
@@ -122,6 +176,10 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
 	}
 	
+	/**
+	 * Opens a dialog to confirm the user action.
+	 * If the action is confirmed, all the statistics are deleted.
+	 */
 	private void resetStats() {
         AlertDialog.Builder confirm = new AlertDialog.Builder(this);
         confirm.setTitle(getResources().getString(R.string.confirm_title))
@@ -138,21 +196,32 @@ public class SettingsActivity extends PreferenceActivity {
         .show();
 	}
 	
+	/**
+	 * Opens the help content in a dialog box.
+	 */
 	private void openHelp() {
 	    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.help));
-        alert.setMessage(getResources().getString(R.string.help_content));
-        alert.setPositiveButton(R.string.close, null);
-        alert.setCancelable(true);
-        alert.show();
+        alert.setTitle(getResources().getString(R.string.help))
+        .setMessage(getResources().getString(R.string.help_content))
+        .setPositiveButton(R.string.close, null)
+        .setCancelable(true)
+        .show();
 	}
 	
+	/**
+	 * Open the Android Market to the "Donate" version of the application.
+	 */
 	private void goToDonateVersion() {
 	    Intent intent = new Intent(Intent.ACTION_VIEW);
 	    intent.setData(Uri.parse(getResources().getString(R.string.donate_app)));
 	    startActivity(intent);
 	}
 	
+	/**
+	 * Manages the result of the {@link DirectoryChooserActivity} and store it to the preferences.
+	 * 
+	 * @see android.preference.PreferenceActivity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
