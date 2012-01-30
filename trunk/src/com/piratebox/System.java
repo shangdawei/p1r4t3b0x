@@ -240,15 +240,27 @@ public class System {
         iptablesRunner.teardown();
     }
     
+    /**
+     * Sets the server state and dispatch event {@link System.EVENT_STATE_CHANGE}
+     * @param state the new state to set
+     */
     private void setServerState(ServerState state) {
         this.state = state;
         dispatchEvent(EVENT_STATE_CHANGE, getServerState());
     }
 
+    /**
+     * Returns the current state of the server.
+     * @return a {@link ServerState}
+     */
     public ServerState getServerState() {
         return state;
     }
     
+    /**
+     * Returns the time from which the system has started.
+     * @return the time from which the system has started, or 0L if the system is not currently running 
+     */
     public long getStartTime() {
         return startTime;
     }
