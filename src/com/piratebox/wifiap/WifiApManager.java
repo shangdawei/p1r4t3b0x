@@ -35,17 +35,28 @@ public class WifiApManager {
 			return false;
 		}
 	}
-	
-	public int getWifiApState() {
-		try {
-			Method method = mWifiManager.getClass().getMethod(
-					"getWifiApState");
-			return (Integer) method.invoke(mWifiManager);
-		} catch (Exception e) {
-			Log.e(this.getClass().getName(), e.toString());
-			return WIFI_AP_STATE_FAILED;
-		}
-	}
+    
+    public int getWifiApState() {
+        try {
+            Method method = mWifiManager.getClass().getMethod(
+                    "getWifiApState");
+            return (Integer) method.invoke(mWifiManager);
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), e.toString());
+            return WIFI_AP_STATE_FAILED;
+        }
+    }
+    
+    public boolean isWifiApEnabled() {
+        try {
+            Method method = mWifiManager.getClass().getMethod(
+                    "isWifiApEnabled");
+            return (Boolean) method.invoke(mWifiManager);
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), e.toString());
+            return false;
+        }
+    }
 	
 	public WifiConfiguration getWifiApConfiguration() {
 		try {
