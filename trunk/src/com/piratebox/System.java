@@ -109,7 +109,6 @@ public class System {
     private IptablesRunner iptablesRunner;
     private long startTime = 0L;
     private final Handler scanHandler = new Handler();
-    private final int period;
     private Runnable scanTask;
 
     private static System instance = null;
@@ -171,31 +170,27 @@ public class System {
             Log.e(this.getClass().getName(), e.toString());
         }
         
-        //Create the 
+        //Create the root directory if it does not exists
         try {
             new File(ServerConfiguration.getRootDir()).createNewFile();
         } catch (IOException e) {
             Log.e(this.getClass().getName(), e.toString());
         }
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
-        period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
-        
         initScan();
         
-        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-            scanHandler.postDelayed(scanTask, period);
-        }
-        
+        //Register receiver for low battery event
         ctx.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context c, Intent i){
+                //Get the charging status
                 int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                                     status == BatteryManager.BATTERY_STATUS_FULL;
 
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 
+                //If the device is currently being charged, there is no need to stop the system
                 if (isCharging || settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
                     return;
                 }
@@ -206,30 +201,43 @@ public class System {
         }, new IntentFilter(Intent.ACTION_BATTERY_LOW));
     }
 
+    /**
+     * Starts the system.
+     * Sets the redirection, create and run a new {@link Server}, starts the hotspot, resets the stats for the session.
+     */
     public void start() {
         iptablesRunner.setup();
-        startHotspot();
+        
         setServerState(ServerState.STATE_WAITING);
         
         server = new Server();
         server.setConnectedUsersHandler(connectedUsersHandler);
         server.setAddStatHandler(addStatHandler);
         server.start();
+        
+        startHotspot();
+        
         startTime = java.lang.System.currentTimeMillis();
         StatUtils.resetStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
     }
 
+    /**
+     * Stops the system.
+     * Resets the stats for the session, stops the hotspot, destroy the {@link Server} instance, resets the redirection.
+     */
     public void stop() {
         StatUtils.resetStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
         startTime = 0L;
         
         stopHotspot();
-        iptablesRunner.teardown();
+        
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
+        
+        iptablesRunner.teardown();
     }
     
     private void setServerState(ServerState state) {
@@ -252,6 +260,9 @@ public class System {
     
     public void setNotificationState(boolean enabled) {
         if (enabled) {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+            int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
+            
             scanHandler.postDelayed(scanTask, period);
         } else {
             scanHandler.removeCallbacks(scanTask);
@@ -274,6 +285,9 @@ public class System {
         
         scanTask = new Runnable() {
             public void run() {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+                final int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
+                
                 if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
                     scanHandler.postDelayed(this, period);
                     return;
@@ -304,6 +318,10 @@ public class System {
                 
                 if (! mgr.startScan()) {
                     apMgr.setWifiApEnabled(config, wifiApEnabled);
+                    scanHandler.postDelayed(this, period);
+                }
+                
+                if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
                     scanHandler.postDelayed(this, period);
                 }
             }

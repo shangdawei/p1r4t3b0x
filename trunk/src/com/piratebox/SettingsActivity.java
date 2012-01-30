@@ -174,6 +174,8 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setEnabled(checked);
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
+        
+        System.getInstance(this).setNotificationState(checked);
 	}
 	
 	/**
