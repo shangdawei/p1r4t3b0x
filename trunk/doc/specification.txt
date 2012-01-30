@@ -41,9 +41,9 @@ V2:
 /- current activity
 
 Config options:
-/ - modify the shared folder
-- notification when piratebox network on range
-- turn off when low battery
+/- modify the shared folder
+/- notification when piratebox network on range
+/- turn off when low battery
 /- reset stats
 
 V3:

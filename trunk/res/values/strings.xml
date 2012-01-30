@@ -42,7 +42,6 @@
     <string name="settings_notification">Notification</string>
     <string name="settings_notification_summary">Notify when P1R4T3B0X network found</string>
     <string name="settings_low_bat">Turn off when low battery</string>
-    <string name="settings_low_bat_dialog">Set threshold</string>
     <string name="settings_reset_stats">Reset statistics</string>
     <string name="settings_help">Help</string>
     <string name="settings_beer">Buy me a beer</string>
@@ -50,21 +49,6 @@
     <string name="settings_notification_frequency_dialog">Set check frequency (low value uses more battery)</string>
     <string name="settings_notification_vibrate">Vibrate</string>
     <string name="settings_notification_ringtone">Select ringtone</string>
-    
-    <string-array name="battery_threshold_readable">
-        <item>50%</item>
-        <item>30%</item>
-        <item>20%</item>
-        <item>10%</item>
-        <item>Off</item>
-    </string-array>
-    <string-array name="battery_threshold">
-        <item>50</item>
-        <item>30</item>
-        <item>20</item>
-        <item>10</item>
-        <item>0</item>
-    </string-array>
     
     <string-array name="notification_frequency_readable">
         <item>1 min</item>
