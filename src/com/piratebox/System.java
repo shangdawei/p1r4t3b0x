@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -128,6 +129,24 @@ public class System {
         if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
             scanHandler.postDelayed(scanTask, period);
         }
+        
+        ctx.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context c, Intent i){
+                int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                                    status == BatteryManager.BATTERY_STATUS_FULL;
+
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+
+                if (isCharging || settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
+                    return;
+                }
+                
+                System.this.stop();
+                System.this.setNotificationState(false);
+            }
+        }, new IntentFilter(Intent.ACTION_BATTERY_LOW));
     }
 
     public void start() {

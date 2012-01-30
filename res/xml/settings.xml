@@ -35,13 +35,10 @@
             android:title="@string/settings_notification_ringtone" />
     </PreferenceScreen>
 
-    <ListPreference
+    <CheckBoxPreference
         android:dialogTitle="@string/settings_low_bat_dialog"
-        android:entries="@array/battery_threshold_readable"
-        android:entryValues="@array/battery_threshold"
         android:key="low_bat"
-        android:persistent="true"
-        android:title="@string/settings_low_bat" />
+        android:persistent="true" />
 
     <Preference
         android:key="reset_stat"
