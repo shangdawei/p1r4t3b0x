@@ -106,6 +106,8 @@ public class System {
         } catch (IOException e) {
             Log.e(this.getClass().getName(), e.toString());
         }
+        
+        //TODO process cyclic network check
     }
 
     public void start() {

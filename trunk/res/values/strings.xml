@@ -13,6 +13,8 @@
     <string name="help">Help</string>
     <string name="close">Close</string>
     <string name="confirm_title">Confirmation</string>
+    <string name="none">None</string>
+    <string name="silent">Silent</string>
     
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
@@ -40,6 +42,10 @@
     <string name="settings_reset_stats">Reset statistics</string>
     <string name="settings_help">Help</string>
     <string name="settings_beer">Buy me a beer</string>
+    <string name="settings_notification_frequency">Check frequency</string>
+    <string name="settings_notification_frequency_dialog">Set check frequency (low value uses more battery)</string>
+    <string name="settings_notification_vibrate">Vibrate</string>
+    <string name="settings_notification_ringtone">Select ringtone</string>
     
     <string-array name="battery_threshold_readable">
         <item>50%</item>
@@ -54,6 +60,21 @@
         <item>20</item>
         <item>10</item>
         <item>0</item>
+    </string-array>
+    
+    <string-array name="notification_frequency_readable">
+        <item>1 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>30 min</item>
+        <item>1 h</item>
+    </string-array>
+    <string-array name="notification_frequency">
+        <item>60</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1800</item>
+        <item>3600</item>
     </string-array>
     
     <string name="help_content">blabla help</string>
