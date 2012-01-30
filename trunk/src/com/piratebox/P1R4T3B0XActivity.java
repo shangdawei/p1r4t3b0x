@@ -1,16 +1,27 @@
-package com.piratebox;
+/**
+ * This is a file from P1R4T3B0X, a program that lets you share files with everyone.
+ * Copyright (C) 2012 by Aylatan
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * The GNU General Public License can be found at http://www.gnu.org/licenses.
+ */
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
+package com.piratebox;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,12 +29,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.StatUtils;
 
+/**
+ * This class describes the main {@link Activity} of the application.
+ * From this {@link Activity}, the user can see the statistics and launch / stop the service.
+ * This {@link Activity} listens to the {@link System.EVENT_STATE_CHANGE} and {@link System.EVENT_STATISTIC_UPDATE} events.
+ * 
+ * @author Aylatan
+ */
 public class P1R4T3B0XActivity extends Activity {
 	private System system;
 
@@ -31,7 +48,11 @@ public class P1R4T3B0XActivity extends Activity {
 	
 	private Handler updateHandler = new Handler();
 
-	/** Called when the activity is first created. */
+	/**
+	 * Initialises the {@link Activity} and register the callbacks.
+	 * 
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +68,11 @@ public class P1R4T3B0XActivity extends Activity {
         addCallbacks();
 	}
 	
+	/**
+	 * Adds the callbacks that will be used in this {@link Activity}.
+	 */
 	private void addCallbacks() {
+	    //Initialises the task to be run to update the uptime display
         final Runnable updateUptimeTask = new Runnable() {
             public void run() {
                 
@@ -70,15 +95,17 @@ public class P1R4T3B0XActivity extends Activity {
         };
         updateHandler.removeCallbacks(updateUptimeTask);
         
-        
         Callback onStateChange = new Callback() { 
             @Override
             public void call(Object arg) {
                 ServerState state = (ServerState) arg;
+                //Update button status
                 setButtonState();
+                //Update status text
                 TextView statusTxt = (TextView) findViewById(R.id.status_value);
                 statusTxt.setText(getResources().getString(state.val()));
                 
+                //Set or reset the timer for the uptime update
                 if (ServerState.STATE_OFF.equals(state)) {
                     updateHandler.removeCallbacks(updateUptimeTask);
                     TextView uptimeTxt = (TextView) findViewById(R.id.uptime_value);
@@ -119,18 +146,22 @@ public class P1R4T3B0XActivity extends Activity {
         onUpdateStatistic.call(null);
 	}
 	
+	/**
+	 * Listener for the start/stop button.
+	 * Switch the {@link System} state.
+	 */
 	private OnClickListener startStopBtnListener = new OnClickListener() {
 		public void onClick(View v) {
-			try {
-				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-				ArrayList<String> interfaceNames = new ArrayList<String>();
-				while (interfaces.hasMoreElements()) {
-					interfaceNames.add(interfaces.nextElement().getName());
-				}
-				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
-			} catch (SocketException e) {
-				Log.e(this.getClass().getName(), e.toString());
-			}
+//			try {
+//				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+//				ArrayList<String> interfaceNames = new ArrayList<String>();
+//				while (interfaces.hasMoreElements()) {
+//					interfaceNames.add(interfaces.nextElement().getName());
+//				}
+//				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
+//			} catch (SocketException e) {
+//				Log.e(this.getClass().getName(), e.toString());
+//			}
 
 	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
 	            system.start();
@@ -140,6 +171,9 @@ public class P1R4T3B0XActivity extends Activity {
 		}
 	};
 
+	/**
+	 * Changes the start/stop button text depending on the {@link System} state.
+	 */
 	private void setButtonState() {
 		if (ServerState.STATE_OFF.equals(system.getServerState())) {
 			startStopBtn.setText(getResources().getString(R.string.start));
@@ -148,6 +182,10 @@ public class P1R4T3B0XActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Initialises the option menu.
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -155,6 +193,10 @@ public class P1R4T3B0XActivity extends Activity {
 	    return true;
 	}
 	
+	/**
+	 * Opens the {@link SettingsActivity} on click on the "Settings" menu item.
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
@@ -166,6 +208,9 @@ public class P1R4T3B0XActivity extends Activity {
 	    }
 	}
 	
+	/**
+	 * Opens the {@link SettingsActivity}.
+	 */
 	private void openSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
 	}	

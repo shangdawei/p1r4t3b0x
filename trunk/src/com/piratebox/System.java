@@ -1,3 +1,20 @@
+/**
+ * This is a file from P1R4T3B0X, a program that lets you share files with everyone.
+ * Copyright (C) 2012 by Aylatan
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * The GNU General Public License can be found at http://www.gnu.org/licenses.
+ */
+
 package com.piratebox;
 
 import java.io.File;
@@ -32,14 +49,36 @@ import com.piratebox.utils.StatUtils;
 import com.piratebox.widget.P1R4T3B0XWidget;
 import com.piratebox.wifiap.WifiApManager;
 
+/**
+ * This class describes the main system of the service.
+ * It manages the server, the redirections, the notifications and dispatches events.
+ * 
+ * @author Aylatan
+ */
 public class System {
 
+    /**
+     * Event dispatched when the state of the server changes.
+     * The {@link Callback} listener will be passed the new {@link ServerState} as argument.
+     */
     public static final String EVENT_STATE_CHANGE = "eventStateChange";
+    /**
+     * Event dispatched when the statistics change.
+     * The {@link Callback} listener will be passed null.
+     * The statistics can be accessed by the {@link StatUtils} class.
+     */
     public static final String EVENT_STATISTIC_UPDATE = "eventStatisticUpdate";
+    /**
+     * The id of the "Network found" notification.
+     */
     public static final int NOTIFICATION_ID_NETWORK = 1;
 
     private HashMap<String, ArrayList<Callback>> listeners = new HashMap<String, ArrayList<Callback>>();
     
+    /**
+     * The different states the server can have.
+     * Calling <code>val()</code> on the {@link ServerState} will return the id of the human readable state.
+     */
     public static enum ServerState {
         STATE_OFF(R.string.widget_system_off),
         STATE_WAITING(R.string.widget_system_waiting),
@@ -51,6 +90,10 @@ public class System {
             this.value = value;
         }
 
+        /**
+         * Returns the id of the string of the human readable value for this {@link ServerState}.
+         * @return a string id
+         */
         public int val() {
             return value;
         }
@@ -71,6 +114,11 @@ public class System {
 
     private static System instance = null;
 
+    /**
+     * {@link System} is a singleton and should always be accessed by this method.
+     * @param ctx the context in which the system will run
+     * @return the unique {@link System} instance for the application
+     */
     public static System getInstance(Context ctx) {
         if (instance == null) {
             instance = new System(ctx);
@@ -78,16 +126,23 @@ public class System {
         return instance;
     }
     
+    /**
+     * Private constructor.
+     * {@link System} is a singleton and should always be accessed by <code>getInstance(Context ctx)</code> method.
+     * @param ctx
+     */
     private System(final Context ctx) {
         this.ctx = ctx;
         
         iptablesRunner = new IptablesRunner(ctx);
 
+        //Sets the specific wifi access point configuration
         config = new WifiConfiguration();
         config.SSID = ServerConfiguration.WIFI_AP_NAME;
 
         setServerState(ServerState.STATE_OFF);
 
+        //Set handlers so that child thread can send messages to this instance
         connectedUsersHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -106,6 +161,7 @@ public class System {
             }
         };
 
+        //Initialises the widgets
         Intent intent = new Intent(ctx, P1R4T3B0XWidget.class);
         intent.setAction(P1R4T3B0XWidget.WIDGET_RECEIVER_INIT);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, 0, intent, 0);
@@ -115,6 +171,7 @@ public class System {
             Log.e(this.getClass().getName(), e.toString());
         }
         
+        //Create the 
         try {
             new File(ServerConfiguration.getRootDir()).createNewFile();
         } catch (IOException e) {
@@ -174,7 +231,8 @@ public class System {
         server.stopRun();
         server = null;
     }
-    public void setServerState(ServerState state) {
+    
+    private void setServerState(ServerState state) {
         this.state = state;
         dispatchEvent(EVENT_STATE_CHANGE, getServerState());
     }
