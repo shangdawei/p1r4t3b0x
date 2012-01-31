@@ -105,9 +105,9 @@ public class GeneratedPage {
 	}
 	
 	/**
-	 * Generates a string that represents the size of the file <code>f</code>.
+	 * Generates a string that represents the size of the file {@code f}.
 	 * @param f the file which size is to be calculated
-	 * @return a human readable string that represents the size of <code>f</code>
+	 * @return a human readable string that represents the size of {@code f}
 	 */
 	private String getReadableFileSize(File f) {
 		long len = f.length();

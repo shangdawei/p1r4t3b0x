@@ -37,7 +37,7 @@ import com.piratebox.utils.StatUtils;
 /**
  * This class describes the main {@link Activity} of the application.
  * From this {@link Activity}, the user can see the statistics and launch / stop the service.
- * This {@link Activity} listens to the {@link System.EVENT_STATE_CHANGE} and {@link System.EVENT_STATISTIC_UPDATE} events.
+ * This {@link Activity} listens to the {@link System#EVENT_STATE_CHANGE} and {@link System#EVENT_STATISTIC_UPDATE} events.
  * 
  * @author Aylatan
  */

@@ -44,8 +44,8 @@ import com.piratebox.utils.PreferencesKeys;
 
 /**
  * This class describes an {@link Activity} that allows the user to browse to a folder.
- * The root folder is either the preference stored in {@link PreferencesKeys.SELECT_DIR} if set, or
- * {@link ServerConfiguration.DEFAULT_ROOT_DIR}.
+ * The root folder is either the preference stored in {@link PreferencesKeys#SELECT_DIR} if set, or
+ * {@link ServerConfiguration#DEFAULT_ROOT_DIR}.
  * 
  * @author Aylatan
  */

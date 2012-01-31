@@ -77,7 +77,7 @@ public class System {
     
     /**
      * The different states the server can have.
-     * Calling <code>val()</code> on the {@link ServerState} will return the id of the human readable state.
+     * Calling {@code val()} on the {@link ServerState} will return the id of the human readable state.
      */
     public static enum ServerState {
         STATE_OFF(R.string.widget_system_off),
@@ -127,7 +127,7 @@ public class System {
     
     /**
      * Private constructor.
-     * {@link System} is a singleton and should always be accessed by <code>getInstance(Context ctx)</code> method.
+     * {@link System} is a singleton and should always be accessed by {@code getInstance(Context ctx)} method.
      * @param ctx
      */
     private System(final Context ctx) {
@@ -236,7 +236,7 @@ public class System {
     }
     
     /**
-     * Sets the server state and dispatch event {@link System.EVENT_STATE_CHANGE}
+     * Sets the server state and dispatch event {@link #EVENT_STATE_CHANGE}
      * @param state the new state to set
      */
     private void setServerState(ServerState state) {
@@ -408,7 +408,7 @@ public class System {
     
     
     /**
-     * Adds a listener for the event <code>event</code>
+     * Adds a listener for the event {@code event}
      * @param event the event to listen
      * @param c the callback to be called when the event is dispatched
      */
@@ -420,7 +420,7 @@ public class System {
     }
     
     /**
-     * Removes a listener for the event <code>event</code>.
+     * Removes a listener for the event {@code event}.
      * @param event the event to remove the listener
      * @param c the callback that had been added
      */
@@ -432,7 +432,7 @@ public class System {
     }
     
     /**
-     * Dispatch <code>event</code> and give <code>value</code> to the listeners.
+     * Dispatch {@code event} and give {@code value} to the listeners.
      * @param event the event to be dispatched
      * @param value the value to give to listeners
      */
@@ -447,7 +447,7 @@ public class System {
     }
     
     /**
-     * Dispatch <code>event</code> and give <code>null</code> to the listeners.
+     * Dispatch {@code event} and give {@code null} to the listeners.
      * @param event the event to be dispatched
      */
     private void dispatchEvent(String event) {

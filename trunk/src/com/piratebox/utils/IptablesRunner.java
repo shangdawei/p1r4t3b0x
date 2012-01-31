@@ -29,11 +29,28 @@ import android.widget.Toast;
 
 import com.piratebox.R;
 
+/**
+ * This class is used to set up and tear down the redirection using iptables.
+ * @author Aylatan
+ */
 public class IptablesRunner {
+    
+    /**
+     * The file name of the temporary script file that will be used.
+     */
+    public static final String TEMP_SCRIPT = "tmp_script";
+    /**
+     * The file name of the iptables executable.
+     */
+    public static final String IPTABLES = "iptables";
     
     private Context ctx;
     private String iptables;
     
+    /**
+     * Creates a new runner and loads the iptables binary.
+     * @param ctx the context where it is used
+     */
     public IptablesRunner(Context ctx) {
         this.ctx = ctx;
 
@@ -44,6 +61,9 @@ public class IptablesRunner {
         }
     }
     
+    /**
+     * Create a script with the redirection rules and run it.
+     */
     public void setup() {
         try {
             StringBuilder script = new StringBuilder();
@@ -60,6 +80,9 @@ public class IptablesRunner {
         }
     }
     
+    /**
+     * Create a script that removes the redirection rules and run it.
+     */
     public void teardown() {
         try {
             StringBuilder script = new StringBuilder();
@@ -76,10 +99,15 @@ public class IptablesRunner {
         }
     }
 
+    /**
+     * Copy the iptables executables from the raw resources to an executable file.
+     * @return the path to the generated iptables file
+     * @throws IOException if a problem occurs while reading or writing the file
+     */
     private String loadIptables() throws IOException {
         File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
 
-        File f = new File(tmpFolder, Script.IPTABLES);
+        File f = new File(tmpFolder, IPTABLES);
         f.setExecutable(true);
         f.deleteOnExit();
 
@@ -94,11 +122,19 @@ public class IptablesRunner {
         return f.getAbsolutePath();
     }
 
+    /**
+     * Executes the string passed as argument as a runnable script with root rights.
+     * Requires root access.
+     * @param script the script content to be run
+     * @return the exit value of the script
+     * @throws IOException if an error occurs while writing or executing the script file
+     * @throws InterruptedException if the calling thread is interrupted
+     */
     private int runScript(String script) throws IOException, InterruptedException {
 
         File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
 
-        File f = new File(tmpFolder, Script.TEMP_SCRIPT);
+        File f = new File(tmpFolder, TEMP_SCRIPT);
         f.setExecutable(true);
         f.deleteOnExit();
 

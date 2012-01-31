@@ -50,3 +50,15 @@ V3:
 Config options:
 - add more folder to analyse
 - keep remote downloaded file
+
+
+***********           TODO          ************
+Write help content
+Design home page
+Design widget
+Integrate page design
+Integrate redirection script
+
+TEST MORE AND MORE !!!
+
+

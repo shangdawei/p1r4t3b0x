@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
  This is a file from P1R4T3B0X, a program that lets you share files with everyone.
  Copyright (C) 2012 by Aylatan
  
@@ -14,10 +14,13 @@
  GNU General Public License for more details.
  
  The GNU General Public License can be found at http://www.gnu.org/licenses.
- -->
+-->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/settings"
-          android:icon="@drawable/settings_ico"
-          android:title="@string/settings" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/settings_ico"
+        android:title="@string/settings"/>
+
 </menu>
