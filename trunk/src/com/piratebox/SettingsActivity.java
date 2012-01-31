@@ -233,6 +233,7 @@ public class SettingsActivity extends PreferenceActivity {
 			Editor edit = settings.edit();
 			edit.putString(PreferencesKeys.SELECT_DIR, data.getAction());
 			edit.commit();
+	        ServerConfiguration.setRootDir(data.getAction());
 			setSelectDirSummary();
 		}
 	}

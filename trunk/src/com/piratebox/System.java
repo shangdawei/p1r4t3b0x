@@ -18,7 +18,6 @@
 package com.piratebox;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,6 +37,7 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.Audio.Media;
 import android.util.Log;
 
 import com.piratebox.server.Server;
@@ -170,12 +170,9 @@ public class System {
             Log.e(this.getClass().getName(), e.toString());
         }
         
-        //Create the root directory if it does not exists
-        try {
-            new File(ServerConfiguration.getRootDir()).createNewFile();
-        } catch (IOException e) {
-            Log.e(this.getClass().getName(), e.toString());
-        }
+        //Sets the root directory to the preference defined value
+        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+        ServerConfiguration.setRootDir(settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR));
 
         initScan();
         
@@ -187,8 +184,6 @@ public class System {
                 int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                                     status == BatteryManager.BATTERY_STATUS_FULL;
-
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 
                 //If the device is currently being charged, there is no need to stop the system
                 if (isCharging || settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
@@ -265,11 +260,18 @@ public class System {
         return startTime;
     }
     
+    /**
+     * Reset all statistics to 0.
+     */
     public void resetAllStats() {
         StatUtils.resetAllStats(ctx);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
     }
     
+    /**
+     * Sets whether or not the user must be warned when there is a P1R4T3B0X network in range.
+     * @param enabled true to enable the notification, false to disable it
+     */
     public void setNotificationState(boolean enabled) {
         if (enabled) {
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -281,25 +283,35 @@ public class System {
         }
     }
 
+    /**
+     * Starts the wifi access point.
+     */
     private void startHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
         savedConfig = mgr.getWifiApConfiguration();
         mgr.setWifiApEnabled(config, true);
     }
 
+    /**
+     * Stops the wifi access point.
+     */
     private void stopHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
         mgr.setWifiApEnabled(config, false);
         mgr.setWifiApConfiguration(savedConfig);
     }
     
+    /**
+     * Initialises the scan task
+     */
     private void initScan() {
-        
         scanTask = new Runnable() {
             public void run() {
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+                final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+                //Defines the call frequency to the user defined value
                 final int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
                 
+                //If we are currently sending a file, try again later, as we need to disable the wifi access point to perform the scan
                 if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
                     scanHandler.postDelayed(this, period);
                     return;
@@ -308,14 +320,21 @@ public class System {
                 final WifiManager mgr = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
                 final WifiApManager apMgr = new WifiApManager(ctx);
                 
+                //Save the current states to restore them later
+                final boolean wifiEnabled = mgr.isWifiEnabled();
                 final boolean wifiApEnabled = apMgr.isWifiApEnabled();
                 
+                //Disable the wifi access point to allow usage of the wifi
                 apMgr.setWifiApEnabled(config, false);
+                
+                //Register an action on scan results
                 ctx.registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context c, Intent i){
+                        //Restore the wifi access point as soon as possible
                         apMgr.setWifiApEnabled(config, wifiApEnabled);
                         
+                        //If a network is found with the name P1R4T3B0X, send a notification
                         for (ScanResult scan : mgr.getScanResults()) {
                             if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
                                 addNetworkNotification();
@@ -324,13 +343,26 @@ public class System {
                             }
                         }
                         
-                        scanHandler.postDelayed(System.this.scanTask, period);
+                        //Launch next scan
+                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                            scanHandler.postDelayed(System.this.scanTask, period);
+                        }
+                        //Restore wifi state
+                        if (!wifiEnabled) {
+                            mgr.setWifiEnabled(false);
+                        }
                     }
                 }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 
-                if (! mgr.startScan()) {
+                //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
+                if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
                     apMgr.setWifiApEnabled(config, wifiApEnabled);
-                    scanHandler.postDelayed(this, period);
+                    if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                        scanHandler.postDelayed(this, period);
+                    }
+                    if (!wifiEnabled) {
+                        mgr.setWifiEnabled(false);
+                    }
                 }
                 
                 if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
@@ -341,10 +373,21 @@ public class System {
         scanHandler.removeCallbacks(scanTask);
     }
     
+    /**
+     * Creates a dispatch a notification to tell the user that a P1R4T3B0X network is in range.
+     */
     private void addNetworkNotification() {
         Notification notification = new Notification(R.drawable.main_ico,
                 ctx.getResources().getString(R.string.notification_network),
                 java.lang.System.currentTimeMillis());
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+        notification.sound = Media.getContentUri(settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, ""));
+        if (settings.getBoolean(PreferencesKeys.NOTIFICATION_VIBRATE, false)) {
+            notification.defaults = Notification.DEFAULT_VIBRATE;
+        } else {
+            notification.vibrate = new long[]{0L};
+        }
         
         notification.setLatestEventInfo(ctx,
                 ctx.getResources().getString(R.string.notification_network),
@@ -354,6 +397,9 @@ public class System {
         mgr.notify(NOTIFICATION_ID_NETWORK, notification);
     }
     
+    /**
+     * Removes a notification about a network in range.
+     */
     private void removeNetworkNotification() {
         NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.cancel(NOTIFICATION_ID_NETWORK);
@@ -361,6 +407,11 @@ public class System {
 
     
     
+    /**
+     * Adds a listener for the event <code>event</code>
+     * @param event the event to listen
+     * @param c the callback to be called when the event is dispatched
+     */
     public void addEventListener(String event, Callback c) {
         if (listeners.get(event) == null) {
             listeners.put(event, new ArrayList<Callback>());
@@ -368,6 +419,11 @@ public class System {
         listeners.get(event).add(c);
     }
     
+    /**
+     * Removes a listener for the event <code>event</code>.
+     * @param event the event to remove the listener
+     * @param c the callback that had been added
+     */
     public void removeEventListener(String event, Callback c) {
         if (listeners.get(event) == null) {
             listeners.put(event, new ArrayList<Callback>());
@@ -375,6 +431,11 @@ public class System {
         listeners.get(event).remove(c);
     }
     
+    /**
+     * Dispatch <code>event</code> and give <code>value</code> to the listeners.
+     * @param event the event to be dispatched
+     * @param value the value to give to listeners
+     */
     private void dispatchEvent(String event, Object value) {
         if (listeners.get(event) == null) {
             return;
@@ -385,6 +446,10 @@ public class System {
         }
     }
     
+    /**
+     * Dispatch <code>event</code> and give <code>null</code> to the listeners.
+     * @param event the event to be dispatched
+     */
     private void dispatchEvent(String event) {
         dispatchEvent(event, null);
     }

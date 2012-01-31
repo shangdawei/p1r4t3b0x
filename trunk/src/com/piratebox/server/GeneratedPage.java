@@ -20,6 +20,10 @@ package com.piratebox.server;
 import java.io.File;
 import java.io.FileFilter;
 
+/**
+ * This class describes a generated web page for a specific directory.
+ * @author Aylatan
+ */
 public class GeneratedPage {
 	
 	private String header = "" +
@@ -52,17 +56,28 @@ public class GeneratedPage {
 			"</body>" +
 			"</html>";
 		
+	/**
+	 * Generates a web page that shows a list of all the file and folders in the given folder.
+	 * File names are link to the file.
+	 * Folder names are link that allow the user to view the files and folder inside it.
+	 * @param rootDir the root directory which content is to be shown
+	 */
 	public GeneratedPage(File rootDir) {
-
-    	
     	StringBuilder contentSb = new StringBuilder().append(content);
     	listFilesFromFolder(rootDir, contentSb, "/");
     	contentSb.append("</ul>");
     	content = contentSb.toString();
 	}
 
+	/**
+	 * Recursive function that generates a list of links of files and folders of the given folder.
+	 * @param folder the folder which content is to be listed
+	 * @param str the {@link StringBuilder} where the content is added
+	 * @param folderPath the path to the folder, relative to the root directory
+	 */
 	private void listFilesFromFolder(File folder, StringBuilder str, String folderPath) {
 
+	    //Remove hidden files from list
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
     	        return !f.getName().startsWith(".");
@@ -73,10 +88,12 @@ public class GeneratedPage {
     	
     	if (children != null) {
 	    	for (File file : children) {
+	    	    //If this is a file, add a list entry and a link to the file
 	    		if (file.isFile()) {
 	    			str.append("<li><a href='").append(folderPath + file.getName()).append("'>").append(file.getName())
 	    				.append("</a> <font size=2>(").append(getReadableFileSize(file)).append(")</font></li>");
 	    		} else {
+	    		    //Else add a folder link and list the content of this folder
 	    			str.append("<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'>")
 	    				.append(file.getName()).append("</a>");
 	    			str.append("<ul class='folder'>");
@@ -87,9 +104,15 @@ public class GeneratedPage {
     	}
 	}
 	
+	/**
+	 * Generates a string that represents the size of the file <code>f</code>.
+	 * @param f the file which size is to be calculated
+	 * @return a human readable string that represents the size of <code>f</code>
+	 */
 	private String getReadableFileSize(File f) {
 		long len = f.length();
 		StringBuilder result = new StringBuilder();
+		//If the size is more than 1 KB, show the value with 2 decimals
 		if (len < 1024) {
 			result.append(f.length() + " bytes");
 		} else if (len < 1024 * 1024) {
@@ -101,6 +124,10 @@ public class GeneratedPage {
 		return result.toString();
 	}
 	
+	/**
+	 * Returns the content of the web page.
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return header + content + footer;

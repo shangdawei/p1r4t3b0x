@@ -28,24 +28,38 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ * This class describes the server that will handle request.
+ * @author Aylatan
+ */
 public class Server extends Thread {
 
 	private ServerSocket listenSocket;
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	private int connectedUsers = 0;
 
+	//Use handlers as this is the way to give information about drawing in a separate thread
     private Handler connectedUsersHandler = new Handler();
     private Handler addStatHandler = new Handler();
 	
+	/**
+	 * Creates a new server.
+	 * Initialises the listenning socket.
+	 */
 	public Server() {
 		try {
 			listenSocket = new ServerSocket(ServerConfiguration.PORT);
+			//Set a timeout so that the socket stops listening when the server stops
 			listenSocket.setSoTimeout(1000);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
 	}
 	
+	/**
+	 * Main loop, waits for a socket and create a new {@link Connection} when one is received.
+	 * @see java.lang.Thread#run()
+	 */
 	public void run() {
 		while(listenSocket != null)
 		{
@@ -60,6 +74,9 @@ public class Server extends Thread {
 		}
 	}
 
+	/**
+	 * Stops the server by breaking the main loop.
+	 */
 	public void stopRun() {
 		for (Connection conn : connections) {
 			conn.stop();
@@ -74,11 +91,17 @@ public class Server extends Thread {
 		listenSocket = null;
 	}
 	
+	/**
+	 * Adds a user as connected and call the {@link Handler}.
+	 */
 	public void addConnectedUser() {
 		connectedUsers++;
 		callConnectedUserHandler();
 	}
 	
+	/**
+	 * Removes a user as connected and call the {@link Handler}.
+	 */
 	public void removeConnectedUser() {
 		connectedUsers--;
 		if (connectedUsers < 0) {
@@ -87,20 +110,37 @@ public class Server extends Thread {
 		callConnectedUserHandler();
 	}
 	
+	/**
+	 * Gives a {@link Message} to the {@link Handler} that manages file statistic updates.
+	 * The <code>obj</code> field of the message contains the file object.
+	 * @param f the file which statistic has changed
+	 */
 	public void addStatForFile(File f) {
 	    Message msg = new Message();
 	    msg.obj = f;
 	    addStatHandler.sendMessage(msg);
 	}
     
+    /**
+     * Sets the {@link Handler} for the connected users.
+     * @param h the handler to set
+     */
     public void setConnectedUsersHandler(Handler h) {
         connectedUsersHandler = h;
     }
-    
+
+    /**
+     * Sets the {@link Handler} for the statistic update.
+     * @param h the handler to set
+     */
     public void setAddStatHandler(Handler h) {
         addStatHandler = h;
     }
-	
+
+    /**
+     * Gives a {@link Message} to the {@link Handler} that manages connected users.
+     * The <code>obj</code> field of the message contains the number of user currently connected.
+     */
 	private void callConnectedUserHandler() {
 	    Message msg = new Message();
 	    msg.obj = connectedUsers;
