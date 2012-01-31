@@ -13,7 +13,8 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  
- The GNU General Public License can be found at http://www.gnu.org/licenses.
+ The GNU General Public License can be found at http://www.gnu.org/licenses.
+
 -->
 
 <resources>
@@ -43,7 +44,7 @@
     <string name="uptime">Uptime:</string>
     <string name="filesdl"># files downloaded:</string>
     <string name="topdl">Files most downloaded:</string>
-    <string name="status">Current status:</string>
+    <string name="status">Current state:</string>
     <string name="not_running">Not running</string>
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
@@ -82,11 +83,21 @@
         <item>3600</item>
     </string-array>
 
-    <string name="help_content">This application is made to allow you to share files with anyone who wants to see them.\n
-        blabla\n
-        bli\n
-        blo
-        </string>
+    <string name="help_content">
+        This application is made to allow you to share files with anyone who wants to see them.\n
+        \n
+        One the home screen you can start and stop the system.\n
+        You can see the current state of the system, which can be "Off", "Online" or "Sending".\n
+        You can see statistics about the number of files that has been downloaded from your phone and the time from which the system is on.\n
+        \n
+        From the settings menu, you can specify the shared folder, set a notification for a P1R4T3B0X network found around you,
+        set whether or not the system should turn off when the battery is low, reset all the statistics, see this message and access to the donate version of the application.\n
+        \n
+        You can add a widget to your desktop.\n
+        The widget will show the current state of the system via its icon.\n
+        A click on the widget will switch the system on or off.\n
+        \n
+        If you like this application, consider buying  me a beer.    </string>
     <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
     <string name="reset_done">All statistics reset.</string>
     <string name="donate_app">market://details?id=com.android.example</string>
