@@ -17,6 +17,15 @@
 
 package com.piratebox.utils;
 
+/**
+ * This class describes a callback.
+ * This object is used to perform an asynchronous call to a function.
+ * @author Aylatan
+ */
 public abstract class Callback {
+	/**
+	 * This method is the one called asynchronously.
+	 * @param arg the argument of this method depends on the context where it is used. Check the documentation of the class using it for more information.
+	 */
 	public abstract void call(Object arg);
 }

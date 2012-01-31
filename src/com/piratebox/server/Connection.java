@@ -30,6 +30,11 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
+/**
+ * This class describes a single connection.
+ * It handle the client request and answers it properly.
+ * @author Aylatan
+ */
 public class Connection extends Thread {
 
 	private Socket client;
@@ -39,13 +44,17 @@ public class Connection extends Thread {
 	private File rootDir;
 	private Server server;
 	
+	/**
+	 * A map between a file extension and its MIME type. 
+	 */
 	@SuppressWarnings("serial")
 	private static Hashtable<String, String> mimeTypes = new Hashtable<String, String>() {
 		{
 			put("htm", "text/html");
 			put("html", "text/html");
+            put("js", "text/javascript");
 			put("txt", "text/plain");
-			put("asc", "text/plain");
+            put("asc", "text/plain");
 			put("gif", "image/gif");
 			put("jpg", "image/jpeg");
 			put("jpeg", "image/jpeg");
@@ -53,19 +62,22 @@ public class Connection extends Thread {
 			put("mp3", "audio/mpeg");
 			put("m3u", "audio/mpeg-url");
 			put("pdf", "application/pdf");
-			put("doc", "application/msword");
+            put("doc", "application/msword");
+            put("docx", "application/msword");
 			put("ogg", "application/x-ogg");
-			put("zip", "application/octet-stream");
-			put("exe", "application/octet-stream");
-			put("class", "application/octet-stream");
 		}
 	};
 
+	/**
+	 * Creates a new Connection for the given socket.
+	 * @param clientSocket the client socket the connection should handle
+	 * @param server the parent server instance that received the client socket
+	 */
 	public Connection(Socket clientSocket, Server server) {
 		client = clientSocket;
 		this.server = server;
 
-		// create input and output streams for conversation with client
+		//Create input and output streams for conversation with client
 		try {
 			in = new DataInputStream(client.getInputStream());
 			out = new PrintStream(client.getOutputStream());
@@ -79,6 +91,7 @@ public class Connection extends Thread {
 			return;
 		}
 
+		//Creates the root directory if it does not exist
 		rootDir = new File(ServerConfiguration.getRootDir());
 		if (!rootDir.canRead()) {
 			rootDir.mkdir();
@@ -87,49 +100,56 @@ public class Connection extends Thread {
 		this.start();
 	}
 
+	/**
+	 * Main loop, handle the received request.
+	 * @see java.lang.Thread#run()
+	 */
 	public void run() {
-		String line = null; // read buffer
-		String req = null; // first line of request
-		// OutputStream os;
+		String line = null;
+		String req = null;
+
+		//Tell the server that a user is connected
 		server.addConnectedUser();
 
 		try {
-			
-			// read HTTP request -- the request comes in
-			// on the first line, and is of the form:
-			// GET <filename> HTTP/1.x
+			//Read first line of http request
+		    //First line looks like :
+		    //GET <filename> HTTP/1.x
 			req = in.readLine();
 
-			// loop through and discard rest of request
+			//Loop through and discard rest of request
 			line = req;
 			while (line.length() > 0) {
 				line = in.readLine();
 			}
 
-			// parse request -- get filename
+			//Get filename from request
 			StringTokenizer st = new StringTokenizer(req);
-			// discard first token ("GET")
+			//First token is "GET"
 			st.nextToken();
 			requestedFile = st.nextToken();
-			// create File object
+			
 			String filePath = URLDecoder.decode(ServerConfiguration.getRootDir()
 					+ requestedFile);
 			File f = new File(filePath);
-
+			
+			//If the file does not exist or is a directory, send the default page
 			if (!f.canRead() || f.isDirectory()) {
 				sendDefaultPage();
 				server.removeConnectedUser();
 				return;
 			}
 
+			//Else (ie the requested file is an existing file) send the file
+			//Send basic headers
 			PrintWriter pw = new PrintWriter(out);
 			pw.print("HTTP/1.0 200 \r\n");
 			pw.print("Content-Type: " + getMIMEType(f) + "\r\n");
 			pw.print("\r\n");
 			pw.flush();
 
+			//Read the file and send it
 			FileInputStream fis = new FileInputStream(f);
-
 			byte[] buff = new byte[2048];
 			while (true) {
 				int read = fis.read(buff, 0, 2048);
@@ -142,20 +162,25 @@ public class Connection extends Thread {
 			out.close();
 			fis.close();
 			
+			//Tell the server to update the statistics for the given file
 			server.addStatForFile(f);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}
 		
+		//Tell the server that the connected user is not connected anymore
 		server.removeConnectedUser();
 	}
 
+	/**
+	 * Sends a default page to the client
+	 */
 	private void sendDefaultPage() {
-		// send response headers
+		//Send basic headers
 		out.println("HTTP/1.0 200 OK");
 		out.println("Content-type: text/html\n\n");
 
-		// send content
+		//Send content
 		out.print(new GeneratedPage(rootDir));
 
 		try {
@@ -165,17 +190,16 @@ public class Connection extends Thread {
 		}
 	}
 
+	/**
+	 * Returns the http string for the MIME type of the file <code>f</code>.
+	 * @param f the file to retrieve the MIME type
+	 * @return a string that represents the MIME type of the file <code>f</code> for http protocol
+	 */
 	private String getMIMEType(File f) {
 		String mime = null;
-		int index = -1;
-		String ext = null;
-		try {
-			index = f.getCanonicalPath().lastIndexOf('.');
-			ext = f.getCanonicalPath().substring(index + 1).toLowerCase();
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
-		}
-
+		int index = f.getPath().lastIndexOf('.');
+		String ext = f.getPath().substring(index + 1).toLowerCase();
+		
 		if (ext != null) {
 			mime = mimeTypes.get(ext);
 		}
