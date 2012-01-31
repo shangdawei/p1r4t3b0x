@@ -24,17 +24,35 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+/**
+ * This class uses reflection to call hidden methods of {@link WifiManager}.
+ * @author Aylatan
+ */
 public class WifiApManager {
 
+	/**
+	 * Constants that hold the failed state of the wifi access point.
+	 */
 	public static final int WIFI_AP_STATE_FAILED = 4;
 
 	private final WifiManager mWifiManager;
 
+	/**
+	 * Creates a new {@link WifiApManager}.
+	 * @param context the context of the application
+	 */
 	public WifiApManager(Context context) {
 		mWifiManager = (WifiManager) context
 				.getSystemService(Context.WIFI_SERVICE);
 	}
 
+	/**
+	 * Turns on or off the wifi access point with the given configuration.
+	 * The wifi will be turned off if {@code enabled} is true.
+	 * @param config The configuration to set to the wifi access point
+	 * @param enabled the state in which to set the wifi access point
+	 * @return {@code true} if the operation succeeds, {@code false} otherwise
+	 */
 	public boolean setWifiApEnabled(WifiConfiguration config,
 			boolean enabled) {
 		
@@ -53,6 +71,13 @@ public class WifiApManager {
 		}
 	}
     
+    /**
+     * Gets the wifi access point enabled state.
+     * @return One of {@link #WIFI_AP_STATE_DISABLED},
+     *         {@link #WIFI_AP_STATE_DISABLING}, {@link #WIFI_AP_STATE_ENABLED},
+     *         {@link #WIFI_AP_STATE_ENABLING}, {@link #WIFI_AP_STATE_FAILED}
+     * @see #isWifiApEnabled()
+     */
     public int getWifiApState() {
         try {
             Method method = mWifiManager.getClass().getMethod(
@@ -64,6 +89,11 @@ public class WifiApManager {
         }
     }
     
+    /**
+     * Return whether wifi access point is enabled or disabled.
+     * @return {@code true} if wifi access point is enabled
+     * @see #getWifiApState()
+     */
     public boolean isWifiApEnabled() {
         try {
             Method method = mWifiManager.getClass().getMethod(
@@ -75,6 +105,10 @@ public class WifiApManager {
         }
     }
 	
+	/**
+	 * Returns the current used configuration for wifi access point.
+	 * @return A {@link WifiConfiguration} instance, or {@code null} if an exception occurred
+	 */
 	public WifiConfiguration getWifiApConfiguration() {
 		try {
 			Method method = mWifiManager.getClass().getMethod(
@@ -87,6 +121,10 @@ public class WifiApManager {
 		}
 	}
 	
+	/**
+	 * Updates the current wifi access point configuration without changing its state.
+	 * @param config the new configuration to be applied
+	 */
 	public void setWifiApConfiguration(WifiConfiguration config) {
 		setWifiApEnabled(config, getWifiApState() == WifiManager.WIFI_STATE_ENABLED);
 	}

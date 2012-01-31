@@ -112,7 +112,7 @@ public class Server extends Thread {
 	
 	/**
 	 * Gives a {@link Message} to the {@link Handler} that manages file statistic updates.
-	 * The <code>obj</code> field of the message contains the file object.
+	 * The {@code obj} field of the message contains the file object.
 	 * @param f the file which statistic has changed
 	 */
 	public void addStatForFile(File f) {
@@ -139,7 +139,7 @@ public class Server extends Thread {
 
     /**
      * Gives a {@link Message} to the {@link Handler} that manages connected users.
-     * The <code>obj</code> field of the message contains the number of user currently connected.
+     * The {@code obj} field of the message contains the number of user currently connected.
      */
 	private void callConnectedUserHandler() {
 	    Message msg = new Message();

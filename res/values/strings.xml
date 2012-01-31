@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
  This is a file from P1R4T3B0X, a program that lets you share files with everyone.
  Copyright (C) 2012 by Aylatan
  
@@ -13,10 +13,11 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  
- The GNU General Public License can be found at http://www.gnu.org/licenses.
- -->
+ The GNU General Public License can be found at http://www.gnu.org/licenses.
+-->
 
 <resources>
+
     <!-- General -->
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -32,11 +33,11 @@
     <string name="confirm_title">Confirmation</string>
     <string name="none">None</string>
     <string name="silent">Silent</string>
-    
+
     <!-- System -->
     <string name="notification_network">P1R4T3B0X network found!</string>
     <string name="notification_network_title">A P1R4T3B0X network has been found around you!</string>
-    
+
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
     <string name="uptime">Uptime:</string>
@@ -44,16 +45,15 @@
     <string name="topdl">Files most downloaded:</string>
     <string name="status">Current status:</string>
     <string name="not_running">Not running</string>
-    
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
-    
+
     <!-- Widget -->
     <string name="widget_name">P1R4T3B0X Widget</string>
     <string name="widget_system_off">Off</string>
     <string name="widget_system_waiting">Online</string>
-    <string name="widget_system_sending">Sending&#8230;</string>
-    
+    <string name="widget_system_sending">Sending…</string>
+
     <!-- Settings Activity -->
     <string name="settings_set_dir">Set shared folder</string>
     <string name="settings_notification">Notification</string>
@@ -66,13 +66,13 @@
     <string name="settings_notification_frequency_dialog">Set check frequency (low value uses more battery)</string>
     <string name="settings_notification_vibrate">Vibrate</string>
     <string name="settings_notification_ringtone">Select ringtone</string>
-    
+
     <string-array name="notification_frequency_readable">
         <item>1 min</item>
         <item>5 min</item>
         <item>10 min</item>
         <item>30 min</item>
-        <item>1 h</item>
+        <item>1 hr</item>
     </string-array>
     <string-array name="notification_frequency">
         <item>60</item>
@@ -81,14 +81,14 @@
         <item>1800</item>
         <item>3600</item>
     </string-array>
-    
+
     <string name="help_content">blabla help</string>
     <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
     <string name="reset_done">All statistics reset.</string>
-    
     <string name="donate_app">market://details?id=com.android.example</string>
-    
-    <!-- Choose folder activity -->
+
+    <!-- Choose folder -->
     <string name="new_folder">New folder</string>
     <string name="new_folder_dialog">Type the name of the folder you want to create:</string>
+
 </resources>

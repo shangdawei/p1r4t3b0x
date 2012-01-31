@@ -191,9 +191,9 @@ public class Connection extends Thread {
 	}
 
 	/**
-	 * Returns the http string for the MIME type of the file <code>f</code>.
+	 * Returns the http string for the MIME type of the file {@code f}.
 	 * @param f the file to retrieve the MIME type
-	 * @return a string that represents the MIME type of the file <code>f</code> for http protocol
+	 * @return a string that represents the MIME type of the file {@code f} for http protocol
 	 */
 	private String getMIMEType(File f) {
 		String mime = null;

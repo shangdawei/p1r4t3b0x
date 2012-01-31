@@ -17,8 +17,18 @@
 
 package com.piratebox.utils;
 
+/**
+ * This class defines global utility methods.
+ * @author Aylatan
+ */
 public class Utils {
 
+	/**
+	 * Get the index of an {@link Object} in an array.
+	 * @param value the object to look for
+	 * @param array the array of object
+	 * @return index such as {@code value.equals(array[index])} is true if it exists, -1 otherwise.
+	 */
 	public static int indexOf(Object value, Object[] array) {
 		for (int i = 0; i < array.length; i++) {
 			if (value.equals(array[i])) {

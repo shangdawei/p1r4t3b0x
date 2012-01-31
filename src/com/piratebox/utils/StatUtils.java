@@ -28,15 +28,39 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+/**
+ * This class is a utility class that helps manage statistic relative operations.
+ * @author Aylatan
+ */
 public class StatUtils {
+    
+    /**
+     * The {@link SharedPreferences} name for the statistics.
+     */
     public static final String STATS_STORAGE = "statStorage";
-
+    /**
+     * The key for the overall file statistics. 
+     */
     public static final String STAT_FILE_DL = "statFileDl";
+    /**
+     * The key for the session file statistics.
+     */
     public static final String STAT_FILE_DL_SESSION = "statFileDlSession";
+    /**
+     * The prefix for the key of a specific file statistics.
+     */
     public static final String STAT_PREFIX_FILE = "file_";
+    /**
+     * The number of top downloads to be shown.
+     */
     public static final int STAT_TOPDL_LENGTH = 5;
     
     
+    /**
+     * Add 1 to the statistic with the specified key.
+     * @param ctx the context of the application
+     * @param key the key of the statistic to add 1
+     */
     public static void addStat(Context ctx, String key) {
         SharedPreferences stats = ctx.getSharedPreferences(STATS_STORAGE, 0);
         int stat = stats.getInt(key, 0);
@@ -45,29 +69,54 @@ public class StatUtils {
         edit.putInt(key, stat).commit();
     }
     
+    /**
+     * Reset to 0 the statistic with the specified key.
+     * @param ctx the context of the application
+     * @param key the key of the statistic to reset
+     */
     public static void resetStat(Context ctx, String key) {
         SharedPreferences stats = ctx.getSharedPreferences(STATS_STORAGE, 0);
         Editor edit = stats.edit();
         edit.putInt(key, 0).commit();
     }
     
+    /**
+     * Reset all statistics to 0.
+     * @param ctx the context of the application
+     */
     public static void resetAllStats(Context ctx) {
         SharedPreferences stats = ctx.getSharedPreferences(STATS_STORAGE, 0);
         stats.edit().clear().commit();
     }
     
+    /**
+     * Adds statistics values for the given file.
+     * This includes:
+     * <li>add 1 to the overall file downloads</li>
+     * <li>add 1 to the session file downloads</li>
+     * <li>add 1 to this specific file download</li>
+     * @param ctx
+     * @param f
+     */
     public static void addStatForFile(Context ctx, File f) {
         addStat(ctx, StatUtils.STAT_FILE_DL);
         addStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         
+        //The statistics for this specific file download uses a key composed of the STAT_PREFIX_FILE prefix and the file name
         addStat(ctx, STAT_PREFIX_FILE + f.getName());
     }
     
+    /**
+     * Generates a list of most downloaded file names.
+     * @param ctx the context of the application
+     * @return an array of {@link #STAT_TOPDL_LENGTH} strings
+     */
     public static String[] getTopDls(Context ctx) {
         SharedPreferences stats = ctx.getSharedPreferences(STATS_STORAGE, 0);
         Map<String, ?> allValues = stats.getAll();
-        
         Object[] entries = allValues.entrySet().toArray();
+        
+        //Get all the entries of the preferences that starts with the STAT_PREFIX_FILE prefix
         ArrayList<Entry<String, Integer>> files = new ArrayList<Map.Entry<String, Integer>>();
         for (Object obj : entries) {
             @SuppressWarnings("unchecked")
@@ -83,6 +132,7 @@ public class StatUtils {
             }
         });
         
+        //Copy the STAT_TOPDL_LENGTH firsts to a string array
         int length = Math.min(STAT_TOPDL_LENGTH, files.size());
         String[] result = new String[STAT_TOPDL_LENGTH];
         for (int i = 0; i < length; i++) {

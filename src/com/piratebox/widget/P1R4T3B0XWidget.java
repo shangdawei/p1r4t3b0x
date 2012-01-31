@@ -30,8 +30,15 @@ import com.piratebox.System;
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
 
+/**
+ * This class describes the {@link AppWidgetProvider} used with this application.
+ * @author Aylatan
+ */
 public class P1R4T3B0XWidget extends AppWidgetProvider {
 
+    /**
+     * The widget initialisation broadcast action.
+     */
     public static final String WIDGET_RECEIVER_INIT = "WidgetReceiverInit";
     
 	private static final String WIDGET_RECEIVER_CLICK = "WidgetReceiverClick";
@@ -39,6 +46,10 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	private boolean initialized = false;
 	private Callback updateWidgetsCallback;
 	
+	/**
+	 * Updates the widget content by reading the current state of the system.
+	 * @see android.appwidget.AppWidgetProvider#onUpdate(android.content.Context, android.appwidget.AppWidgetManager, int[])
+	 */
 	@Override
 	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
@@ -47,10 +58,13 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget);
 
+		//Initialise the widget if not already done
         init(context);
         System system = System.getInstance(context);
+        //Update the widget
         updateWidgetsCallback.call(system.getServerState());
 		
+        //Set a click action for all widgets
 		for (int i = 0; i < N; i++) {
             int appWidgetId = appWidgetIds[i];
             Intent intent = new Intent(context, P1R4T3B0XWidget.class);
@@ -63,10 +77,16 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 		}
 	}
 
+	/**
+	 * Process messages.
+	 * Can handle {@link P1R4T3B0XWidget#WIDGET_RECEIVER_CLICK} and {@link P1R4T3B0XWidget#WIDGET_RECEIVER_INIT} messages.
+	 * @see android.appwidget.AppWidgetProvider#onReceive(android.content.Context, android.content.Intent)
+	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		if (WIDGET_RECEIVER_CLICK.equals(intent.getAction())) {
+		    //On click, switch the system state
 			System system = System.getInstance(context);
 			if (ServerState.STATE_OFF.equals(system.getServerState())) {
 				system.start();
@@ -74,10 +94,16 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 				system.stop();
 			}
 		} else if (WIDGET_RECEIVER_INIT.equals(intent.getAction())) {
+		    //On init, launch the initialisation
 		    init(context);
 		}
 	}
 
+	/**
+	 * Initialises the widget.
+	 * Add a listener on {@code System.EVENT_STATE_CHANGE} to update the widget.
+	 * @param context the application context
+	 */
 	private void init(final Context context) {
         if (!initialized) {
             final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -86,7 +112,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
                 @Override
                 public void call(Object arg) {
                     int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
-
+                    
                     RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
                     views.setTextViewText(R.id.widgetlabel, context.getString(((ServerState) arg).val()));
