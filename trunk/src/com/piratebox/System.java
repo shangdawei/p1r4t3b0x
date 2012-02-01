@@ -110,6 +110,7 @@ public class System {
     private long startTime = 0L;
     private final Handler scanHandler = new Handler();
     private Runnable scanTask;
+    private BroadcastReceiver scanResultReceiver = null;
 
     private static System instance = null;
 
@@ -327,32 +328,34 @@ public class System {
                 //Disable the wifi access point to allow usage of the wifi
                 apMgr.setWifiApEnabled(config, false);
                 
-                //Register an action on scan results
-                ctx.registerReceiver(new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context c, Intent i){
-                        //Restore the wifi access point as soon as possible
-                        apMgr.setWifiApEnabled(config, wifiApEnabled);
-                        
-                        //If a network is found with the name P1R4T3B0X, send a notification
-                        for (ScanResult scan : mgr.getScanResults()) {
-                            if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
-                                addNetworkNotification();
-                            } else {
-                                removeNetworkNotification();
+                //Set the action on scan results
+                if (scanResultReceiver == null) {
+                    scanResultReceiver = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context c, Intent i){
+                            //Restore the wifi access point as soon as possible
+                            apMgr.setWifiApEnabled(config, wifiApEnabled);
+                            
+                            //If a network is found with the name P1R4T3B0X, send a notification
+                            for (ScanResult scan : mgr.getScanResults()) {
+                                if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
+                                    addNetworkNotification();
+                                } else {
+                                    removeNetworkNotification();
+                                }
+                            }
+                            
+                            //Launch next scan
+                            if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                                scanHandler.postDelayed(System.this.scanTask, period);
+                            }
+                            //Restore wifi state
+                            if (!wifiEnabled) {
+                                mgr.setWifiEnabled(false);
                             }
                         }
-                        
-                        //Launch next scan
-                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                            scanHandler.postDelayed(System.this.scanTask, period);
-                        }
-                        //Restore wifi state
-                        if (!wifiEnabled) {
-                            mgr.setWifiEnabled(false);
-                        }
-                    }
-                }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                    };
+                }
                 
                 //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
                 if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
@@ -370,6 +373,8 @@ public class System {
                 }
             }
         };
+        
+        ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         scanHandler.removeCallbacks(scanTask);
     }
     
