@@ -19,5 +19,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/settings_ico"
     android:shape="rectangle" >
-
+    
 </shape>

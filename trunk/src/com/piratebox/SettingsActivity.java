@@ -18,6 +18,7 @@
 package com.piratebox;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,7 +36,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.provider.MediaStore.Audio.Media;
 import android.widget.Toast;
 
 import com.piratebox.server.ServerConfiguration;
@@ -94,10 +94,34 @@ public class SettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.settings);
 		
 		setSelectDirSummary();
-		setNotificationsFrequencySummary();
-		setNotificationsRingtoneSummary();
+
+		
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        //Get the currently selected frequency value.
+        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
+		setNotificationsFrequencySummaryFromValue(value);
+		
+
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                setNotificationsFrequencySummaryFromValue((String)newValue);
+                return true;
+            }
+        });
+
+        
+        //Get the current ringtone URI.
+        String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, "");
+		setNotificationsRingtoneSummaryFromRingtoneURI(ringtone);
 		
 		setNotificationMenusStates();
+        
+        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                setNotificationsRingtoneSummaryFromRingtoneURI((String)newValue);
+                return true;
+            }
+        });
 	}
 	
 	/**
@@ -122,7 +146,7 @@ public class SettingsActivity extends PreferenceActivity {
         } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION))) {
             setNotificationMenusStates();
 		}
-		
+		        
 		return true;
 	}
 	
@@ -142,13 +166,9 @@ public class SettingsActivity extends PreferenceActivity {
      * Sets the summary of the list item for the notification frequency.
      * The summary shows the current set frequency.
      */
-    private void setNotificationsFrequencySummary() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+    private void setNotificationsFrequencySummaryFromValue(String value) {
         CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
         CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
-        
-        //Get the currently selected value.
-        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
         //Get its index in the R.array.notification_frequency array.
         int index = Utils.indexOf(value, array);
         //Retrieve the readable value from the index in the R.array.notification_frequency_readable array.
@@ -163,17 +183,15 @@ public class SettingsActivity extends PreferenceActivity {
      * Sets the summary of the list item for the notification ringtone.
      * The summary shows the current set ringtone name.
      */
-    private void setNotificationsRingtoneSummary() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        //Get the current ringtone URI.
-        String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, getResources().getString(R.string.none));
+    private void setNotificationsRingtoneSummaryFromRingtoneURI(String ringtoneUri) {
         
+        String ringtone;
         //If the ringtone is "Silent" then the URI is "".
-        if ("".equals(ringtone)) {
+        if ("".equals(ringtoneUri)) {
             ringtone = getResources().getString(R.string.silent);
-        } else if (!getResources().getString(R.string.none).equals(ringtone)) {
+        } else {
             //Else get the ringtone name.
-            ringtone = RingtoneManager.getRingtone(this, Media.getContentUri(ringtone)).getTitle(this);
+            ringtone = RingtoneManager.getRingtone(this, Uri.parse(ringtoneUri)).getTitle(this);
         }
         
         
