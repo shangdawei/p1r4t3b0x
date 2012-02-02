@@ -82,9 +82,12 @@
         <item>1800</item>
         <item>3600</item>
     </string-array>
-
+    <string name="notification_default_frequency">600</string>
+    
     <string name="help_content">
         This application is made to allow you to share files with anyone who wants to see them.\n
+        \n
+        You might encounter issues if you try to use the widget without having allowed root rights to the application.\n
         \n
         One the home screen you can start and stop the system.\n
         You can see the current state of the system, which can be "Off", "Online" or "Sending".\n
@@ -97,7 +100,7 @@
         The widget will show the current state of the system via its icon.\n
         A click on the widget will switch the system on or off.\n
         \n
-        If you like this application, consider buying  me a beer.    </string>
+        If you like this application, consider buying me a beer.    </string>
     <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
     <string name="reset_done">All statistics reset.</string>
     <string name="donate_app">market://details?id=com.android.example</string>

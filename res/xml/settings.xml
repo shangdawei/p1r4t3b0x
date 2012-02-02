@@ -26,12 +26,14 @@
 
     <PreferenceScreen android:title="@string/settings_notification" >
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="notification"
             android:persistent="true"
             android:summary="@string/settings_notification_summary"
             android:title="@string/settings_notification" />
 
         <ListPreference
+            android:defaultValue="@string/notification_default_frequency"
             android:dialogTitle="@string/settings_notification_frequency_dialog"
             android:entries="@array/notification_frequency_readable"
             android:entryValues="@array/notification_frequency"
@@ -40,14 +42,17 @@
             android:title="@string/settings_notification_frequency" />
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="notification_vibrate"
             android:persistent="true"
             android:title="@string/settings_notification_vibrate" />
 
         <RingtonePreference
+            android:defaultValue="@string/silent"
             android:key="notification_ringtone"
             android:persistent="true"
             android:ringtoneType="notification"
+            android:showDefault="false"
             android:showSilent="true"
             android:title="@string/settings_notification_ringtone" />
     </PreferenceScreen>

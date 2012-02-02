@@ -72,7 +72,7 @@ public class IptablesRunner {
             // TODO Add lines !!!!
     
             int res = runScript(script.toString());
-            if (res != 1) {
+            if (res != 0) {
                 Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class IptablesRunner {
             // TODO Add lines !!!!
     
             int res = runScript(script.toString());
-            if (res != 1) {
+            if (res != 0) {
                 Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
