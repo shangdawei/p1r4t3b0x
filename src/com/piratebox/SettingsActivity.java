@@ -19,12 +19,16 @@ package com.piratebox;
 
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -59,6 +63,25 @@ public class SettingsActivity extends PreferenceActivity {
 	
 	private final int DIRECTORY_CHOOSE_ACTIVITY_CODE = 0;
 	
+	private BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c, Intent i){
+            //Get the charging status
+            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                                status == BatteryManager.BATTERY_STATUS_FULL;
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+
+            //If the device is currently being charged, there is no need to stop the system
+            if (isCharging || settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
+                return;
+            }
+            
+            System.getInstance(c).stop();
+            System.getInstance(c).setNotificationState(false);
+        }
+    };
+	
 	/**
 	 * Initialises the {@link Activity}.
 	 * 
@@ -88,8 +111,10 @@ public class SettingsActivity extends PreferenceActivity {
 		
 		if (preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR))) {
 			openSelectDir();
-		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.RESET_STAT))) {
-			resetStats();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT))) {
+            onLowBatterychange();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.RESET_STAT))) {
+            resetStats();
 		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
 			openHelp();
         } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.BEER))) {
@@ -176,6 +201,18 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
         
         System.getInstance(this).setNotificationState(checked);
+	}
+	
+	/**
+	 * Registers or unregisters the broadcast receiver for the low battery event, depending on the preference status.
+	 */
+	private void onLowBatterychange() {
+        CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
+	    if (lowBatPref.isChecked()) {
+	        registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+	    } else {
+	        unregisterReceiver(batteryBroadcastReceiver);
+	    }
 	}
 	
 	/**
