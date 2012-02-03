@@ -94,6 +94,11 @@ public class SettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.settings);
 		
 		setSelectDirSummary();
+		
+        CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
+        if (lowBatPref.isChecked()) {
+            registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+        }
 
 		
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -186,8 +191,8 @@ public class SettingsActivity extends PreferenceActivity {
     private void setNotificationsRingtoneSummaryFromRingtoneURI(String ringtoneUri) {
         
         String ringtone;
-        //If the ringtone is "Silent" then the URI is "".
-        if ("".equals(ringtoneUri)) {
+        //If the ringtone is "Silent" then the URI is "Silent" or "".
+        if ("Silent".equals(ringtoneUri) || "".equals(ringtoneUri)) {
             ringtone = getResources().getString(R.string.silent);
         } else {
             //Else get the ringtone name.

@@ -22,8 +22,8 @@
 
     <gradient
         android:angle="45"
-        android:endColor="#CC7f7f7f"
-        android:startColor="#CC111111" />
+        android:endColor="#CCCCCCCC"
+        android:startColor="#CC888888" />
 
     <padding
         android:bottom="1dp"

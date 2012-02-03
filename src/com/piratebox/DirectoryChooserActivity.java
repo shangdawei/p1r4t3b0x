@@ -20,8 +20,10 @@ package com.piratebox;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -175,16 +177,18 @@ public class DirectoryChooserActivity extends ListActivity {
 		
 		String[] dirs = currentFolder.list(filter);
     	directories = new ArrayList<String>();
-    	
-    	//If it is not the root, add the ".." folder
-    	if (currentFolder.getParent() != null) {
-    	    directories.add("..");
-    	}
     	if (dirs != null) {
     	    for (String dir : dirs) {
     	        directories.add(dir);
     	    }
     	}
+        
+    	Collections.sort(directories);
+    	
+        //If it is not the root, add the ".." folder
+        if (currentFolder.getParent() != null) {
+            directories.add(0, "..");
+        }
         setListAdapter(new ArrayAdapter<String>(this, R.layout.folder_item, directories));
     }
 }
