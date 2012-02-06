@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crittercism.app.Crittercism;
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.StatUtils;
@@ -42,6 +43,8 @@ import com.piratebox.utils.StatUtils;
  * @author Aylatan
  */
 public class P1R4T3B0XActivity extends Activity {
+    private final String CRITTERCISM_APP_ID = "4f30546db093150ce40004a4";
+    
 	private System system;
 
 	private Button startStopBtn;
@@ -56,6 +59,8 @@ public class P1R4T3B0XActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// TODO uncomment
+//		Crittercism.init(getApplicationContext(), CRITTERCISM_APP_ID);
 		
 		setContentView(R.layout.main);
 		

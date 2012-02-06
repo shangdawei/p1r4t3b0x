@@ -50,7 +50,14 @@
             android:name=".DirectoryChooserActivity"
             android:label="@string/app_name" >
         </activity>
-
+        
+		<!-- Start of Crittercism.com Code -->
+		<activity android:name="com.crittercism.FeedbackActivity"/>
+		<activity android:name="com.crittercism.FeedbackCreateActivity"/>
+		<activity android:name="com.crittercism.FeedbackDetailsActivity"/>
+		<activity android:name="com.crittercism.NotificationActivity"/>
+		<!-- End of Crittercism.com Code -->
+		
         <receiver android:name=".widget.P1R4T3B0XWidget" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
