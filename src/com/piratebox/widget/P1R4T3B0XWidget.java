@@ -23,6 +23,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.widget.RemoteViews;
 
 import com.piratebox.R;
@@ -41,10 +42,14 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
      */
     public static final String WIDGET_RECEIVER_INIT = "WidgetReceiverInit";
     
-	private static final String WIDGET_RECEIVER_CLICK = "WidgetReceiverClick";
+	private final String WIDGET_RECEIVER_CLICK = "WidgetReceiverClick";
+	private final int MS_BETWEEN_IMAGE_UPDATE = 300;
 	
 	private boolean initialized = false;
 	private Callback updateWidgetsCallback;
+	private Handler updateHandler = new Handler();
+	private int currentImage = 0;
+	private Runnable updateImage;
 	
 	/**
 	 * Updates the widget content by reading the current state of the system.
@@ -71,7 +76,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
             intent.setAction(WIDGET_RECEIVER_CLICK);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-            views.setOnClickPendingIntent(R.id.widgetlabel, pendingIntent);
+            views.setOnClickPendingIntent(R.id.widgetimg, pendingIntent);
 
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
@@ -106,24 +111,69 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	 */
 	private void init(final Context context) {
         if (!initialized) {
-            final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             System system = System.getInstance(context);
             updateWidgetsCallback = new Callback() {
                 @Override
                 public void call(Object arg) {
-                    int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
                     
-                    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-
-                    views.setTextViewText(R.id.widgetlabel, context.getString(((ServerState) arg).val()));
-
-                    appWidgetManager.updateAppWidget(ids, views);
+                    updateHandler.removeCallbacks(updateImage);
+                    currentImage = 0;
+                    switch ((ServerState) arg) {
+                        case STATE_OFF:
+                            updateWidgetImg(context, R.drawable.piratebox_off);
+                            break;
+                        case STATE_WAITING:
+                            updateWidgetImg(context, R.drawable.piratebox_waiting);
+                            break;
+                        case STATE_SENDING:
+                            updateHandler.postDelayed(updateImage, 100);
+                            break;
+                    }
                 }
             };
+            
+
+            updateImage = new Runnable() {
+               public void run() {
+                   int id;
+                   
+                   switch (currentImage) {
+                       case 0:
+                           id = R.drawable.piratebox_sending1;
+                           break;
+                       case 1:
+                           id = R.drawable.piratebox_sending2;
+                           break;
+                       default:
+                           id = R.drawable.piratebox_sending3;
+                           break;
+                   }
+                   updateWidgetImg(context, id);
+                   
+                   id = (id+1)%3;
+                   
+                   updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
+               }
+           };
+            
             
             system.addEventListener(System.EVENT_STATE_CHANGE, updateWidgetsCallback);
             updateWidgetsCallback.call(system.getServerState());
             initialized = true;
         }
+	}
+	
+	/**
+	 * Sets the given image to the widgets.
+	 * @param context the application context
+	 * @param imgId the id of the image to set
+	 */
+	private void updateWidgetImg(Context context, int imgId) {
+        final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+	    int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
+        
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        views.setImageViewResource(R.id.widgetimg, imgId);
+        appWidgetManager.updateAppWidget(ids, views);
 	}
 }
