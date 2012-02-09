@@ -35,6 +35,9 @@ import com.piratebox.utils.Callback;
  * This class describes the {@link AppWidgetProvider} used with this application.
  * @author Aylatan
  */
+/**
+ * @author Aylatan
+ */
 public class P1R4T3B0XWidget extends AppWidgetProvider {
 
     /**
@@ -58,28 +61,12 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	@Override
 	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-		
-		final int N = appWidgetIds.length;
-		RemoteViews views = new RemoteViews(context.getPackageName(),
-				R.layout.widget);
 
 		//Initialise the widget if not already done
         init(context);
-        System system = System.getInstance(context);
+        System system = System.getInstance(context.getApplicationContext());
         //Update the widget
         updateWidgetsCallback.call(system.getServerState());
-		
-        //Set a click action for all widgets
-		for (int i = 0; i < N; i++) {
-            int appWidgetId = appWidgetIds[i];
-            Intent intent = new Intent(context, P1R4T3B0XWidget.class);
-            intent.setAction(WIDGET_RECEIVER_CLICK);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-            views.setOnClickPendingIntent(R.id.widgetimg, pendingIntent);
-
-			appWidgetManager.updateAppWidget(appWidgetId, views);
-		}
 	}
 
 	/**
@@ -92,7 +79,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 		super.onReceive(context, intent);
 		if (WIDGET_RECEIVER_CLICK.equals(intent.getAction())) {
 		    //On click, switch the system state
-			System system = System.getInstance(context);
+			System system = System.getInstance(context.getApplicationContext());
 			if (ServerState.STATE_OFF.equals(system.getServerState())) {
 				system.start();
 			} else {
@@ -111,7 +98,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	 */
 	private void init(final Context context) {
         if (!initialized) {
-            System system = System.getInstance(context);
+            System system = System.getInstance(context.getApplicationContext());
             updateWidgetsCallback = new Callback() {
                 @Override
                 public void call(Object arg) {
@@ -134,28 +121,29 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
             
 
             updateImage = new Runnable() {
-               public void run() {
-                   int id;
+                public void run() {
+                    int id;
                    
-                   switch (currentImage) {
-                       case 0:
-                           id = R.drawable.piratebox_sending1;
-                           break;
-                       case 1:
-                           id = R.drawable.piratebox_sending2;
-                           break;
-                       default:
-                           id = R.drawable.piratebox_sending3;
-                           break;
-                   }
-                   updateWidgetImg(context, id);
-                   
-                   id = (id+1)%3;
-                   
-                   updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
-               }
-           };
+                    switch (currentImage) {
+                        case 0:
+                            id = R.drawable.piratebox_sending1;
+                            break;
+                        case 1:
+                            id = R.drawable.piratebox_sending2;
+                            break;
+                        default:
+                            id = R.drawable.piratebox_sending3;
+                            break;
+                    }
+                    updateWidgetImg(context, id);
+                    
+                    id = (id+1)%3;
+                    
+                    updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
+                }
+            };
             
+            addOnClickListeners(context);
             
             system.addEventListener(System.EVENT_STATE_CHANGE, updateWidgetsCallback);
             updateWidgetsCallback.call(system.getServerState());
@@ -175,5 +163,25 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setImageViewResource(R.id.widgetimg, imgId);
         appWidgetManager.updateAppWidget(ids, views);
+	}
+	
+	/**
+	 * Adds the listeners for the click action on the widget image.
+	 * @param context the application context
+	 */
+	private void addOnClickListeners(Context context) {
+        final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
+        
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        
+        Intent intent = new Intent(context, P1R4T3B0XWidget.class);
+        intent.setAction(WIDGET_RECEIVER_CLICK);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        
+        views.setOnClickPendingIntent(R.id.widgetimg, pendingIntent);
+        
+        appWidgetManager.updateAppWidget(ids, views);
+
 	}
 }
