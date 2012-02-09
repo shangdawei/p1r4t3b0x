@@ -265,7 +265,7 @@ public class System {
     }
 
     /**
-     * Starts the wifi access point.
+     * Starts the wifi access point and try to save the current widi access point configuration.
      */
     private void startHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
@@ -274,12 +274,14 @@ public class System {
     }
 
     /**
-     * Stops the wifi access point.
+     * Stops the wifi access point and restore the saved wifi access point configuration.
      */
     private void stopHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
         mgr.setWifiApEnabled(config, false);
-        mgr.setWifiApConfiguration(savedConfig);
+        if (savedConfig != null) {
+            mgr.setWifiApConfiguration(savedConfig);
+        }
     }
     
     /**
