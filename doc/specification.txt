@@ -53,8 +53,8 @@ Config options:
 
 
 ***********           TODO          ************
-Design home page
-Design widget
+Design home screen
+/ Design widget
 Integrate page design
 Integrate redirection script
 
