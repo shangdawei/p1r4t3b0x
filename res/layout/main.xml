@@ -108,6 +108,7 @@
         android:layout_toRightOf="@id/status" />
 
     <Button
+        android:background="@drawable/button"
         android:id="@+id/startStopBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -116,8 +117,8 @@
         android:layout_marginBottom="10dip"
         android:layout_marginLeft="30dip"
         android:layout_marginRight="30dip"
-        android:paddingBottom="30dip"
-        android:paddingTop="30dip"
-        android:text="@string/start" />
+        android:text="@string/start"
+        android:textColor="#000000"
+        android:textSize="30sp" />
 
 </RelativeLayout>
