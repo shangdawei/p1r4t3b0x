@@ -119,6 +119,8 @@ public class Connection extends Thread {
 		server.addConnectedUser();
 
 		try {
+		    boolean updateStats = false;
+		    
 			//Read first line of http request
 		    //First line looks like :
 		    //GET <filename> HTTP/1.x
@@ -150,6 +152,12 @@ public class Connection extends Thread {
 				return;
 			}
 
+            //If the file is not a local file, it is a shared file and its stats should be updated
+            if (fis == null) {
+                fis = new FileInputStream(f);
+                updateStats = true;
+            }
+
 			//Else (i.e. the requested file is an existing file) send the file
 			//Send basic headers
 			PrintWriter pw = new PrintWriter(out);
@@ -157,10 +165,7 @@ public class Connection extends Thread {
 			pw.print("Content-Type: " + getMIMEType(f) + "\r\n");
 			pw.print("\r\n");
 			pw.flush();
-
-			if (fis == null) {
-			    fis = new FileInputStream(f);
-			}
+			
 			//Read the file and send it
 			byte[] buff = new byte[2048];
 			while (true) {
@@ -174,8 +179,10 @@ public class Connection extends Thread {
 			out.close();
 			fis.close();
 			
-			//Tell the server to update the statistics for the given file
-			server.addStatForFile(f);
+			//Tell the server to update the statistics for the given file if it is not a local file
+			if (updateStats) {			
+			    server.addStatForFile(f);
+			}
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), e.toString());
 		}

@@ -30,21 +30,28 @@ public class GeneratedPage {
 			"<html>" +
 			"<head>" +
 			"<title>P1R4T3B0X Home</title>" +
+			"<meta name='viewport' content='width=device-width, initial-scale=1.0' />" +
 			"<script>" +
-			"	function switchBlockDisplay(a) {" +
-			"		content = a.parentNode.getElementsByClassName('folder')[0];" +
-			"		content.style.display = content.style.display == 'block' ? 'none' : 'block'" +
-			"	}" +
+			"  function switchBlockDisplay(a) {" +
+			"    content = a.parentNode.getElementsByClassName('folder')[0];" +
+			"    content.style.display = content.style.display == 'block' ? 'none' : 'block'" +
+			"  }" +
 			"</script>" +
 			"" +
 			"<style>" +
-			"	.folderLink {" +
-			"		font-weight: bold;" +
-			"	}" +
+			"  .folderLink {" +
+			"    font-weight: bold;" +
+			"  }" +
 			"" +
-			"	.folder {" +
-			"		display: none;" +
-			"	}" +
+			"  @media only screen and (max-width:480px) {" +
+			"    .folderLink {" +
+			"      font-style: italic;" +
+			"    }" +
+			"  }" +
+			"" +
+			"  .folder {" +
+			"    display: none;" +
+			"  }" +
 			"</style>" +
 			"</head>";
 	private String content = "" +
