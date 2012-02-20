@@ -49,6 +49,7 @@ public class GeneratedPage {
 			"</head>";
 	private String content = "" +
 			"<body>" +
+	        "<img src='piratebox.png' alt='PirateBox' />" +
 			"<h1>Available files:</h1>" +
 			"" +
 			"<ul>";
