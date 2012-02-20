@@ -126,6 +126,17 @@ public class System {
     }
     
     /**
+     * Returns the {@link Context} instance with which {@link System} was initialised.
+     * @return A {@link Context} instance if {@link System} has been initialised, {@code null} otherwise.
+     */
+    public static Context getContext() {
+        if (instance == null) {
+            return null;
+        }
+        return instance.ctx;
+    }
+    
+    /**
      * Private constructor.
      * {@link System} is a singleton and should always be accessed by {@code getInstance(Context ctx)} method.
      * @param ctx

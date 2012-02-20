@@ -38,7 +38,7 @@ public class ServerConfiguration {
 	
 	private static String rootDir = DEFAULT_ROOT_DIR;
 	/**
-	 * Returns the value of the current set root directory.
+	 * Returns the value of the current root directory.
 	 * @return the path to the directory to be used as root
 	 */
 	public static String getRootDir() {

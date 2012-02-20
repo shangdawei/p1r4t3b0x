@@ -53,11 +53,20 @@ Config options:
 
 
 ***********           TODO          ************
-Design home screen
+/ Design home screen
 / Design widget
 Integrate page design
 Integrate redirection script
 
 TEST MORE AND MORE !!!
 
+
+
+***********           AUTHORISATIONS          ************
+Internet access: Create the server that will manage file access
+Change WIFI state: Set the Wifi access point
+Access WIFI state: Read the Wifi state to restore it
+Write external storage: Store the statistics values
+Vibrate: Configure the notification
+Battery state: Option to turn off when low battery
 
