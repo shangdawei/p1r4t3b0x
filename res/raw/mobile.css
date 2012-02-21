@@ -1,0 +1,66 @@
+body {
+	margin: 10px auto;
+	padding-left: 10px;
+	width: 1024px;
+}
+
+img.logo {
+	float: left;
+	margin-right: 20px;
+}
+
+.folderLink {
+	font-weight: bold;
+}
+
+.folder {
+	display: none;
+}
+
+li {
+	list-style: none;
+}
+
+li a div span {
+	background: url('file_ico.png') no-repeat 0 0;
+	padding-left: 20px;
+}
+
+li a.folderLink div span {
+	background: url('folder_ico.png') no-repeat 0 0;
+}
+
+li a div {
+	background: url('li_bg.png') repeat-x 0 0;
+	min-height: 25px;
+	padding-left: 5px;
+}
+
+li a {
+    color: #000000;
+    text-decoration: none;
+}
+
+ul {
+	padding-left: 0;
+}
+
+li ul li div {
+	padding-left: 15px;
+}
+
+li ul li ul li div {
+	padding-left: 25px;
+}
+
+li ul li ul li ul li div {
+	padding-left: 35px;
+}
+
+li ul li ul li ul li ul li div {
+	padding-left: 45px;
+}
+
+li ul li ul li ul li ul li ul li div {
+	padding-left: 55px;
+}

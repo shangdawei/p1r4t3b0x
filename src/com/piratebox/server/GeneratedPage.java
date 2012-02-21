@@ -38,26 +38,24 @@ public class GeneratedPage {
 			"  }" +
 			"</script>" +
 			"" +
-			"<style>" +
-			"  .folderLink {" +
-			"    font-weight: bold;" +
-			"  }" +
+			"<link rel='stylesheet' type='text/css' href='mobile.css' />" +
 			"" +
-			"  @media only screen and (max-width:480px) {" +
-			"    .folderLink {" +
-			"      font-style: italic;" +
-			"    }" +
-			"  }" +
-			"" +
-			"  .folder {" +
-			"    display: none;" +
-			"  }" +
-			"</style>" +
 			"</head>";
 	private String content = "" +
 			"<body>" +
-	        "<img src='piratebox.png' alt='PirateBox' />" +
-			"<h1>Available files:</h1>" +
+	        "<img class='logo' src='piratebox.png' alt='PirateBox' />" +
+			"<h1>PirateBox</h1>" +
+			"" +
+			"<p class='intro'>" +
+			"Welcome on this PirateBox.<br />" +
+			"PirateBox is a free Android application that let you share all the files you want with anybody.<br />" +
+			"<a href='http://market.android.com/details?id=com.piratebox'>" +
+			"  <img src='http://www.android.com/images/brand/45_avail_market_logo1.png'" +
+			"    alt='Available in Android Market' />" +
+			"</a>" +
+			"</p>" +
+			"" +
+			"<h2>Here are the files shared on this PirateBox:</h2>" +
 			"" +
 			"<ul>";
 	private String footer = "" +
@@ -98,13 +96,21 @@ public class GeneratedPage {
 	    	for (File file : children) {
 	    	    //If this is a file, add a list entry and a link to the file
 	    		if (file.isFile()) {
-	    			str.append("<li><a href='").append(folderPath + file.getName()).append("'>").append(file.getName())
-	    				.append("</a> <font size=2>(").append(getReadableFileSize(file)).append(")</font></li>");
+	    			str.append("<li><a href='")
+	    			.append(folderPath + file.getName())
+	    			.append("'><div><span>")
+	    			.append(file.getName())
+	    			.append("<font size=2>(")
+	    			.append(getReadableFileSize(file))
+	    			.append(")</font></span></div></a></li>");
+	    			
 	    		} else {
 	    		    //Else add a folder link and list the content of this folder
-	    			str.append("<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'>")
-	    				.append(file.getName()).append("</a>");
-	    			str.append("<ul class='folder'>");
+	    			str.append("<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>")
+	    			.append(file.getName())
+	    			.append("</span></div></a>")
+	    			.append("<ul class='folder'>");
+	    			
 	    			listFilesFromFolder(file, str, folderPath + file.getName() + "/");
 	    			str.append("</ul></li>");
 	    		}

@@ -2,66 +2,52 @@
 <head>
 <script>
   function switchBlockDisplay(a) {
-    content = a.parentNode.getElementsByClassName("folder")[0];
-    content.style.display = content.style.display == "block" ? "none" : "block";
+    content = a.parentNode.getElementsByClassName('folder')[0];
+    content.style.display = content.style.display == 'block' ? 'none' : 'block';
   }
 </script>
 
-<style>
-  body {
-    margin: 10px auto;
-    width: 1024px;
-  }
-
-  .folderLink {
-    font-weight: bold;
-  }
-
-  .folder {
-    display: none;
-  }
-  
-  li {
-    list-style: none;
-  }
-  
-  ul {
-    padding-left: 20px;
-  }
-</style>
+<link rel='stylesheet' type='text/css' href='../../res/raw/mobile.css' />
 
 </head>
 
 <body>
 
-<img src=".png" alt="PirateBox" />
+<img class='logo' src='.png' alt='PirateBox' />
+<h1>PirateBox</h1>
 
-<h1>Available files:</h1>
+<p class='intro'>
+Welcome on this PirateBox.<br />
+PirateBox is a free Android application that let you share all the files you want with anybody.<br />
+It can be downloaded <a href=''>here</a>. (<a href=''>mobile direct link</a>)
+</p>
+
+<h2>Here are the files shared on this PirateBox:</h2>
 
 <ul>
-<li><a href='bla1.asd'>bla1.asd (2.5MB)</a></li>
-<li><a href='bla2.asd'>bla2.asd (2.5MB)</a></li>
-<li><a href='bla3.asd'>bla3.asd (2.5MB)</a></li>
-<li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
-  <ul class="folder">
-    <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
-    <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
+<li><a href='bla1.asd'><div><span>bla1.asd <font size=2>(2.5MB)</font></span></div></a></li>
+<li><a href='bla2.asd'><div><span>bla2.asd <font size=2>(2.5MB)</font></span></div></a></li>
+<li><a href='bla3.asd'><div><span>bla3.asd <font size=2>(2.5MB)</font></span></div></a></li>
+<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
+  <ul class='folder'>
+    <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
+    <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
   </ul>
 </li>
-<li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
-  <ul class="folder">
-    <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
-    <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
-    <li><a class="folderLink" onclick=switchBlockDisplay(this) href='javascript:void(0);'>folder</a>
-      <ul class="folder">
-        <li><a href='bli1.asd'>bli1.asd (2.5MB)</a></li>
-        <li><a href='bli2.asd'>bli2.asd (2.5MB)</a></li>
+<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
+  <ul class='folder'>
+    <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
+    <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
+    <li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
+      <ul class='folder'>
+        <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
+        <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
       </ul>
     </li>
   </ul>
 </li>
-<li><a href='bla4.asd'>bla2.asd (2.5MB)</a></li>
-<li><a href='bla5.asd'>bla3.asd (2.5MB)</a></li>
+<li><a href='bla4.asd'><div><span>bla2.asd <font size=2>(2.5MB)</font></span></div></a></li>
+<li><a href='bla5.asd'><div><span>bla3.asd <font size=2>(2.5MB)</font></span></div></a></li>
 </ul>
 
 </body>

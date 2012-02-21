@@ -47,6 +47,7 @@ Config options:
 /- reset stats
 
 V3:
+Link to "see what others see on the webpage"
 Config options:
 - add more folder to analyse
 - keep remote downloaded file
@@ -58,12 +59,20 @@ Config options:
 Integrate page design
 Integrate redirection script
 
+Change link to payable version to in-app billing
+$1 -> Buy me a shooter
+$5 -> Buy me a beer
+$10 -> Buy me a large beer
+$50 -> Buy me a beer barrel
+
+Prepare EULA
 TEST MORE AND MORE !!!
 
 
 
 ***********           AUTHORISATIONS          ************
 Internet access: Create the server that will manage file access
+Billing: Buy me a beer
 Change WIFI state: Set the Wifi access point
 Access WIFI state: Read the Wifi state to restore it
 Write external storage: Store the statistics values
