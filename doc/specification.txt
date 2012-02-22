@@ -48,6 +48,9 @@ Config options:
 
 V3:
 Link to "see what others see on the webpage"
+Search on page
+Compatibility
+
 Config options:
 - add more folder to analyse
 - keep remote downloaded file
