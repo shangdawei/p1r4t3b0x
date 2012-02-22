@@ -50,7 +50,8 @@ V3:
 Link to "see what others see on the webpage"
 Search on page
 Compatibility
-
+I18n
+Unit tests
 Config options:
 - add more folder to analyse
 - keep remote downloaded file
@@ -60,6 +61,11 @@ Config options:
 / Design home screen
 / Design widget
 Integrate page design
+  Larger font
+  Align text on right
+  Add title bars
+  Internal bordered table
+  Add icons
 Integrate redirection script
 
 Change link to payable version to in-app billing
@@ -70,6 +76,7 @@ $50 -> Buy me a beer barrel
 
 Prepare EULA
 TEST MORE AND MORE !!!
+(test orientation change)
 
 
 

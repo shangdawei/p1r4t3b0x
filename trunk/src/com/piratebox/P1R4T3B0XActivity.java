@@ -20,6 +20,7 @@ package com.piratebox;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -72,6 +73,17 @@ public class P1R4T3B0XActivity extends Activity {
         
         addCallbacks();
 	}
+
+	/**
+	 * Ignore orientation change.
+	 * 
+	 * @see android.app.Activity#onConfigurationChanged(android.content.res.Configuration)
+	 */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	  }
+
 	
 	/**
 	 * Adds the callbacks that will be used in this {@link Activity}.
