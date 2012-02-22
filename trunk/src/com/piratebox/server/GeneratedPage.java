@@ -100,7 +100,7 @@ public class GeneratedPage {
 	    			.append(folderPath + file.getName())
 	    			.append("'><div><span>")
 	    			.append(file.getName())
-	    			.append("<font size=2>(")
+	    			.append(" <font size=2>(")
 	    			.append(getReadableFileSize(file))
 	    			.append(")</font></span></div></a></li>");
 	    			
