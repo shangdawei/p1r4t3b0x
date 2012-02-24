@@ -19,108 +19,91 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/main_bg">
 
     <TextView
+        android:id="@+id/statTitle"
+        style="@style/title"
+        android:layout_marginTop="0dp"
+        android:text="@string/stat_title" />
+    
+    <TextView
         android:id="@+id/uptime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
+        android:layout_below="@id/statTitle"
         android:text="@string/uptime" />
 
     <TextView
         android:id="@+id/uptime_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/uptime"
-        android:layout_toRightOf="@id/uptime" />
+        style="@style/textLabel.textValue"
+        android:layout_alignTop="@id/uptime" />
 
     <TextView
         android:id="@+id/filesdl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/uptime"
         android:layout_below="@id/uptime"
         android:text="@string/filesdl" />
 
     <TextView
         android:id="@+id/filesdl_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/filesdl"
-        android:layout_toRightOf="@id/filesdl" />
+        style="@style/textLabel.textValue"
+        android:layout_alignTop="@id/filesdl" />
 
     <TextView
         android:id="@+id/topdl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/filesdl"
+        style="@style/title"
         android:layout_below="@id/filesdl"
-        android:text="@string/topdl" />
+        android:text="@string/topdl_title" />
 
     <TextView
         android:id="@+id/topdl1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/topdl"
         android:layout_below="@id/topdl" />
 
     <TextView
         android:id="@+id/topdl2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/topdl"
         android:layout_below="@id/topdl1" />
 
     <TextView
         android:id="@+id/topdl3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/topdl"
         android:layout_below="@id/topdl2" />
 
     <TextView
         android:id="@+id/topdl4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/topdl"
         android:layout_below="@id/topdl3" />
 
     <TextView
         android:id="@+id/topdl5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textLabel"
         android:layout_alignLeft="@id/topdl"
         android:layout_below="@id/topdl4" />
 
     <TextView
         android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/topdl"
+        style="@style/title"
         android:layout_below="@id/topdl5"
         android:text="@string/status" />
 
     <TextView
         android:id="@+id/status_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/status"
-        android:layout_toRightOf="@id/status" />
+        style="@style/textLabel.state"
+        android:layout_below="@id/status"
+        android:layout_alignLeft="@id/topdl" />
 
     <Button
-        android:background="@drawable/button"
+        style="@style/button"
         android:id="@+id/startStopBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="50dip"
-        android:layout_marginRight="50dip"
-        android:paddingTop="15dip"
-        android:paddingBottom="15dip"
-        android:text="@string/start"
-        android:textColor="#000000"
-        android:textSize="30sp" />
+        android:text="@string/start" />
 
 </RelativeLayout>
