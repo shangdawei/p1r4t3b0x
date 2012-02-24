@@ -79,6 +79,8 @@ Remove save/restore wifiApConfiguration as the function does not seem to be avai
 
 Prepare EULA
 TEST MORE AND MORE !!!
+    Cyclic scan + notification
+    low battery shutdown
 
 
 
