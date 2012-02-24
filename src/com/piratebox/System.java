@@ -79,9 +79,9 @@ public class System {
      * Calling {@code val()} on the {@link ServerState} will return the id of the human readable state.
      */
     public static enum ServerState {
-        STATE_OFF(R.string.widget_system_off),
-        STATE_WAITING(R.string.widget_system_waiting),
-        STATE_SENDING(R.string.widget_system_sending);
+        STATE_OFF(R.string.system_state_off),
+        STATE_WAITING(R.string.system_state_waiting),
+        STATE_SENDING(R.string.system_state_sending);
 
         private final int value;
 

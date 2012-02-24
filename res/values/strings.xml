@@ -41,19 +41,20 @@
 
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>
+    <string name="stat_title">General statistics</string>
     <string name="uptime">Uptime:</string>
     <string name="filesdl"># files downloaded:</string>
-    <string name="topdl">Files most downloaded:</string>
-    <string name="status">Current state:</string>
+    <string name="topdl_title">Top 5 downloaded files</string>
+    <string name="status">Current state</string>
+    <string name="system_state_off">Off</string>
+    <string name="system_state_waiting">Online</string>
+    <string name="system_state_sending">Sending…</string>
     <string name="not_running">Not running</string>
     <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
 
     <!-- Widget -->
     <string name="widget_name">P1R4T3B0X Widget</string>
-    <string name="widget_system_off">Off</string>
-    <string name="widget_system_waiting">Online</string>
-    <string name="widget_system_sending">Sending…</string>
 
     <!-- Settings Activity -->
     <string name="settings_set_dir">Set shared folder</string>

@@ -65,6 +65,7 @@ Integrate page design
   Align text on right
   Add title bars
   Internal bordered table
+  Frames
   Add icons
 Integrate redirection script
 
