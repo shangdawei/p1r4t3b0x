@@ -59,14 +59,14 @@ Config options:
 
 ***********           TODO          ************
 / Design home screen
-/ Design widget
-Integrate page design
   Larger font
   Align text on right
   Add title bars
   Internal bordered table
   Frames
   Add icons
+/ Design widget
+Integrate page design
 Integrate redirection script
 
 Change link to payable version to in-app billing
@@ -75,9 +75,10 @@ $5 -> Buy me a beer
 $10 -> Buy me a large beer
 $50 -> Buy me a beer barrel
 
+Remove save/restore wifiApConfiguration as the function does not seem to be available.
+
 Prepare EULA
 TEST MORE AND MORE !!!
-(test orientation change)
 
 
 
