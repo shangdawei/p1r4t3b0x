@@ -17,12 +17,17 @@
 
 package com.piratebox;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,8 +35,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.crittercism.app.Crittercism;
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.StatUtils;
@@ -159,22 +164,22 @@ public class P1R4T3B0XActivity extends Activity {
 	 */
 	private OnClickListener startStopBtnListener = new OnClickListener() {
 		public void onClick(View v) {
-//			try {
-//				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-//				ArrayList<String> interfaceNames = new ArrayList<String>();
-//				while (interfaces.hasMoreElements()) {
-//					interfaceNames.add(interfaces.nextElement().getName());
-//				}
-//				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
-//			} catch (SocketException e) {
-//				Log.e(this.getClass().getName(), e.toString());
-//			}
-
-	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
-	            system.start();
-	        } else {
-	            system.stop();
-	        }
+			try {
+				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+				ArrayList<String> interfaceNames = new ArrayList<String>();
+				while (interfaces.hasMoreElements()) {
+					interfaceNames.add(interfaces.nextElement().getName());
+				}
+				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
+			} catch (SocketException e) {
+				Log.e(this.getClass().getName(), e.toString());
+			}
+//
+//	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
+//	            system.start();
+//	        } else {
+//	            system.stop();
+//	        }
 		}
 	};
 

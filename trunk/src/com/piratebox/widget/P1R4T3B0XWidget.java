@@ -137,7 +137,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
                     }
                     updateWidgetImg(context, id);
                     
-                    id = (id+1)%3;
+                    currentImage = (currentImage+1)%3;
                     
                     updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
                 }
