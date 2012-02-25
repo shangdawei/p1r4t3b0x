@@ -274,9 +274,6 @@ public class SettingsActivity extends PreferenceActivity {
 	 * Open the Android Market to the "Donate" version of the application.
 	 */
 	private void goToDonateVersion() {
-	    Intent intent = new Intent(Intent.ACTION_VIEW);
-	    intent.setData(Uri.parse(getResources().getString(R.string.donate_app)));
-	    startActivity(intent);
 	}
 	
 	/**

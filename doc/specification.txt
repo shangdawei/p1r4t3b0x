@@ -75,7 +75,7 @@ $5 -> Buy me a beer
 $10 -> Buy me a large beer
 $50 -> Buy me a beer barrel
 
-Remove save/restore wifiApConfiguration as the function does not seem to be available.
+/ Remove save/restore wifiApConfiguration as the function does not seem to be available.
 
 Prepare EULA
 TEST MORE AND MORE !!!

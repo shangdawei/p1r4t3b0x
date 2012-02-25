@@ -100,7 +100,6 @@ public class System {
 
     private ServerState state;
     private WifiConfiguration config;
-    private WifiConfiguration savedConfig;
     private Server server;
     private Context ctx;
     private Handler connectedUsersHandler;
@@ -276,23 +275,19 @@ public class System {
     }
 
     /**
-     * Starts the wifi access point and try to save the current widi access point configuration.
+     * Starts the wifi access point.
      */
     private void startHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
-        savedConfig = mgr.getWifiApConfiguration();
         mgr.setWifiApEnabled(config, true);
     }
 
     /**
-     * Stops the wifi access point and restore the saved wifi access point configuration.
+     * Stops the wifi access point.
      */
     private void stopHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
         mgr.setWifiApEnabled(config, false);
-        if (savedConfig != null) {
-            mgr.setWifiApConfiguration(savedConfig);
-        }
     }
     
     /**

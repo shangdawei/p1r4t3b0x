@@ -106,22 +106,6 @@ public class WifiApManager {
     }
 	
 	/**
-	 * Returns the current used configuration for wifi access point.
-	 * @return A {@link WifiConfiguration} instance, or {@code null} if an exception occurred
-	 */
-	public WifiConfiguration getWifiApConfiguration() {
-		try {
-			Method method = mWifiManager.getClass().getMethod(
-					"getWifiApConfiguration", WifiConfiguration.class,
-					boolean.class);
-			return (WifiConfiguration) method.invoke(mWifiManager, new Object[]{});
-		} catch (Exception e) {
-			Log.e(this.getClass().getName(), e.toString());
-			return null;
-		}
-	}
-	
-	/**
 	 * Updates the current wifi access point configuration without changing its state.
 	 * @param config the new configuration to be applied
 	 */

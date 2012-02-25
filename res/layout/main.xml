@@ -13,21 +13,21 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  
- The GNU General Public License can be found at http://www.gnu.org/licenses.
+ The GNU General Public License can be found at http://www.gnu.org/licenses.
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/main_bg">
+    android:background="@drawable/main_bg"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/statTitle"
         style="@style/title"
         android:layout_marginTop="0dp"
         android:text="@string/stat_title" />
-    
+
     <TextView
         android:id="@+id/uptime"
         style="@style/textLabel"
@@ -96,12 +96,12 @@
     <TextView
         android:id="@+id/status_value"
         style="@style/textLabel.state"
-        android:layout_below="@id/status"
-        android:layout_alignLeft="@id/topdl" />
+        android:layout_alignLeft="@id/topdl"
+        android:layout_below="@id/status" />
 
     <Button
-        style="@style/button"
         android:id="@+id/startStopBtn"
+        style="@style/button"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:text="@string/start" />

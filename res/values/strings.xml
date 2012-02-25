@@ -104,7 +104,6 @@
         If you like this application, consider buying me a beer.    </string>
     <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
     <string name="reset_done">All statistics reset.</string>
-    <string name="donate_app">market://details?id=com.android.example</string>
 
     <!-- Choose folder -->
     <string name="new_folder">New folder</string>
