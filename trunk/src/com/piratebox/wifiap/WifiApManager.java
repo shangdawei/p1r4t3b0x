@@ -30,19 +30,83 @@ import android.util.Log;
  */
 public class WifiApManager {
 
+    /**
+     * The lookup key for an int that indicates whether Wi-Fi AP is enabled,
+     * disabled, enabling, disabling, or failed.  Retrieve it with
+     * {@link android.content.Intent#getIntExtra(String,int)}.
+     *
+     * @see #WIFI_AP_STATE_DISABLED
+     * @see #WIFI_AP_STATE_DISABLING
+     * @see #WIFI_AP_STATE_ENABLED
+     * @see #WIFI_AP_STATE_ENABLING
+     * @see #WIFI_AP_STATE_FAILED
+     *
+     * @hide
+     */
+    public static final String EXTRA_WIFI_AP_STATE = "wifi_state";
+    
+    /**
+     * The previous Wi-Fi state.
+     *
+     * @see #EXTRA_WIFI_AP_STATE
+     */
+    public static final String EXTRA_PREVIOUS_WIFI_AP_STATE = "previous_wifi_state";
+    
+    /**
+     * Wi-Fi AP is currently being disabled. The state will change to
+     * {@link #WIFI_AP_STATE_DISABLED} if it finishes successfully.
+     *
+     * @see #WIFI_AP_STATE_CHANGED_ACTION
+     * @see #getWifiApState()
+     */
+    public static final int WIFI_AP_STATE_DISABLING = 0;
+    
+    /**
+     * Wi-Fi AP is disabled.
+     *
+     * @see #WIFI_AP_STATE_CHANGED_ACTION
+     * @see #getWifiState()
+     */
+    public static final int WIFI_AP_STATE_DISABLED = 1;
+    
+    /**
+     * Wi-Fi AP is currently being enabled. The state will change to
+     * {@link #WIFI_AP_STATE_ENABLED} if it finishes successfully.
+     *
+     * @see #WIFI_AP_STATE_CHANGED_ACTION
+     * @see #getWifiApState()
+     */
+    public static final int WIFI_AP_STATE_ENABLING = 2;
+    
+    /**
+     * Wi-Fi AP is enabled.
+     *
+     * @see #WIFI_AP_STATE_CHANGED_ACTION
+     * @see #getWifiApState()
+     */
+    public static final int WIFI_AP_STATE_ENABLED = 3;
+    
+    /**
+     * Wi-Fi AP is in a failed state. This state will occur when an error occurs during
+     * enabling or disabling
+     *
+     * @see #WIFI_AP_STATE_CHANGED_ACTION
+     * @see #getWifiApState()
+     */
+    public static final int WIFI_AP_STATE_FAILED = 4;
+    
+    
 	/**
-	 * Constants that hold the failed state of the wifi access point.
+	 * The {@link WifiManager} instance.
 	 */
-	public static final int WIFI_AP_STATE_FAILED = 4;
-
-	private final WifiManager mWifiManager;
+	private final WifiManager wifiManager;
 
 	/**
 	 * Creates a new {@link WifiApManager}.
 	 * @param context the context of the application
 	 */
 	public WifiApManager(Context context) {
-		mWifiManager = (WifiManager) context
+		wifiManager = (WifiManager) context
 				.getSystemService(Context.WIFI_SERVICE);
 	}
 
@@ -58,13 +122,13 @@ public class WifiApManager {
 		
 		try {
 			if (enabled) {
-				mWifiManager.setWifiEnabled(false);
+				wifiManager.setWifiEnabled(false);
 			}
 			
-			Method method = mWifiManager.getClass().getMethod(
+			Method method = wifiManager.getClass().getMethod(
 					"setWifiApEnabled", WifiConfiguration.class,
 					boolean.class);
-			return (Boolean) method.invoke(mWifiManager, config, enabled);
+			return (Boolean) method.invoke(wifiManager, config, enabled);
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), e.toString());
 			return false;
@@ -80,9 +144,9 @@ public class WifiApManager {
      */
     public int getWifiApState() {
         try {
-            Method method = mWifiManager.getClass().getMethod(
+            Method method = wifiManager.getClass().getMethod(
                     "getWifiApState");
-            return (Integer) method.invoke(mWifiManager);
+            return (Integer) method.invoke(wifiManager);
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.toString());
             return WIFI_AP_STATE_FAILED;
@@ -96,9 +160,9 @@ public class WifiApManager {
      */
     public boolean isWifiApEnabled() {
         try {
-            Method method = mWifiManager.getClass().getMethod(
+            Method method = wifiManager.getClass().getMethod(
                     "isWifiApEnabled");
-            return (Boolean) method.invoke(mWifiManager);
+            return (Boolean) method.invoke(wifiManager);
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.toString());
             return false;

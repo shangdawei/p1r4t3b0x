@@ -70,6 +70,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        
+        <receiver android:name="WifiApStateReceiver">
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
 
         <service android:name="BillingService" />
 

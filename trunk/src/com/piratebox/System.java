@@ -18,7 +18,10 @@
 package com.piratebox;
 
 import java.io.File;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import android.app.Notification;
@@ -71,6 +74,11 @@ public class System {
      * The id of the "Network found" notification.
      */
     public static final int NOTIFICATION_ID_NETWORK = 1;
+    
+    /**
+     * The prefix of the wifi access point interface name.
+     */
+    public static final String WIFI_AP_INTERFACE_NAME_PREFIX = "wl0";
 
     private HashMap<String, ArrayList<Callback>> listeners = new HashMap<String, ArrayList<Callback>>();
     
@@ -192,14 +200,27 @@ public class System {
      * Sets the redirection, create and run a new {@link Server}, starts the hotspot, resets the stats for the session.
      */
     public void start() {
-        iptablesRunner.setup();
-        
         setServerState(ServerState.STATE_WAITING);
         
         server = new Server();
         server.setConnectedUsersHandler(connectedUsersHandler);
         server.setAddStatHandler(addStatHandler);
         server.start();
+        
+        WifiApStateReceiver.setOnChangeCallback(new Callback() {
+            
+            @Override
+            public void call(Object arg) {
+                int state = ((Intent)arg).getIntExtra(WifiApManager.EXTRA_WIFI_AP_STATE, -1);
+                if (state == WifiApManager.WIFI_AP_STATE_ENABLED) {
+                    try {
+                        iptablesRunner.setup(getWlanInterfaceName());
+                    } catch (SocketException e) {
+                        Log.e(this.getClass().getName(), e.toString());
+                    }
+                }
+            }
+        });
         
         startHotspot();
         
@@ -217,13 +238,26 @@ public class System {
         dispatchEvent(EVENT_STATISTIC_UPDATE);
         startTime = 0L;
         
+        WifiApStateReceiver.setOnChangeCallback(new Callback() {
+            
+            @Override
+            public void call(Object arg) {
+                int state = ((Intent)arg).getIntExtra(WifiApManager.EXTRA_WIFI_AP_STATE, -1);
+                if (state == WifiApManager.WIFI_AP_STATE_DISABLING) {
+                    try {
+                        iptablesRunner.teardown(getWlanInterfaceName());
+                    } catch (SocketException e) {
+                        Log.e(this.getClass().getName(), e.toString());
+                    }
+                }
+            }
+        });
+        
         stopHotspot();
         
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
-        
-        iptablesRunner.teardown();
     }
     
     /**
@@ -396,6 +430,23 @@ public class System {
     private void removeNetworkNotification() {
         NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.cancel(NOTIFICATION_ID_NETWORK);
+    }
+    
+    /**
+     * Retrieves the interface name associated with the wifi access point interface
+     * @return The name of the interface of the wifi access point, or null if no such interface is found.
+     * @throws SocketException 
+     */
+    private String getWlanInterfaceName() throws SocketException {
+
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            String interfaceName = interfaces.nextElement().getName();
+            if (interfaceName.startsWith(WIFI_AP_INTERFACE_NAME_PREFIX)) {
+                return interfaceName;
+            }
+        }
+        return null;
     }
 
     
