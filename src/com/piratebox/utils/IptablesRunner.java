@@ -28,12 +28,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.piratebox.R;
+import com.piratebox.server.ServerConfiguration;
 
 /**
  * This class is used to set up and tear down the redirection using iptables.
  * @author Aylatan
  */
 public class IptablesRunner {
+
+    private final String IPTABLES_SETUP_OPTIONS = " -t nat -A PREROUTING -i {interface} -p tcp -j REDIRECT --to-port " + ServerConfiguration.PORT;
+    private final String IPTABLES_TEARDOWN_OPTIONS = " -t nat -D PREROUTING -i {interface} -p tcp -j REDIRECT --to-port " + ServerConfiguration.PORT;
     
     /**
      * The file name of the temporary script file that will be used.
@@ -45,7 +49,7 @@ public class IptablesRunner {
     public static final String IPTABLES = "iptables";
     
     private Context ctx;
-    private String iptables;
+    private String iptables = null;
     
     /**
      * Creates a new runner and loads the iptables binary.
@@ -63,40 +67,32 @@ public class IptablesRunner {
     
     /**
      * Create a script with the redirection rules and run it.
+     * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
      */
-    public void setup() {
-        try {
-            StringBuilder script = new StringBuilder();
-            script.append(iptables).append(" --version\n");
-    
-            // TODO Add lines !!!!
-    
-            int res = runScript(script.toString());
-            if (res != 0) {
-                Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.toString());
+    public void setup(String wlanInterfaceName) {
+        if (wlanInterfaceName == null || iptables == null) {
+            return;
         }
+        
+        StringBuilder script = new StringBuilder();
+        script.append(iptables).append(IPTABLES_SETUP_OPTIONS.replace("{interface}", wlanInterfaceName));
+
+        runScript(script.toString());
     }
     
     /**
      * Create a script that removes the redirection rules and run it.
+     * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
      */
-    public void teardown() {
-        try {
-            StringBuilder script = new StringBuilder();
-            script.append(iptables).append(" --version\n");
-    
-            // TODO Add lines !!!!
-    
-            int res = runScript(script.toString());
-            if (res != 0) {
-                Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.toString());
+    public void teardown(String wlanInterfaceName) {
+        if (wlanInterfaceName == null || iptables == null) {
+            return;
         }
+        
+        StringBuilder script = new StringBuilder();
+        script.append(iptables).append(IPTABLES_TEARDOWN_OPTIONS.replace("{interface}", wlanInterfaceName));
+
+        runScript(script.toString());
     }
 
     /**
@@ -130,27 +126,36 @@ public class IptablesRunner {
      * @throws IOException if an error occurs while writing or executing the script file
      * @throws InterruptedException if the calling thread is interrupted
      */
-    private int runScript(String script) throws IOException, InterruptedException {
+    private void runScript(String script) {
 
-        File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
-
-        File f = new File(tmpFolder, TEMP_SCRIPT);
-        f.setExecutable(true);
-        f.deleteOnExit();
-
-        // Write the script to be executed
-        PrintWriter out = new PrintWriter(new FileOutputStream(f));
-        if (new File("/system/bin/sh").exists()) {
-            out.write("#!/system/bin/sh\n");
+        try {
+            File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
+    
+            File f = new File(tmpFolder, TEMP_SCRIPT);
+            f.setExecutable(true);
+            f.deleteOnExit();
+    
+            // Write the script to be executed
+            PrintWriter out = new PrintWriter(new FileOutputStream(f));
+            if (new File("/system/bin/sh").exists()) {
+                out.write("#!/system/bin/sh\n");
+            }
+            out.write(script);
+            if (!script.endsWith("\n")) {
+                out.write("\n");
+            }
+            out.write("exit\n");
+            out.flush();
+            out.close();
+            Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
+            int res = exec.waitFor();
+            Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
+            
+            if (res != 0) {
+                Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), e.toString());
         }
-        out.write(script);
-        if (!script.endsWith("\n")) {
-            out.write("\n");
-        }
-        out.write("exit\n");
-        out.flush();
-        out.close();
-        Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
-        return exec.waitFor();
     }
 }

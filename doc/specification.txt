@@ -66,8 +66,8 @@ Config options:
   Frames
   Add icons
 / Design widget
-Integrate page design
-Integrate redirection script
+/ Integrate page design
+/ Integrate redirection script
 
 Change link to payable version to in-app billing
 $1 -> Buy me a shooter
@@ -81,6 +81,8 @@ Prepare EULA
 TEST MORE AND MORE !!!
     Cyclic scan + notification
     low battery shutdown
+    Rerouting
+    Add widget after starting application ?
 
 
 

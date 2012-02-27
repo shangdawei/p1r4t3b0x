@@ -164,22 +164,22 @@ public class P1R4T3B0XActivity extends Activity {
 	 */
 	private OnClickListener startStopBtnListener = new OnClickListener() {
 		public void onClick(View v) {
-			try {
-				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-				ArrayList<String> interfaceNames = new ArrayList<String>();
-				while (interfaces.hasMoreElements()) {
-					interfaceNames.add(interfaces.nextElement().getName());
-				}
-				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
-			} catch (SocketException e) {
-				Log.e(this.getClass().getName(), e.toString());
-			}
-//
-//	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
-//	            system.start();
-//	        } else {
-//	            system.stop();
-//	        }
+//			try {
+//				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+//				ArrayList<String> interfaceNames = new ArrayList<String>();
+//				while (interfaces.hasMoreElements()) {
+//					interfaceNames.add(interfaces.nextElement().getName());
+//				}
+//				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
+//			} catch (SocketException e) {
+//				Log.e(this.getClass().getName(), e.toString());
+//			}
+
+	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
+	            system.start();
+	        } else {
+	            system.stop();
+	        }
 		}
 	};
 
