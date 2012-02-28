@@ -50,7 +50,6 @@
     <string name="system_state_waiting">Online</string>
     <string name="system_state_sending">Sending…</string>
     <string name="not_running">Not running</string>
-    <string name="error_redirect">An error occurred while trying to set up the rerouting procedures.</string>
     <string name="restart_server">You have to restart the server for changes to be applied.</string>
 
     <!-- Widget -->
@@ -108,11 +107,16 @@
     <string name="reset_confirm">Are you sure you want to reset all statistic data ?</string>
     <string name="reset_done">All statistics reset.</string>
     <string name="thank_you">Thank you for your support! I will think of you while drinking ;)</string>
-    
-    <string name="error_during_payment">There was an error during the payment. Please try again.</string>
 
     <!-- Choose folder -->
     <string name="new_folder">New folder</string>
     <string name="new_folder_dialog">Type the name of the folder you want to create:</string>
 
+    <!-- Error messages -->
+    <string name="error_during_payment">There was an error during the payment. Please try again.</string>
+    <string name="error_script_loading">The redirection script failed to load and therefore there will be no redirection of incoming traffic.</string>
+    <string name="error_creating_folder">Could not create the requested folder.</string>
+    <string name="error_ap_start">The Wifi access point could not be started.</string>
+    <string name="error_ap_stop">The Wifi access point could not be stopped.</string>
+    <string name="error_network_scan">The Wifi network scan failed.</string>
 </resources>

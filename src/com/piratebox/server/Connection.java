@@ -31,9 +31,9 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import android.content.res.Resources;
-import android.util.Log;
 
 import com.piratebox.System;
+import com.piratebox.utils.ExceptionHandler;
 
 /**
  * This class describes a single connection.
@@ -89,7 +89,7 @@ public class Connection extends Thread {
 			in = new DataInputStream(client.getInputStream());
 			out = new PrintStream(client.getOutputStream());
 		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
+            ExceptionHandler.handle(this, e);
 			try {
 				client.close();
 			} catch (IOException e2) {
@@ -184,7 +184,7 @@ public class Connection extends Thread {
 			    server.addStatForFile(f);
 			}
 		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
+            ExceptionHandler.handle(this, e);
 		}
 		
 		//Tell the server that the connected user is not connected anymore
@@ -192,9 +192,10 @@ public class Connection extends Thread {
 	}
 
 	/**
-	 * Sends a default page to the client
+	 * Sends a default page to the client.
+	 * @throws IOException when fail to close the client socket
 	 */
-	private void sendDefaultPage() {
+	private void sendDefaultPage() throws IOException {
 		//Send basic headers
 		out.println("HTTP/1.0 200 OK");
 		out.println("Content-type: text/html\n\n");
@@ -202,11 +203,7 @@ public class Connection extends Thread {
 		//Send content
 		out.print(new GeneratedPage(rootDir));
 
-		try {
-			client.close();
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
-		}
+		client.close();
 	}
 
 	/**

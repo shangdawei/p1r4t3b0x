@@ -40,11 +40,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore.Audio.Media;
-import android.util.Log;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.Callback;
+import com.piratebox.utils.ExceptionHandler;
 import com.piratebox.utils.IptablesRunner;
 import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.StatUtils;
@@ -185,7 +185,7 @@ public class System {
         try {
             pendingIntent.send();
         } catch (CanceledException e) {
-            Log.e(this.getClass().getName(), e.toString());
+            ExceptionHandler.handle(this, e);
         }
         
         //Sets the root directory to the preference defined value
@@ -215,8 +215,8 @@ public class System {
                 if (state == WifiApManager.WIFI_AP_STATE_ENABLED) {
                     try {
                         iptablesRunner.setup(getWlanInterfaceName());
-                    } catch (SocketException e) {
-                        Log.e(this.getClass().getName(), e.toString());
+                    } catch (Exception e) {
+                        ExceptionHandler.handle(this, R.string.error_script_loading, ctx.getApplicationContext());
                     }
                 }
             }
@@ -246,8 +246,8 @@ public class System {
                 if (state == WifiApManager.WIFI_AP_STATE_DISABLING) {
                     try {
                         iptablesRunner.teardown(getWlanInterfaceName());
-                    } catch (SocketException e) {
-                        Log.e(this.getClass().getName(), e.toString());
+                    } catch (Exception e) {
+                        ExceptionHandler.handle(this, R.string.error_script_loading, ctx.getApplicationContext());
                     }
                 }
             }
@@ -313,7 +313,11 @@ public class System {
      */
     private void startHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
-        mgr.setWifiApEnabled(config, true);
+        try {
+            mgr.setWifiApEnabled(config, true);
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_ap_start, ctx);
+        }
     }
 
     /**
@@ -321,7 +325,11 @@ public class System {
      */
     private void stopHotspot() {
         WifiApManager mgr = new WifiApManager(ctx);
-        mgr.setWifiApEnabled(config, false);
+        try {
+            mgr.setWifiApEnabled(config, false);
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_ap_stop, ctx);
+        }
     }
     
     /**
@@ -329,65 +337,75 @@ public class System {
      */
     private void initScan() {
         scanTask = new Runnable() {
+            
             public void run() {
                 final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
                 //Defines the call frequency to the user defined value
                 final int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
                 
-                //If we are currently sending a file, try again later, as we need to disable the wifi access point to perform the scan
-                if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
-                    scanHandler.postDelayed(this, period);
-                    return;
-                }
-                
-                final WifiManager mgr = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-                final WifiApManager apMgr = new WifiApManager(ctx);
-                
-                //Save the current states to restore them later
-                final boolean wifiEnabled = mgr.isWifiEnabled();
-                final boolean wifiApEnabled = apMgr.isWifiApEnabled();
-                
-                //Disable the wifi access point to allow usage of the wifi
-                apMgr.setWifiApEnabled(config, false);
-                
-                //Set the action on scan results
-                if (scanResultReceiver == null) {
-                    scanResultReceiver = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context c, Intent i){
-                            //Restore the wifi access point as soon as possible
-                            apMgr.setWifiApEnabled(config, wifiApEnabled);
-                            
-                            //If a network is found with the name P1R4T3B0X, send a notification
-                            for (ScanResult scan : mgr.getScanResults()) {
-                                if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
-                                    addNetworkNotification();
-                                } else {
-                                    removeNetworkNotification();
+                try {
+                    //If we are currently sending a file, try again later, as we need to disable the wifi access point to perform the scan
+                    if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
+                        scanHandler.postDelayed(this, period);
+                        return;
+                    }
+                    
+                    final WifiManager mgr = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+                    final WifiApManager apMgr = new WifiApManager(ctx);
+                    
+                    //Save the current states to restore them later
+                    final boolean wifiEnabled = mgr.isWifiEnabled();
+                    final boolean wifiApEnabled = apMgr.isWifiApEnabled();
+                    
+                    //Disable the wifi access point to allow usage of the wifi
+                    apMgr.setWifiApEnabled(config, false);
+                    
+                    //Set the action on scan results
+                    if (scanResultReceiver == null) {
+                        scanResultReceiver = new BroadcastReceiver() {
+                            @Override
+                            public void onReceive(Context c, Intent i){
+                                //Restore the wifi access point as soon as possible
+                                try {
+                                    apMgr.setWifiApEnabled(config, wifiApEnabled);
+                                    
+                                    //If a network is found with the name P1R4T3B0X, send a notification
+                                    for (ScanResult scan : mgr.getScanResults()) {
+                                        if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
+                                            addNetworkNotification();
+                                        } else {
+                                            removeNetworkNotification();
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    ExceptionHandler.handle(this, R.string.error_network_scan, ctx);
+                                }
+                                
+                                //Launch next scan
+                                if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                                    scanHandler.postDelayed(System.this.scanTask, period);
+                                }
+                                //Restore wifi state
+                                if (!wifiEnabled) {
+                                    mgr.setWifiEnabled(false);
                                 }
                             }
-                            
-                            //Launch next scan
-                            if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                                scanHandler.postDelayed(System.this.scanTask, period);
-                            }
-                            //Restore wifi state
-                            if (!wifiEnabled) {
-                                mgr.setWifiEnabled(false);
-                            }
+                        };
+                    }
+                    
+                    //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
+                    if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
+                        apMgr.setWifiApEnabled(config, wifiApEnabled);
+                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                            scanHandler.postDelayed(this, period);
                         }
-                    };
-                }
-                
-                //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
-                if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
-                    apMgr.setWifiApEnabled(config, wifiApEnabled);
-                    if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                        scanHandler.postDelayed(this, period);
+                        if (!wifiEnabled) {
+                            mgr.setWifiEnabled(false);
+                        }
                     }
-                    if (!wifiEnabled) {
-                        mgr.setWifiEnabled(false);
-                    }
+                    
+                } catch (Exception e) {
+                    ExceptionHandler.handle(this, R.string.error_network_scan, ctx);
                 }
                 
                 if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {

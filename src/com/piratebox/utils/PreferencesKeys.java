@@ -17,7 +17,6 @@
 
 package com.piratebox.utils;
 
-import com.piratebox.R.string;
 
 /**
  * This class holds constants that are used to store preferences.

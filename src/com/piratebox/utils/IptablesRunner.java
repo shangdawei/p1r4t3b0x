@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.piratebox.R;
@@ -61,15 +60,17 @@ public class IptablesRunner {
         try {
             iptables = loadIptables();
         } catch (IOException e) {
-            Log.e(this.getClass().getName(), e.toString());
+            ExceptionHandler.handle(this, R.string.error_script_loading, ctx);
         }
     }
     
     /**
      * Create a script with the redirection rules and run it.
      * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
+     * @throws IOException if an error occurs while writing or executing the script file
+     * @throws InterruptedException if the calling thread is interrupted
      */
-    public void setup(String wlanInterfaceName) {
+    public void setup(String wlanInterfaceName) throws IOException, InterruptedException {
         if (wlanInterfaceName == null || iptables == null) {
             return;
         }
@@ -83,8 +84,10 @@ public class IptablesRunner {
     /**
      * Create a script that removes the redirection rules and run it.
      * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
+     * @throws IOException if an error occurs while writing or executing the script file
+     * @throws InterruptedException if the calling thread is interrupted
      */
-    public void teardown(String wlanInterfaceName) {
+    public void teardown(String wlanInterfaceName) throws IOException, InterruptedException {
         if (wlanInterfaceName == null || iptables == null) {
             return;
         }
@@ -126,36 +129,31 @@ public class IptablesRunner {
      * @throws IOException if an error occurs while writing or executing the script file
      * @throws InterruptedException if the calling thread is interrupted
      */
-    private void runScript(String script) {
+    private void runScript(String script) throws IOException, InterruptedException {
+        File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
 
-        try {
-            File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
-    
-            File f = new File(tmpFolder, TEMP_SCRIPT);
-            f.setExecutable(true);
-            f.deleteOnExit();
-    
-            // Write the script to be executed
-            PrintWriter out = new PrintWriter(new FileOutputStream(f));
-            if (new File("/system/bin/sh").exists()) {
-                out.write("#!/system/bin/sh\n");
-            }
-            out.write(script);
-            if (!script.endsWith("\n")) {
-                out.write("\n");
-            }
-            out.write("exit\n");
-            out.flush();
-            out.close();
-            Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
-            int res = exec.waitFor();
-            Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
-            
-            if (res != 0) {
-                Toast.makeText(ctx, R.string.error_redirect, Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.toString());
+        File f = new File(tmpFolder, TEMP_SCRIPT);
+        f.setExecutable(true);
+        f.deleteOnExit();
+
+        // Write the script to be executed
+        PrintWriter out = new PrintWriter(new FileOutputStream(f));
+        if (new File("/system/bin/sh").exists()) {
+            out.write("#!/system/bin/sh\n");
+        }
+        out.write(script);
+        if (!script.endsWith("\n")) {
+            out.write("\n");
+        }
+        out.write("exit\n");
+        out.flush();
+        out.close();
+        Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
+        int res = exec.waitFor();
+        Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
+        
+        if (res != 0) {
+            Toast.makeText(ctx, R.string.error_script_loading, Toast.LENGTH_LONG).show();
         }
     }
 }

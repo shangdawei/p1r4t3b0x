@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -42,6 +41,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.piratebox.server.ServerConfiguration;
+import com.piratebox.utils.ExceptionHandler;
 import com.piratebox.utils.PreferencesKeys;
 
 /**
@@ -131,7 +131,7 @@ public class DirectoryChooserActivity extends ListActivity {
 						    Runtime.getRuntime().exec("su -c mkdir " + folder.getAbsolutePath()).waitFor();
 	                        goInDir(folder);
 						} catch (Exception e) {
-							Log.e(this.getClass().getName(), e.toString());
+			                ExceptionHandler.handle(this, R.string.error_creating_folder, ctx.getApplicationContext());
 						}
 	        		}
 	        	}

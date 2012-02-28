@@ -23,12 +23,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.piratebox.R;
 import com.piratebox.billing.util.BillingConstants;
 import com.piratebox.billing.util.BillingConstants.ResponseCode;
+import com.piratebox.utils.ExceptionHandler;
 
 /**
  * This class implements the {@link BroadcastReceiver} used to handle message from the MarketService for the In-App Billing functionality.
@@ -75,7 +75,7 @@ public class BillingReceiver extends BroadcastReceiver {
                 // Send confirmation
                 BillingService.confirmNotifications(new String[]{(String) json.get(JSON_FIELD_NOTIFICATION_ID)});
             } catch (Exception e) {
-                Log.e(this.getClass().getName(), e.toString());
+                ExceptionHandler.handle(this, R.string.error_during_payment, context.getApplicationContext());
             }
             
         } else if (BillingConstants.ACTION_NOTIFY.equals(action)) {
@@ -84,15 +84,14 @@ public class BillingReceiver extends BroadcastReceiver {
                 // Ask for the details of the transaction
                 BillingService.getPurchaseInformation(new String[]{notifyId});
             } catch (RemoteException e) {
-                Log.e(this.getClass().getName(), e.toString());
+                ExceptionHandler.handle(this, R.string.error_during_payment, context.getApplicationContext());
             }
 
         } else if (BillingConstants.ACTION_RESPONSE_CODE.equals(action)) {
             
             int responseCodeIndex = intent.getIntExtra(BillingConstants.INAPP_RESPONSE_CODE, ResponseCode.RESULT_ERROR.ordinal());
             if (! BillingConstants.ResponseCode.RESULT_OK.equals(BillingConstants.ResponseCode.valueOf(responseCodeIndex))) {
-//                Log.e(this.getClass().getName(), R.string.error_during_payment);
-                Toast.makeText(context, R.string.error_during_payment, Toast.LENGTH_LONG).show();
+                ExceptionHandler.handle(this, R.string.error_during_payment, context);
             }
 
         }

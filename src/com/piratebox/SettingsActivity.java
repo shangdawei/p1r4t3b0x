@@ -31,7 +31,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -41,6 +40,7 @@ import android.widget.Toast;
 
 import com.piratebox.billing.BillingService;
 import com.piratebox.server.ServerConfiguration;
+import com.piratebox.utils.ExceptionHandler;
 import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.Utils;
 
@@ -290,8 +290,8 @@ public class SettingsActivity extends PreferenceActivity {
             if (BillingService.isInAppBillingSupported()) {
                 BillingService.requestPurchase(SHOOTER_ID, this);
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
     }
     
@@ -303,8 +303,8 @@ public class SettingsActivity extends PreferenceActivity {
             if (BillingService.isInAppBillingSupported()) {
                 BillingService.requestPurchase(BEER_ID, this);
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
     }
     
@@ -316,8 +316,8 @@ public class SettingsActivity extends PreferenceActivity {
             if (BillingService.isInAppBillingSupported()) {
                 BillingService.requestPurchase(LARGE_BEER_ID, this);
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
     }
     
@@ -329,8 +329,8 @@ public class SettingsActivity extends PreferenceActivity {
             if (BillingService.isInAppBillingSupported()) {
                 BillingService.requestPurchase(BEER_BARREL_ID, this);
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
     }
 	
