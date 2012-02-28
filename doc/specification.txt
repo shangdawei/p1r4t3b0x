@@ -90,7 +90,7 @@ TEST MORE AND MORE !!!
 Internet access: Create the server that will manage file access
 Billing: Buy me a beer
 Change WIFI state: Set the Wifi access point
-Access WIFI state: Read the Wifi state to restore it
+Access WIFI state: Read the Wifi state
 Write external storage: Store the statistics values
 Vibrate: Configure the notification
 Battery state: Option to turn off when low battery
