@@ -17,8 +17,11 @@
 
 package com.piratebox.utils;
 
+import com.piratebox.R.string;
+
 /**
  * This class holds constants that are used to store preferences.
+ * 
  * @author Aylatan
  */
 public class PreferencesKeys {
@@ -39,10 +42,6 @@ public class PreferencesKeys {
      */
     public static final String HELP = "help";
     /**
-     * The key used by the donate button.
-     */
-    public static final String BEER = "beer";
-    /**
      * The key used to store the notification preference.
      */
     public static final String NOTIFICATION = "notification";
@@ -62,4 +61,27 @@ public class PreferencesKeys {
      * The key used to store the notification ringtone preference.
      */
     public static final String NOTIFICATION_RINGTONE = "notification_ringtone";
+    
+    /**
+     * Holds keys relative to the "buy me a beer" feature.
+     */
+    public static class Beer {
+        /**
+         * The key used by the beer shooter button.
+         */
+        public static final String BEER_SHOOTER = "beer_shooter";
+        /**
+         * The key used by the beer button.
+         */
+        public static final String BEER = "beer_beer";
+        /**
+         * The key used by the large beer button.
+         */
+        public static final String BEER_LARGE = "beer_large";
+        /**
+         * The key used by the beer barrel button.
+         */
+        public static final String BEER_BARREL = "beer_barrel";
+        
+    }
 }
