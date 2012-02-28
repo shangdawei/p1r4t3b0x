@@ -31,6 +31,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -38,6 +39,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
 
+import com.piratebox.billing.BillingService;
 import com.piratebox.server.ServerConfiguration;
 import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.Utils;
@@ -61,7 +63,11 @@ import com.piratebox.utils.Utils;
  */
 public class SettingsActivity extends PreferenceActivity {
 	
-	private final int DIRECTORY_CHOOSE_ACTIVITY_CODE = 0;
+	private static final int DIRECTORY_CHOOSE_ACTIVITY_ID = 0;
+    private static final String SHOOTER_ID = "beer.shooter";
+    private static final String BEER_ID = "beer.beer";
+    private static final String LARGE_BEER_ID = "beer.large";
+    private static final String BEER_BARREL_ID = "beer.barrel";
 	
 	private BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -146,11 +152,17 @@ public class SettingsActivity extends PreferenceActivity {
             resetStats();
 		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
 			openHelp();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.BEER))) {
-            goToDonateVersion();
         } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION))) {
             setNotificationMenusStates();
-		}
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_SHOOTER))) {
+            buyAShooter();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER))) {
+            buyABeer();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_LARGE))) {
+            buyALargeBeer();
+        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_BARREL))) {
+            buyABeerBarrel();
+        }
 		        
 		return true;
 	}
@@ -209,7 +221,7 @@ public class SettingsActivity extends PreferenceActivity {
 	 * Opens the {@link DirectoryChooserActivity}.
 	 */
 	private void openSelectDir() {
-		startActivityForResult(new Intent(this, DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_CODE);
+		startActivityForResult(new Intent(this, DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_ID);
 	}
 	
 	/**
@@ -271,10 +283,56 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 	
 	/**
-	 * Open the Android Market to the "Donate" version of the application.
+	 * Opens the in app billing feature for the shooter item.
 	 */
-	private void goToDonateVersion() {
-	}
+    private void buyAShooter() {
+        try {
+            if (BillingService.isInAppBillingSupported()) {
+                BillingService.requestPurchase(SHOOTER_ID, this);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Opens the in app billing feature for the beer item.
+     */
+    private void buyABeer() {
+        try {
+            if (BillingService.isInAppBillingSupported()) {
+                BillingService.requestPurchase(BEER_ID, this);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Opens the in app billing feature for the large beer item.
+     */
+    private void buyALargeBeer() {
+        try {
+            if (BillingService.isInAppBillingSupported()) {
+                BillingService.requestPurchase(LARGE_BEER_ID, this);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Opens the in app billing feature for the beer barrel  item.
+     */
+    private void buyABeerBarrel() {
+        try {
+            if (BillingService.isInAppBillingSupported()) {
+                BillingService.requestPurchase(BEER_BARREL_ID, this);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	/**
 	 * Manages the result of the {@link DirectoryChooserActivity} and store it to the preferences.
@@ -285,7 +343,7 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_CODE && resultCode == RESULT_OK) {
+		if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_ID && resultCode == RESULT_OK) {
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 			Editor edit = settings.edit();
 			edit.putString(PreferencesKeys.SELECT_DIR, data.getAction());

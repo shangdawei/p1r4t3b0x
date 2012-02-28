@@ -63,7 +63,10 @@
     <string name="settings_low_bat">Turn off when low battery</string>
     <string name="settings_reset_stats">Reset statistics</string>
     <string name="settings_help">Help</string>
-    <string name="settings_beer">Buy me a beer</string>
+    <string name="settings_beer">Buy me a beer!</string>
+    <string name="settings_beer_shooter">Buy me a shooter!</string>
+    <string name="settings_beer_large">Buy me a large beer!</string>
+    <string name="settings_beer_barrel">Buy me a beer barrel!</string>
     <string name="settings_notification_frequency">Check frequency</string>
     <string name="settings_notification_frequency_dialog">Set check frequency (low value uses more battery)</string>
     <string name="settings_notification_vibrate">Vibrate</string>

@@ -13,7 +13,7 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  
- The GNU General Public License can be found at http://www.gnu.org/licenses.
+ The GNU General Public License can be found at http://www.gnu.org/licenses.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
@@ -70,9 +70,21 @@
         <Preference
             android:key="help"
             android:title="@string/settings_help" />
-        <Preference
-            android:key="beer"
-            android:title="@string/settings_beer" />
+
+        <PreferenceScreen android:title="@string/settings_beer" >
+            <Preference
+                android:key="beer_shooter"
+                android:title="@string/settings_beer_shooter" />
+            <Preference
+                android:key="beer_beer"
+                android:title="@string/settings_beer" />
+            <Preference
+                android:key="beer_large"
+                android:title="@string/settings_beer_large" />
+            <Preference
+                android:key="beer_barrel"
+                android:title="@string/settings_beer_barrel" />
+        </PreferenceScreen>
     </PreferenceCategory>
 
 </PreferenceScreen>
