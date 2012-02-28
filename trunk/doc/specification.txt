@@ -81,10 +81,12 @@ $50 -> Buy me a beer barrel
 
 Prepare EULA
 TEST MORE AND MORE !!!
+    Start/stop
     Cyclic scan + notification
-    low battery shutdown
+    Low battery shutdown
     Rerouting
     Add widget after starting application ?
+    In-app billing
 
 
 
