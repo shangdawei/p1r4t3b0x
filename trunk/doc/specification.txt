@@ -69,13 +69,15 @@ Config options:
 / Integrate page design
 / Integrate redirection script
 
-Change link to payable version to in-app billing
+/ Change link to payable version to in-app billing
 $1 -> Buy me a shooter
 $5 -> Buy me a beer
 $10 -> Buy me a large beer
 $50 -> Buy me a beer barrel
 
 / Remove save/restore wifiApConfiguration as the function does not seem to be available.
+
+/ Add general exception handling system
 
 Prepare EULA
 TEST MORE AND MORE !!!

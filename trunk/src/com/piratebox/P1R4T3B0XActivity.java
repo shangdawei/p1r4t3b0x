@@ -17,17 +17,11 @@
 
 package com.piratebox;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,7 +29,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
@@ -172,7 +165,7 @@ public class P1R4T3B0XActivity extends Activity {
 //				}
 //				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
 //			} catch (SocketException e) {
-//				Log.e(this.getClass().getName(), e.toString());
+//            ExceptionHandler.handle(this, e, ctx.getApplicationContext());
 //			}
 
 	        if (ServerState.STATE_OFF.equals(system.getServerState())) {

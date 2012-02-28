@@ -28,10 +28,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.android.vending.billing.IMarketBillingService;
 import com.piratebox.billing.util.BillingConstants;
+import com.piratebox.utils.ExceptionHandler;
 
 /**
  * This class provides methods to send purchase request to the MarketService.
@@ -65,10 +65,10 @@ public class BillingService extends Service implements ServiceConnection {
         try {
             boolean bindResult = bindService(new Intent(MARKET_BILLING_SERVICE), this, Context.BIND_AUTO_CREATE);
             if (!bindResult) {
-                Log.e(this.getClass().getName(), "Could not bind to the MarketBillingService.");
+                ExceptionHandler.handle(this, "Could not bind to the MarketBillingService.");
             }
         } catch (SecurityException e) {
-            Log.e(this.getClass().getName(), "Security exception: " + e);
+            ExceptionHandler.handle(this, e);
         }
         
         packageName = getPackageName();
@@ -116,13 +116,13 @@ public class BillingService extends Service implements ServiceConnection {
         case RESULT_BILLING_UNAVAILABLE:
             return false;
         case RESULT_ERROR:
-            Log.e(BillingService.class.getName() + "#isInAppBillingSupported", "Error trying to get in-app billing informations.");
+            ExceptionHandler.handle(BillingService.class.getName(), "Error trying to get in-app billing informations.");
             return false;
         case RESULT_DEVELOPER_ERROR:
-            Log.e(BillingService.class.getName() + "#isInAppBillingSupported", "Developper error trying to get in-app billing informations.");
+            ExceptionHandler.handle(BillingService.class.getName(), "Developper error trying to get in-app billing informations.");
             return false;
         default:
-            Log.e(BillingService.class.getName() + "#isInAppBillingSupported", "Unknown response.");
+            ExceptionHandler.handle(BillingService.class.getName(), "Unknown response.");
             return false;
         }
     }
@@ -133,8 +133,9 @@ public class BillingService extends Service implements ServiceConnection {
      * @param activity the activity in which the market activity should be opened
      * @return {@code false} if something went wrong, {@code true} otherwise
      * @throws RemoteException if fails accessing the market service.
+     * @throws SendIntentException If intent failed to start
      */
-    public static boolean requestPurchase(String itemId, Activity activity) throws RemoteException {
+    public static boolean requestPurchase(String itemId, Activity activity) throws RemoteException, SendIntentException {
 
         Bundle request = makeRequestBundle(BillingConstants.REQUEST_TYPE_REQUEST_PURCHASE);
         request.putString(BillingConstants.BILLING_REQUEST_ITEM_ID, itemId);
@@ -147,12 +148,7 @@ public class BillingService extends Service implements ServiceConnection {
         
         PendingIntent pendingIntent = response.getParcelable(BillingConstants.BILLING_RESPONSE_PURCHASE_INTENT);
         
-        try {
-            activity.startIntentSender(pendingIntent.getIntentSender(), new Intent(), 0, 0, 0);
-        } catch (SendIntentException e) {
-            Log.e(BillingService.class.getName() + "#requestPurchase", "" + e);
-            return false;
-        }
+        activity.startIntentSender(pendingIntent.getIntentSender(), new Intent(), 0, 0, 0);
         return true;
     }
     

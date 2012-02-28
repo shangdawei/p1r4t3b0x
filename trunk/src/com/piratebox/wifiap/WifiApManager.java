@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 
 /**
  * This class uses reflection to call hidden methods of {@link WifiManager}.
@@ -116,23 +115,18 @@ public class WifiApManager {
 	 * @param config The configuration to set to the wifi access point
 	 * @param enabled the state in which to set the wifi access point
 	 * @return {@code true} if the operation succeeds, {@code false} otherwise
+	 * @throws Exception If the AP method could not be accessed
 	 */
-	public boolean setWifiApEnabled(WifiConfiguration config,
-			boolean enabled) {
+	public boolean setWifiApEnabled(WifiConfiguration config, boolean enabled) throws Exception {
 		
-		try {
-			if (enabled) {
-				wifiManager.setWifiEnabled(false);
-			}
-			
-			Method method = wifiManager.getClass().getMethod(
-					"setWifiApEnabled", WifiConfiguration.class,
-					boolean.class);
-			return (Boolean) method.invoke(wifiManager, config, enabled);
-		} catch (Exception e) {
-			Log.e(this.getClass().getName(), e.toString());
-			return false;
+		if (enabled) {
+			wifiManager.setWifiEnabled(false);
 		}
+		
+		Method method = wifiManager.getClass().getMethod(
+				"setWifiApEnabled", WifiConfiguration.class,
+				boolean.class);
+		return (Boolean) method.invoke(wifiManager, config, enabled);
 	}
     
     /**
@@ -140,40 +134,33 @@ public class WifiApManager {
      * @return One of {@link #WIFI_AP_STATE_DISABLED},
      *         {@link #WIFI_AP_STATE_DISABLING}, {@link #WIFI_AP_STATE_ENABLED},
      *         {@link #WIFI_AP_STATE_ENABLING}, {@link #WIFI_AP_STATE_FAILED}
+     * @throws Exception If the AP method could not be accessed
      * @see #isWifiApEnabled()
      */
-    public int getWifiApState() {
-        try {
-            Method method = wifiManager.getClass().getMethod(
-                    "getWifiApState");
-            return (Integer) method.invoke(wifiManager);
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.toString());
-            return WIFI_AP_STATE_FAILED;
-        }
+    public int getWifiApState() throws Exception {
+        Method method = wifiManager.getClass().getMethod(
+                "getWifiApState");
+        return (Integer) method.invoke(wifiManager);
     }
     
     /**
      * Return whether wifi access point is enabled or disabled.
      * @return {@code true} if wifi access point is enabled
+     * @throws Exception If the AP method could not be accessed
      * @see #getWifiApState()
      */
-    public boolean isWifiApEnabled() {
-        try {
-            Method method = wifiManager.getClass().getMethod(
-                    "isWifiApEnabled");
-            return (Boolean) method.invoke(wifiManager);
-        } catch (Exception e) {
-            Log.e(this.getClass().getName(), e.toString());
-            return false;
-        }
+    public boolean isWifiApEnabled() throws Exception {
+        Method method = wifiManager.getClass().getMethod(
+                "isWifiApEnabled");
+        return (Boolean) method.invoke(wifiManager);
     }
 	
 	/**
 	 * Updates the current wifi access point configuration without changing its state.
 	 * @param config the new configuration to be applied
+     * @throws Exception If the AP method could not be accessed
 	 */
-	public void setWifiApConfiguration(WifiConfiguration config) {
+	public void setWifiApConfiguration(WifiConfiguration config) throws Exception {
 		setWifiApEnabled(config, getWifiApState() == WifiManager.WIFI_STATE_ENABLED);
 	}
 }

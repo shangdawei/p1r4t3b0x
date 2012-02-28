@@ -20,9 +20,8 @@ package com.piratebox.billing;
 import java.security.PublicKey;
 import java.security.Signature;
 
-import android.util.Log;
-
 import com.piratebox.billing.util.Base64;
+import com.piratebox.billing.util.Base64DecoderException;
 
 /**
  * This class is used to check the validity of a signedData.
@@ -60,22 +59,16 @@ public class BillingSecurity {
      * Checks that the data matches the signature.
      * @param data the signed data to check
      * @param signature the signature of the data
-     * @return {@code true} if the data matches the signature, {@code false} otherwise. 
+     * @return {@code true} if the data matches the signature, {@code false} otherwise
+     * @throws Exception If something went wrong during data check
      */
-    public static boolean checkData(String data, String signature) {
-
-        try {
-            Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
-            sig.initVerify(publicKey);
-            sig.update(data.getBytes());
-            if (!sig.verify(Base64.decode(signature))) {
-                throw new Exception("Signature verification failed.");
-            }
-            return true;
-            
-        } catch (Exception e) {
-            Log.e(BillingSecurity.class.getName(), e.toString());
+    public static boolean checkData(String data, String signature) throws Base64DecoderException, Exception {
+        Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
+        sig.initVerify(publicKey);
+        sig.update(data.getBytes());
+        if (!sig.verify(Base64.decode(signature))) {
+            throw new Exception("Signature verification failed.");
         }
-        return false;
+        return true;
     }
 }

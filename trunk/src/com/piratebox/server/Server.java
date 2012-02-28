@@ -21,12 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+
+import com.piratebox.utils.ExceptionHandler;
 
 /**
  * This class describes the server that will handle request.
@@ -52,7 +52,7 @@ public class Server extends Thread {
 			//Set a timeout so that the socket stops listening when the server stops
 			listenSocket.setSoTimeout(1000);
 		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
+            ExceptionHandler.handle(this, e);
 		}
 	}
 	
@@ -67,9 +67,7 @@ public class Server extends Thread {
 				Socket clientSocket = listenSocket.accept();
                 connections.add(new Connection (clientSocket, this));
 			} catch(IOException e) {
-				if (!e.getClass().equals(SocketTimeoutException.class)) {
-					Log.e(this.getClass().getName(), e.toString());
-				}
+                ExceptionHandler.handle(this, e);
 			}
 		}
 	}
@@ -86,7 +84,7 @@ public class Server extends Thread {
 		try {
 			listenSocket.close();
 		} catch (IOException e) {
-			Log.e(this.getClass().getName(), e.toString());
+		    ExceptionHandler.handle(this, e);
 		}
 		listenSocket = null;
 	}
