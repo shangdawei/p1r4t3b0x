@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.piratebox.R;
 import com.piratebox.server.ServerConfiguration;
@@ -150,10 +149,10 @@ public class IptablesRunner {
         out.close();
         Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
         int res = exec.waitFor();
-        Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
+//        Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
         
         if (res != 0) {
-            Toast.makeText(ctx, R.string.error_script_loading, Toast.LENGTH_LONG).show();
+            ExceptionHandler.handle(this, R.string.error_script_loading, ctx);
         }
     }
 }

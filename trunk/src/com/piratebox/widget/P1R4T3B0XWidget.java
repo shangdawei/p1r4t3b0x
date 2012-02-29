@@ -23,7 +23,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.widget.RemoteViews;
 
 import com.piratebox.R;
@@ -33,9 +32,8 @@ import com.piratebox.utils.Callback;
 
 /**
  * This class describes the {@link AppWidgetProvider} used with this application.
- * @author Aylatan
- */
-/**
+ * 
+ * All code relative to the sending state is commented out for the moment.
  * @author Aylatan
  */
 public class P1R4T3B0XWidget extends AppWidgetProvider {
@@ -46,13 +44,13 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
     public static final String WIDGET_RECEIVER_INIT = "WidgetReceiverInit";
     
 	private final String WIDGET_RECEIVER_CLICK = "WidgetReceiverClick";
-	private final int MS_BETWEEN_IMAGE_UPDATE = 300;
+//	private final int MS_BETWEEN_IMAGE_UPDATE = 300;
 	
 	private boolean initialized = false;
 	private Callback updateWidgetsCallback;
-	private Handler updateHandler = new Handler();
-	private int currentImage = 0;
-	private Runnable updateImage;
+//	private static Handler updateHandler = new Handler();
+//	private int currentImage = 0;
+//	private static Runnable updateImage;
 	
 	/**
 	 * Updates the widget content by reading the current state of the system.
@@ -64,9 +62,6 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 
 		//Initialise the widget if not already done
         init(context);
-        System system = System.getInstance(context.getApplicationContext());
-        //Update the widget
-        updateWidgetsCallback.call(system.getServerState());
 	}
 
 	/**
@@ -99,12 +94,13 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	private void init(final Context context) {
         if (!initialized) {
             System system = System.getInstance(context.getApplicationContext());
+            
             updateWidgetsCallback = new Callback() {
                 @Override
                 public void call(Object arg) {
                     
-                    updateHandler.removeCallbacks(updateImage);
-                    currentImage = 0;
+//                    updateHandler.removeCallbacks(updateImage);
+//                    currentImage = 0;
                     switch ((ServerState) arg) {
                         case STATE_OFF:
                             updateWidgetImg(context, R.drawable.piratebox_off);
@@ -113,40 +109,43 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
                             updateWidgetImg(context, R.drawable.piratebox_waiting);
                             break;
                         case STATE_SENDING:
-                            updateHandler.postDelayed(updateImage, 100);
+                            updateWidgetImg(context, R.drawable.piratebox_waiting);
+//                            updateHandler.postDelayed(updateImage, 100);
                             break;
                     }
                 }
             };
             
 
-            updateImage = new Runnable() {
-                public void run() {
-                    int id;
-                   
-                    switch (currentImage) {
-                        case 0:
-                            id = R.drawable.piratebox_sending1;
-                            break;
-                        case 1:
-                            id = R.drawable.piratebox_sending2;
-                            break;
-                        default:
-                            id = R.drawable.piratebox_sending3;
-                            break;
-                    }
-                    updateWidgetImg(context, id);
-                    
-                    currentImage = (currentImage+1)%3;
-                    
-                    updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
-                }
-            };
-            
-            addOnClickListeners(context);
+//            if (updateImage == null) {
+//                updateImage = new Runnable() {
+//                    public void run() {
+//                        int id;
+//                       
+//                        switch (currentImage) {
+//                            case 0:
+//                                id = R.drawable.piratebox_sending1;
+//                                break;
+//                            case 1:
+//                                id = R.drawable.piratebox_sending2;
+//                                break;
+//                            default:
+//                                id = R.drawable.piratebox_sending3;
+//                                break;
+//                        }
+//                        updateWidgetImg(context, id);
+//                        
+//                        currentImage = (currentImage+1)%3;
+//                        
+//                        updateHandler.postDelayed(this, MS_BETWEEN_IMAGE_UPDATE);
+//                    }
+//                };
+//            }
             
             system.addEventListener(System.EVENT_STATE_CHANGE, updateWidgetsCallback);
-            updateWidgetsCallback.call(system.getServerState());
+            
+            initialImageSetup(context);
+
             initialized = true;
         }
 	}
@@ -166,22 +165,37 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	}
 	
 	/**
-	 * Adds the listeners for the click action on the widget image.
+	 * Adds the listeners for the click action on the widget image and sets the correct image according to the system state.
 	 * @param context the application context
 	 */
-	private void addOnClickListeners(Context context) {
-        final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, P1R4T3B0XWidget.class));
-        
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        
+	private void initialImageSetup(Context context) {
+	    // Initial image is set here and not in updateWidgetImg because if 2 successive calls are made to AppWidgetManager.updateAppWidget(),
+	    // the second one will override the first. So we need to add the click listener and to set the image in the same call.
+	    
+	    int imgId = -1;
+        switch(System.getInstance(context).getServerState()) {
+        case STATE_OFF:
+            imgId = R.drawable.piratebox_off;
+            break;
+        case STATE_SENDING:
+            // If state is sending, we set the icon as "waiting" and launch the image rotation after 1 sec.
+//            updateHandler.postDelayed(updateImage, 1000);
+        case STATE_WAITING:
+            imgId = R.drawable.piratebox_waiting;
+            break;
+        }
+	    
         Intent intent = new Intent(context, P1R4T3B0XWidget.class);
         intent.setAction(WIDGET_RECEIVER_CLICK);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        
-        views.setOnClickPendingIntent(R.id.widgetimg, pendingIntent);
-        
-        appWidgetManager.updateAppWidget(ids, views);
 
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+
+        views.setOnClickPendingIntent(R.id.widgetimg, pendingIntent);
+        views.setImageViewResource(R.id.widgetimg, imgId);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisWidget = new ComponentName(context, P1R4T3B0XWidget.class);
+        appWidgetManager.updateAppWidget(thisWidget, views);
 	}
 }
