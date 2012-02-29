@@ -49,6 +49,7 @@ Config options:
 V3:
 Link to "see what others see on the webpage"
 Search on page
+Widget animation
 Compatibility
 I18n
 Unit tests
@@ -81,12 +82,14 @@ $50 -> Buy me a beer barrel
 
 Prepare EULA
 TEST MORE AND MORE !!!
-    Start/stop
+    / Start/stop
+    / Add widget after starting application ?
+    X Widget animation
+    In-app billing
     Cyclic scan + notification
     Low battery shutdown
     Rerouting
-    Add widget after starting application ?
-    In-app billing
+    Heating / consumption
 
 
 

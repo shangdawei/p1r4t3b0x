@@ -33,6 +33,6 @@
         android:clickable="true"
         android:contentDescription="@string/system_state_off"
         android:scaleType="fitCenter"
-        android:src="@drawable/piratebox" />
+        android:src="@drawable/piratebox_off" />
 
 </LinearLayout>

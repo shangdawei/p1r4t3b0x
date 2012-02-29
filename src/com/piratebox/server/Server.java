@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import android.os.Handler;
@@ -66,6 +67,8 @@ public class Server extends Thread {
 			try{
 				Socket clientSocket = listenSocket.accept();
                 connections.add(new Connection (clientSocket, this));
+			} catch (SocketTimeoutException e) {
+			    
 			} catch(IOException e) {
                 ExceptionHandler.handle(this, e);
 			}

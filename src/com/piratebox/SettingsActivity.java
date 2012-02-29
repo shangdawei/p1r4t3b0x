@@ -64,10 +64,14 @@ import com.piratebox.utils.Utils;
 public class SettingsActivity extends PreferenceActivity {
 	
 	private static final int DIRECTORY_CHOOSE_ACTIVITY_ID = 0;
-    private static final String SHOOTER_ID = "beer.shooter";
-    private static final String BEER_ID = "beer.beer";
-    private static final String LARGE_BEER_ID = "beer.large";
-    private static final String BEER_BARREL_ID = "beer.barrel";
+//    private static final String SHOOTER_ID = "beer.shooter";
+//    private static final String BEER_ID = "beer.beer";
+//    private static final String LARGE_BEER_ID = "beer.large";
+//    private static final String BEER_BARREL_ID = "beer.barrel";
+    private static final String SHOOTER_ID = "android.test.item_unavailable";
+    private static final String BEER_ID = "android.test.refunded";
+    private static final String LARGE_BEER_ID = "android.test.canceled";
+    private static final String BEER_BARREL_ID = "android.test.purchased";
 	
 	private BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
         @Override
