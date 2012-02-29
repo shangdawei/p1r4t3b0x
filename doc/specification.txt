@@ -91,6 +91,8 @@ TEST MORE AND MORE !!!
     Rerouting
     Heating / consumption
 
+To fix:
+Unregister the wifi ap state receiver
 
 
 ***********           AUTHORISATIONS          ************
