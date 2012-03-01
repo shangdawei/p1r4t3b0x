@@ -219,6 +219,9 @@ public class System {
                         ExceptionHandler.handle(this, R.string.error_script_loading, ctx.getApplicationContext());
                     }
                 }
+                
+                // Shall be called only once
+                WifiApStateReceiver.setOnChangeCallback(null);
             }
         });
         
@@ -250,6 +253,9 @@ public class System {
                         ExceptionHandler.handle(this, R.string.error_script_loading, ctx.getApplicationContext());
                     }
                 }
+                
+                // Shall be called only once
+                WifiApStateReceiver.setOnChangeCallback(null);
             }
         });
         
