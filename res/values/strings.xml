@@ -88,16 +88,14 @@
     <string name="notification_default_frequency">600</string>
     
     <string name="help_content">
-        This application is made to allow you to share files with anyone who wants to see them.\n
-        \n
-        You might encounter issues if you try to use the widget without having allowed root rights to the application.\n
+        This application is made to allow you to share files with anyone.\n
         \n
         One the home screen you can start and stop the system.\n
         You can see the current state of the system, which can be "Off", "Online" or "Sending".\n
         You can see statistics about the number of files that has been downloaded from your phone and the time from which the system is on.\n
         \n
         From the settings menu, you can specify the shared folder, set a notification for a P1R4T3B0X network found around you,
-        set whether or not the system should turn off when the battery is low, reset all the statistics, see this message and access to the donate version of the application.\n
+        set whether or not the system should turn off when the battery is low, reset all the statistics, see this message and support the development by buying me a beer.\n
         \n
         You can add a widget to your desktop.\n
         The widget will show the current state of the system via its icon.\n

@@ -6,56 +6,52 @@ This application should be able to offer anyone who is connected by wifi to the 
 
 **********     V1 specifications     **********
 
-The application generates a web page to send to the connected device trying to access any page on internet.
+/ The application generates a web page to send to the connected device trying to access any page on internet.
 The generated page contains a list of links to the files inside the defined folder (/sdcard/piratebox).
 
-The application HMI should provide a way to enable / disable the system.
+/ The application HMI should provide a way to enable / disable the system.
 
 The wifi hotspot management is not within the scope of this version.
 
 
 **********     V2 specifications     **********
 
-When enabled, the application will generate a wifi hotspot with a custom name (ie P1r4t3b0x).
+/ When enabled, the application will generate a wifi hotspot with a custom name (ie P1r4t3b0x).
 The application should be able to reset the parameters to their original value when the application is disabled.
 
+/ A widget must allow to turn the system on and off.
 
-**********     V3 specifications     **********
+/Display use stats on home page:
+/    * uptime
+/    * n of files downloaded (from uptime)
+/    * top 5 files dl
+/    * current activity
 
-The application is able to look for other P1r4t3b0x networks and add their files to its list. (checkbox option)
+/Config options:
+/    * modify the shared folder
+/    * notification when piratebox network on range
+/    * turn off when low battery
+/    * reset stats
+
+
+**********     Later specifications     **********
+
+- The application is able to look for other P1r4t3b0x networks and add their files to its list. (checkbox option)
 The files located on other devices should be annotated on the webpage (for instance with the mention "remote located")
 If a client ask for a remote located file, the application must download the application from its original source and provide this downloaded file to
 the client. The application should transfer the file gradually as it is received.
 An option should allow the user to specify if the downloaded remote file should be kept in the shared folder or not.
+- Link to "see what others see on the webpage"
+- Search on page
+- Widget animation
+- File upload
+- Config options:
+    * add more folder to analyse
+    * keep remote downloaded file
 
-
-
-**********           Other           ***********
-V2:
-/ A widget must allow to turn the system on and off.
-
-/Display use stats on home page:
-/- uptime
-/- n of files downloaded (from uptime)
-/- top 5 files dl
-/- current activity
-
-Config options:
-/- modify the shared folder
-/- notification when piratebox network on range
-/- turn off when low battery
-/- reset stats
-
-V3:
-Link to "see what others see on the webpage"
-Search on page
-Widget animation
-Compatibility
-I18n
-Unit tests
-Config options:
-- add more folder to analyse
-- keep remote downloaded file
+- Compatibility
+- I18n
+- Unit tests
 
 
 ***********           TODO          ************
@@ -82,17 +78,19 @@ $50 -> Buy me a beer barrel
 
 Prepare EULA
 TEST MORE AND MORE !!!
-    / Start/stop
-    / Add widget after starting application ?
-    X Widget animation
-    In-app billing
-    Cyclic scan + notification
-    Low battery shutdown
-    Rerouting
-    Heating / consumption
+Tests:
+/ Start/stop
+/ Add widget after starting application ?
+X Widget animation
+- Unregister the wifi ap state receiver
+- In-app billing
+- Cyclic scan + notification
+- Low battery shutdown
+- Rerouting
+- Heating / consumption
 
 To fix:
-Unregister the wifi ap state receiver
+- Cyclic scan (can never start. there should be a check at the beginning with "if setting = false {postDelayed; return;}.)
 
 
 ***********           AUTHORISATIONS          ************

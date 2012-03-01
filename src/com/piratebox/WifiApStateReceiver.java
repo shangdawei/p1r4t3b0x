@@ -28,10 +28,10 @@ import android.content.Intent;
  */
 public class WifiApStateReceiver extends BroadcastReceiver {
     
-    private static Callback onChangeCallback;
+    private static Callback _onChangeCallback;
 
     public static void setOnChangeCallback(Callback onChangeCallback) {
-        WifiApStateReceiver.onChangeCallback = onChangeCallback;
+        _onChangeCallback = onChangeCallback;
     }
 
     /**
@@ -39,7 +39,9 @@ public class WifiApStateReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        WifiApStateReceiver.onChangeCallback.call(intent);
+        if (_onChangeCallback != null) {
+            _onChangeCallback.call(intent);
+        }
     }
 
 }

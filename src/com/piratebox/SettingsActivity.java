@@ -100,6 +100,8 @@ public class SettingsActivity extends PreferenceActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		startService(new Intent(this, BillingService.class));
 
 		addPreferencesFromResource(R.xml.settings);
 		

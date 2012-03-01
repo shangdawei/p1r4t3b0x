@@ -77,9 +77,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="BillingService" />
+        <service android:name="com.piratebox.billing.BillingService" />
 
-        <receiver android:name="BillingReceiver" >
+        <receiver android:name="com.piratebox.billing.BillingReceiver" >
             <intent-filter>
                 <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
                 <action android:name="com.android.vending.billing.RESPONSE_CODE" />
