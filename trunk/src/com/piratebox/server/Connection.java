@@ -128,6 +128,10 @@ public class Connection extends Thread {
 
 			//Loop through and discard rest of request
 			line = req;
+			if (line == null) {
+			    return;
+			}
+			
 			while (line.length() > 0) {
 				line = in.readLine();
 			}

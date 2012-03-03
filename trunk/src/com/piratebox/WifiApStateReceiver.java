@@ -16,11 +16,11 @@
  */
 package com.piratebox;
 
-import com.piratebox.utils.Callback;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.piratebox.utils.Callback;
 
 /**
  * This class handles Broadcasts about the wifi access point state and calls the defined callback with the informations.
@@ -28,13 +28,22 @@ import android.content.Intent;
  */
 public class WifiApStateReceiver extends BroadcastReceiver {
     
+    /**
+     * The callback to be called on wifi access point state change event.
+     */
     private static Callback _onChangeCallback;
 
+    /**
+     * Sets the callback to call on next wifi access point state change.
+//     * A new callback has to be assigned each time you want to listen to the next wifi access point change.
+     * @param onChangeCallback
+     */
     public static void setOnChangeCallback(Callback onChangeCallback) {
         _onChangeCallback = onChangeCallback;
     }
 
     /**
+     * Calls the callback with the intent as argument, if callback is not {@code null}.
      * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
      */
     @Override
