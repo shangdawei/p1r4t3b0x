@@ -30,7 +30,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.crittercism.app.Crittercism;
 import com.piratebox.System.ServerState;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.StatUtils;
@@ -50,6 +49,11 @@ public class P1R4T3B0XActivity extends Activity {
 	private Button startStopBtn;
 	
 	private Handler updateHandler = new Handler();
+	
+	private TextView uptimeTxt = null;
+	private Callback onUpdateStatistic;
+	private Callback onStateChange;
+	private Runnable updateUptimeTask;
 
 	/**
 	 * Initialises the {@link Activity} and register the callbacks.
@@ -60,7 +64,7 @@ public class P1R4T3B0XActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Crittercism.init(getApplicationContext(), CRITTERCISM_APP_ID);
+//		Crittercism.init(getApplicationContext(), CRITTERCISM_APP_ID);
 		
 		setContentView(R.layout.main);
 		
@@ -69,6 +73,7 @@ public class P1R4T3B0XActivity extends Activity {
 		startStopBtn = (Button) findViewById(R.id.startStopBtn);
 		startStopBtn.setOnClickListener(startStopBtnListener);
 
+		uptimeTxt = (TextView) findViewById(R.id.uptime_value);
         
         addCallbacks();
 	}
@@ -79,7 +84,7 @@ public class P1R4T3B0XActivity extends Activity {
 	 */
 	private void addCallbacks() {
 	    //Initialises the task to be run to update the uptime display
-        final Runnable updateUptimeTask = new Runnable() {
+        updateUptimeTask = new Runnable() {
             public void run() {
                 
                 long milis = java.lang.System.currentTimeMillis() - system.getStartTime();
@@ -87,21 +92,15 @@ public class P1R4T3B0XActivity extends Activity {
                 int min = (int)((milis / 1000 / 60) % 60);
                 int hour = (int)((milis / 1000 / 60 / 60) % 24);
                 int day = (int)(milis / 1000 / 60 / 60 / 24);
-                StringBuilder timeStr = new StringBuilder();
-                timeStr.append(day).append("d")
-                .append(hour).append("h")
-                .append(min).append("m")
-                .append(sec).append("s");
-
-                TextView uptimeTxt = (TextView) findViewById(R.id.uptime_value);
-                uptimeTxt.setText(timeStr.toString());
+                
+                uptimeTxt.setText(String.format("%d:%02d:%02d:%02d", day, hour, min, sec));
                 
                 updateHandler.postDelayed(this, 200);
             }
         };
         updateHandler.removeCallbacks(updateUptimeTask);
         
-        Callback onStateChange = new Callback() { 
+        onStateChange = new Callback() { 
             @Override
             public void call(Object arg) {
                 ServerState state = (ServerState) arg;
@@ -114,9 +113,9 @@ public class P1R4T3B0XActivity extends Activity {
                 //Set or reset the timer for the uptime update
                 if (ServerState.STATE_OFF.equals(state)) {
                     updateHandler.removeCallbacks(updateUptimeTask);
-                    TextView uptimeTxt = (TextView) findViewById(R.id.uptime_value);
                     uptimeTxt.setText(R.string.not_running);
                 } else {
+                    updateHandler.removeCallbacks(updateUptimeTask);
                     updateHandler.postDelayed(updateUptimeTask, 100);
                 }
             }
@@ -125,7 +124,7 @@ public class P1R4T3B0XActivity extends Activity {
         onStateChange.call(system.getServerState());
         
 
-        Callback onUpdateStatistic = new Callback() { 
+        onUpdateStatistic = new Callback() { 
             @Override
             public void call(Object arg) {
                 TextView filesDl = (TextView) findViewById(R.id.filesdl_value);
@@ -152,23 +151,40 @@ public class P1R4T3B0XActivity extends Activity {
         onUpdateStatistic.call(null);
 	}
 	
+	
+	/**
+	 * Restores the event listeners.
+	 *
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+	    super.onResume();
+        system.addEventListener(System.EVENT_STATE_CHANGE, onStateChange);
+        onStateChange.call(system.getServerState());
+        system.addEventListener(System.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
+	}
+	
+	/**
+	 * Removes the event listeners.
+	 *
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+	    super.onPause();
+        updateHandler.removeCallbacks(updateUptimeTask);
+        system.removeEventListener(System.EVENT_STATE_CHANGE, onStateChange);
+        system.removeEventListener(System.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
+	    
+	}
+	
 	/**
 	 * Listener for the start/stop button.
 	 * Switch the {@link System} state.
 	 */
 	private OnClickListener startStopBtnListener = new OnClickListener() {
-		public void onClick(View v) {
-//			try {
-//				Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-//				ArrayList<String> interfaceNames = new ArrayList<String>();
-//				while (interfaces.hasMoreElements()) {
-//					interfaceNames.add(interfaces.nextElement().getName());
-//				}
-//				Toast.makeText(getBaseContext(), interfaceNames.toString(), Toast.LENGTH_LONG).show();
-//			} catch (SocketException e) {
-//            ExceptionHandler.handle(this, e, ctx.getApplicationContext());
-//			}
-
+		public void onClick(View v) {		    
 	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
 	            system.start();
 	        } else {

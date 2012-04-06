@@ -49,7 +49,7 @@ public class GeneratedPage {
 			"Welcome on this PirateBox.<br />" +
 			"PirateBox is a free Android application that let you share all the files you want with anybody.<br />" +
 			"<a href='http://market.android.com/details?id=com.piratebox'>" +
-			"  <img src='http://www.android.com/images/brand/45_avail_market_logo1.png'" +
+			"  <img src='market_available.png'" +
 			"    alt='Available in Android Market' />" +
 			"</a>" +
 			"</p>" +
