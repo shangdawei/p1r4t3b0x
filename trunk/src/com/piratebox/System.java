@@ -33,13 +33,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore.Audio.Media;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
@@ -246,6 +246,7 @@ public class System {
                 if (state == WifiApManager.WIFI_AP_STATE_DISABLING) {
                     try {
                         iptablesRunner.teardown(getWlanInterfaceName());
+                        WifiApStateReceiver.setOnChangeCallback(null);
                     } catch (Exception e) {
                         ExceptionHandler.handle(this, R.string.error_script_loading, ctx.getApplicationContext());
                     }
@@ -305,6 +306,10 @@ public class System {
             scanHandler.postDelayed(scanTask, period);
         } else {
             scanHandler.removeCallbacks(scanTask);
+            if (scanResultReceiver != null) {
+                ctx.unregisterReceiver(scanResultReceiver);
+                scanResultReceiver = null;
+            }
         }
     }
 
@@ -367,11 +372,16 @@ public class System {
                             public void onReceive(Context c, Intent i){
                                 //Restore the wifi access point as soon as possible
                                 try {
+                                    //Restore wifi state
                                     apMgr.setWifiApEnabled(config, wifiApEnabled);
+                                    if (!wifiEnabled) {
+                                        mgr.setWifiEnabled(false);
+                                    }
                                     
                                     //If a network is found with the name P1R4T3B0X, send a notification
                                     for (ScanResult scan : mgr.getScanResults()) {
                                         if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
+//                                        if ("BigPond0CB5".equals(scan.SSID)) {
                                             addNetworkNotification();
                                         } else {
                                             removeNetworkNotification();
@@ -385,22 +395,22 @@ public class System {
                                 if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
                                     scanHandler.postDelayed(System.this.scanTask, period);
                                 }
-                                //Restore wifi state
-                                if (!wifiEnabled) {
-                                    mgr.setWifiEnabled(false);
-                                }
                             }
                         };
+                        
+                        IntentFilter i = new IntentFilter();
+                        i.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+                        ctx.registerReceiver(scanResultReceiver, i);
                     }
                     
                     //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
                     if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
                         apMgr.setWifiApEnabled(config, wifiApEnabled);
-                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                            scanHandler.postDelayed(this, period);
-                        }
                         if (!wifiEnabled) {
                             mgr.setWifiEnabled(false);
+                        }
+                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
+                            scanHandler.postDelayed(this, period);
                         }
                     }
                     
@@ -422,21 +432,26 @@ public class System {
      * Creates a dispatch a notification to tell the user that a P1R4T3B0X network is in range.
      */
     private void addNetworkNotification() {
-        Notification notification = new Notification(R.drawable.main_ico,
+        Notification notification = new Notification(R.drawable.piratebox_ico,
                 ctx.getResources().getString(R.string.notification_network),
                 java.lang.System.currentTimeMillis());
 
+        // Adding a sound
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
-        notification.sound = Media.getContentUri(settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, ""));
+        notification.sound = Uri.parse(settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, ""));
+        
+        // Adding a vibration
         if (settings.getBoolean(PreferencesKeys.NOTIFICATION_VIBRATE, false)) {
-            notification.defaults = Notification.DEFAULT_VIBRATE;
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
         } else {
             notification.vibrate = new long[]{0L};
         }
         
-        notification.setLatestEventInfo(ctx,
+        notification.setLatestEventInfo(ctx.getApplicationContext(),
                 ctx.getResources().getString(R.string.notification_network),
-                "", null);
+                "", PendingIntent.getActivity(ctx, 0, new Intent(), 0));
+        
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         
         NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.notify(NOTIFICATION_ID_NETWORK, notification);

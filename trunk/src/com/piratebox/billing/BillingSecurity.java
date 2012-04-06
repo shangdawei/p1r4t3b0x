@@ -17,8 +17,10 @@
 
 package com.piratebox.billing;
 
+import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
 
 import com.piratebox.billing.util.Base64;
 import com.piratebox.billing.util.Base64DecoderException;
@@ -34,26 +36,27 @@ public class BillingSecurity {
      * Default signature algorithm.
      */
     private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
+    private static final String KEY_FACTORY_ALGORITHM = "RSA";
     
-    /**
-     * The public key associated with the P1R4T2B0X application.
-     */
-    @SuppressWarnings("serial")
-    private static final PublicKey publicKey = new PublicKey() {
-
-        public String getFormat() {
-            return null;
-        }
-
-        public byte[] getEncoded() {
-            return "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6emUiHPEwHoobkmWvcThDVmP5ghNXhga8gxdjuHJIUXKK+THxQy/Gi0sTR/PYAlxrG1kFszw42SuIhO7ilfNLTwFuhyQKOrc+ht9qE/NP3bLqnULc0q9eJ2lOlVs3NPDbNdrAYf1TdH7p6CFdyuy4fWMc9j4V9HzigCNxRv4Vm3b5TJoXc/bXnKRQGGIYmZ/otO7j6XlDAoPnNw8UgZtkJl1UwHNwKdgx1x1cJw7tKmCPiF839FL+XhTKmrW6pz1GnAazTgmDk0yVAxyVbjBJcQThNKX/e1/tczisPIs25htNDMQxG4a/HxGZ9qygANNCX7DfkiCyPAkk5Y+/QiyQQIDAQAB"
-                    .getBytes();
-        }
-
-        public String getAlgorithm() {
-            return SIGNATURE_ALGORITHM;
-        }
-    };
+//    /**
+//     * The public key associated with the P1R4T2B0X application.
+//     */
+//    @SuppressWarnings("serial")
+//    private static final PublicKey publicKey = new PublicKey() {
+//
+//        public String getFormat() {
+//            return null;
+//        }
+//
+//        public byte[] getEncoded() {
+//            return "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6emUiHPEwHoobkmWvcThDVmP5ghNXhga8gxdjuHJIUXKK+THxQy/Gi0sTR/PYAlxrG1kFszw42SuIhO7ilfNLTwFuhyQKOrc+ht9qE/NP3bLqnULc0q9eJ2lOlVs3NPDbNdrAYf1TdH7p6CFdyuy4fWMc9j4V9HzigCNxRv4Vm3b5TJoXc/bXnKRQGGIYmZ/otO7j6XlDAoPnNw8UgZtkJl1UwHNwKdgx1x1cJw7tKmCPiF839FL+XhTKmrW6pz1GnAazTgmDk0yVAxyVbjBJcQThNKX/e1/tczisPIs25htNDMQxG4a/HxGZ9qygANNCX7DfkiCyPAkk5Y+/QiyQQIDAQAB"
+//                    .getBytes();
+//        }
+//
+//        public String getAlgorithm() {
+//            return SIGNATURE_ALGORITHM;
+//        }
+//    };
 
     /**
      * Checks that the data matches the signature.
@@ -63,8 +66,13 @@ public class BillingSecurity {
      * @throws Exception If something went wrong during data check
      */
     public static boolean checkData(String data, String signature) throws Base64DecoderException, Exception {
+        
+        byte[] decodedKey = Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6emUiHPEwHoobkmWvcThDVmP5ghNXhga8gxdjuHJIUXKK+THxQy/Gi0sTR/PYAlxrG1kFszw42SuIhO7ilfNLTwFuhyQKOrc+ht9qE/NP3bLqnULc0q9eJ2lOlVs3NPDbNdrAYf1TdH7p6CFdyuy4fWMc9j4V9HzigCNxRv4Vm3b5TJoXc/bXnKRQGGIYmZ/otO7j6XlDAoPnNw8UgZtkJl1UwHNwKdgx1x1cJw7tKmCPiF839FL+XhTKmrW6pz1GnAazTgmDk0yVAxyVbjBJcQThNKX/e1/tczisPIs25htNDMQxG4a/HxGZ9qygANNCX7DfkiCyPAkk5Y+/QiyQQIDAQAB");
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
+        PublicKey key = keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
+        
         Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
-        sig.initVerify(publicKey);
+        sig.initVerify(key);
         sig.update(data.getBytes());
         if (!sig.verify(Base64.decode(signature))) {
             throw new Exception("Signature verification failed.");

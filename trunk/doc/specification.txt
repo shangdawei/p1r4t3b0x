@@ -44,6 +44,7 @@ An option should allow the user to specify if the downloaded remote file should 
 - Link to "see what others see on the webpage"
 - Search on page
 - Widget animation
+- Vibrate on widget click
 - File upload
 - Config options:
     * add more folder to analyse
@@ -52,6 +53,8 @@ An option should allow the user to specify if the downloaded remote file should 
 - Compatibility
 - I18n
 - Unit tests
+- Logs
+- Turn System class as a service
 
 
 ***********           TODO          ************
@@ -81,17 +84,15 @@ TEST MORE AND MORE !!!
 Tests:
 / Start/stop
 / Add widget after starting application ?
-X Widget animation
-- Unregister the wifi ap state receiver
-- In-app billing
-- Cyclic scan + notification
+/ Heating / consumption
+/ Cyclic scan + notification
+- first notification ringtone pick
 - Low battery shutdown
-- Rerouting
-- Heating / consumption
+- In-app billing
 
-To fix:
-- Cyclic scan (can never start. there should be a check at the beginning with "if setting = false {postDelayed; return;}.)
-
+Known bug:
+- Can only load an http page
+- Unregister the wifi ap state receiver
 
 ***********           AUTHORISATIONS          ************
 Internet access: Create the server that will manage file access

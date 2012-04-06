@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.piratebox.System;
 import com.piratebox.utils.ExceptionHandler;
@@ -114,6 +115,8 @@ public class Connection extends Thread {
 	public void run() {
 		String line = null;
 		String req = null;
+        File f = null;
+		InputStream fis = null;
 
 		//Tell the server that a user is connected
 		server.addConnectedUser();
@@ -131,26 +134,29 @@ public class Connection extends Thread {
 			if (line == null) {
 			    return;
 			}
-			
-			while (line.length() > 0) {
-				line = in.readLine();
-			}
 
 			//Get filename from request
 			StringTokenizer st = new StringTokenizer(req);
 			//First token is "GET"
-			st.nextToken();
-			requestedFile = st.nextToken();
-			
-			String filePath = URLDecoder.decode(ServerConfiguration.getRootDir()
-					+ requestedFile);
-			File f = new File(filePath);
+			if ("GET".equals(st.nextToken())) {
+	            
+	            // Finish to read the whole input
+	            while (line.length() > 0) {
+	                line = in.readLine();
+	            }
+	            
+	            requestedFile = st.nextToken();
+	            Log.d("file", requestedFile);
+	            
+	            String filePath = URLDecoder.decode(ServerConfiguration.getRootDir()
+	                    + requestedFile);
+	            f = new File(filePath);
 
+	            fis = getLocalFileStream(extractName(requestedFile));
+			}
 			
-            InputStream fis = getLocalFileStream(extractName(requestedFile));
-            
 			//If the file is not a local file and does not exist or is a directory, send the default page
-			if (fis == null && (!f.canRead() || f.isDirectory())) {
+			if (fis == null && (f == null || !f.canRead() || f.isDirectory())) {
 				sendDefaultPage();
 				server.removeConnectedUser();
 				return;
@@ -206,6 +212,8 @@ public class Connection extends Thread {
 
 		//Send content
 		out.print(new GeneratedPage(rootDir));
+		out.flush();
+		out.close();
 
 		client.close();
 	}

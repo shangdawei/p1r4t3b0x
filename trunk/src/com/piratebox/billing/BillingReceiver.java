@@ -17,6 +17,8 @@
 
 package com.piratebox.billing;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
@@ -46,6 +48,7 @@ public class BillingReceiver extends BroadcastReceiver {
      * The json field name for the notification id.
      */
     private static final String JSON_FIELD_NOTIFICATION_ID = "notificationId";
+    private static final String JSON_FIELD_ORDERS = "orders";
 
     /**
      * Defines what to do for the different messages.
@@ -72,8 +75,14 @@ public class BillingReceiver extends BroadcastReceiver {
                 // Display a thank you message
                 Toast.makeText(context, R.string.thank_you, Toast.LENGTH_LONG).show();
                 
-                // Send confirmation
-                BillingService.confirmNotifications(new String[]{(String) json.get(JSON_FIELD_NOTIFICATION_ID)});
+                // Send confirmations
+                JSONArray orders = (JSONArray) json.get(JSON_FIELD_ORDERS);
+                for (int i = 0; i < orders.length(); i++) {
+                    try {
+                        JSONObject order = orders.getJSONObject(i);
+                        BillingService.confirmNotifications(new String[]{(String) order.get(JSON_FIELD_NOTIFICATION_ID)});
+                    } catch (JSONException e) {}
+                }
             } catch (Exception e) {
                 ExceptionHandler.handle(this, R.string.error_during_payment, context.getApplicationContext());
             }
