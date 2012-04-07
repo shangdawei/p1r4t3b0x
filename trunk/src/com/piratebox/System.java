@@ -57,7 +57,7 @@ import com.piratebox.wifiap.WifiApManager;
  * 
  * @author Aylatan
  */
-public class System {
+public class System /*extends Service*/ {
 
     /**
      * Event dispatched when the state of the server changes.
@@ -227,6 +227,8 @@ public class System {
         startTime = java.lang.System.currentTimeMillis();
         StatUtils.resetStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
+
+//        ctx.startService(new Intent(ctx, System.class));
     }
 
     /**
@@ -259,6 +261,8 @@ public class System {
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
+        
+//        stopSelf();
     }
     
     /**
@@ -398,9 +402,7 @@ public class System {
                             }
                         };
                         
-                        IntentFilter i = new IntentFilter();
-                        i.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-                        ctx.registerReceiver(scanResultReceiver, i);
+                        ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     }
                     
                     //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
@@ -530,4 +532,14 @@ public class System {
     private void dispatchEvent(String event) {
         dispatchEvent(event, null);
     }
+    
+//    /**
+//     * No binding allowed, returns null.
+//     *
+//     * @see android.app.Service#onBind(android.content.Intent)
+//     */
+//    @Override
+//    public IBinder onBind(Intent intent) {
+//        return null;
+//    }
 }
