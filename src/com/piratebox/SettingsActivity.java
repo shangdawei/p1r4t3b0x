@@ -77,13 +77,13 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onReceive(Context c, Intent i){
             //Get the charging status
-            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                                status == BatteryManager.BATTERY_STATUS_FULL;
+//            int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+//            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+//                                status == BatteryManager.BATTERY_STATUS_FULL;
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 
             //If the device is currently being charged, there is no need to stop the system
-            if (isCharging || settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
+            if (/*isCharging || */!settings.getBoolean(PreferencesKeys.LOW_BAT, false)) {
                 return;
             }
             

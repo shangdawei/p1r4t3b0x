@@ -83,9 +83,9 @@ Prepare EULA
 TEST MORE AND MORE !!!
 Tests:
 / Start/stop
-/ Add widget after starting application ?
+/ Add widget after starting application
 / Heating / consumption
-/ Cyclic scan + notification
+- Cyclic scan + notification
 - first notification ringtone pick
 - Low battery shutdown
 - In-app billing
