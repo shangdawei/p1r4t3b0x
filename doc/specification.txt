@@ -54,7 +54,7 @@ An option should allow the user to specify if the downloaded remote file should 
 - I18n
 - Unit tests
 - Logs
-- Turn System class as a service
+- Reactivate system when battery is ok again (option?)
 
 
 ***********           TODO          ************

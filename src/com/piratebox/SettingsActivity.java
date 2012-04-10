@@ -91,6 +91,18 @@ public class SettingsActivity extends PreferenceActivity {
             System.getInstance(c).setNotificationState(false);
         }
     };
+    /*
+    
+    Other solutions:
+    onReceive:
+    int rawlevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+    int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+    int level = -1;
+    if (rawlevel >= 0 && scale > 0) {
+        level = (rawlevel * 100) / scale;
+    }
+    
+    using Intent.ACTION_BATTERY_CHANGE for the IntentFilter
 	
 	/**
 	 * Initialises the {@link Activity}.
