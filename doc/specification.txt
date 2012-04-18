@@ -55,6 +55,13 @@ An option should allow the user to specify if the downloaded remote file should 
 - Unit tests
 - Logs
 - Reactivate system when battery is ok again (option?)
+- Bluetooth scan + send file "turnWifiOn.html" > Hey, you received that because you are in range of a free wifi connection to a piratebox. A piratebox is a device where you can connect to and download files. To connect to the piratebox, follow those simple steps:
+1- turn your wifi on
+2- connect to a wifi network called P1R4T3B0X
+3- open your navigator and try to go to any website
+4- you are redirected to the piratebox home page, where you can see the list of the files available for download.
+
+You can turn your android device into a piratebox too ! You just need to download and install the P1R4T3B0X application (link)
 
 
 ***********           TODO          ************
