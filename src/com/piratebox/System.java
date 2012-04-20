@@ -23,6 +23,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -193,6 +194,8 @@ public class System /*extends Service*/ {
         ServerConfiguration.setRootDir(settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR));
 
         initScan();
+        
+        setNotificationState(PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PreferencesKeys.NOTIFICATION, false));
     }
 
     /**
@@ -370,49 +373,44 @@ public class System /*extends Service*/ {
                     apMgr.setWifiApEnabled(config, false);
                     
                     //Set the action on scan results
-                    if (scanResultReceiver == null) {
-                        scanResultReceiver = new BroadcastReceiver() {
-                            @Override
-                            public void onReceive(Context c, Intent i){
-                                //Restore the wifi access point as soon as possible
-                                try {
-                                    //Restore wifi state
-                                    apMgr.setWifiApEnabled(config, wifiApEnabled);
-                                    if (!wifiEnabled) {
-                                        mgr.setWifiEnabled(false);
-                                    }
-                                    
-                                    //If a network is found with the name P1R4T3B0X, send a notification
-                                    for (ScanResult scan : mgr.getScanResults()) {
+                    scanResultReceiver = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context c, Intent i){
+                            //Restore the wifi access point as soon as possible
+                            try {
+                                //Restore wifi state
+                                apMgr.setWifiApEnabled(config, wifiApEnabled);
+                                if (!wifiEnabled) {
+                                    mgr.setWifiEnabled(false);
+                                }
+                                
+                                //If a network is found with the name P1R4T3B0X, send a notification
+                                List<ScanResult> scans = mgr.getScanResults();
+                                if (scans != null) {
+                                    for (ScanResult scan : scans) {
                                         if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
-//                                        if ("BigPond0CB5".equals(scan.SSID)) {
                                             addNetworkNotification();
                                         } else {
                                             removeNetworkNotification();
                                         }
                                     }
-                                } catch (Exception e) {
-                                    ExceptionHandler.handle(this, R.string.error_network_scan, ctx);
                                 }
-                                
-                                //Launch next scan
-                                if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                                    scanHandler.postDelayed(System.this.scanTask, period);
-                                }
+                            } catch (Exception e) {
+                                ExceptionHandler.handle(this, R.string.error_network_scan, ctx);
                             }
-                        };
-                        
-                        ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                    }
+                            try {
+                                ctx.unregisterReceiver(scanResultReceiver);
+                            } catch (IllegalArgumentException e) {}
+                        }
+                    };
+                    
+                    ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     
                     //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
                     if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
                         apMgr.setWifiApEnabled(config, wifiApEnabled);
                         if (!wifiEnabled) {
                             mgr.setWifiEnabled(false);
-                        }
-                        if (settings.getBoolean(PreferencesKeys.NOTIFICATION, false)) {
-                            scanHandler.postDelayed(this, period);
                         }
                     }
                     
