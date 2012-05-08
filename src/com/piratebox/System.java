@@ -41,6 +41,7 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.piratebox.server.Server;
 import com.piratebox.server.ServerConfiguration;
@@ -351,6 +352,7 @@ public class System /*extends Service*/ {
         scanTask = new Runnable() {
             
             public void run() {
+                Log.d("System", "Running scan task");
                 final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
                 //Defines the call frequency to the user defined value
                 final int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
@@ -358,6 +360,7 @@ public class System /*extends Service*/ {
                 try {
                     //If we are currently sending a file, try again later, as we need to disable the wifi access point to perform the scan
                     if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
+                        Log.d("System", "Currently sending, do not scan");
                         scanHandler.postDelayed(this, period);
                         return;
                     }
@@ -368,6 +371,7 @@ public class System /*extends Service*/ {
                     //Save the current states to restore them later
                     final boolean wifiEnabled = mgr.isWifiEnabled();
                     final boolean wifiApEnabled = apMgr.isWifiApEnabled();
+                    Log.d("System", "Saved states: " + wifiEnabled + " " + wifiApEnabled);
                     
                     //Disable the wifi access point to allow usage of the wifi
                     apMgr.setWifiApEnabled(config, false);
@@ -378,22 +382,29 @@ public class System /*extends Service*/ {
                         public void onReceive(Context c, Intent i){
                             //Restore the wifi access point as soon as possible
                             try {
-                                //Restore wifi state
-                                apMgr.setWifiApEnabled(config, wifiApEnabled);
-                                if (!wifiEnabled) {
-                                    mgr.setWifiEnabled(false);
-                                }
+                                //Hack to let the time for the scan results to be filled
+                                Thread.sleep(1000);
+                                Log.d("System", "Scan result");
                                 
                                 //If a network is found with the name P1R4T3B0X, send a notification
                                 List<ScanResult> scans = mgr.getScanResults();
                                 if (scans != null) {
+                                    Log.d("System", "Networks found " + scans);
                                     for (ScanResult scan : scans) {
                                         if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
                                             addNetworkNotification();
+                                            Log.d("System", "P1R4T3B0X Network found");
                                         } else {
                                             removeNetworkNotification();
                                         }
                                     }
+                                }
+                                
+                                Log.d("System", "Restoring states: " + wifiEnabled + " " + wifiApEnabled);
+                                //Restore wifi state
+                                apMgr.setWifiApEnabled(config, wifiApEnabled);
+                                if (!wifiEnabled) {
+                                    mgr.setWifiEnabled(false);
                                 }
                             } catch (Exception e) {
                                 ExceptionHandler.handle(this, R.string.error_network_scan, ctx);
@@ -407,7 +418,8 @@ public class System /*extends Service*/ {
                     ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     
                     //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
-                    if (! (mgr.setWifiEnabled(true) && mgr.startScan())) {
+                    Log.d("System", "Starting wifi for scan");
+                    if (!(mgr.setWifiEnabled(true) && mgr.startScan())) {
                         apMgr.setWifiApEnabled(config, wifiApEnabled);
                         if (!wifiEnabled) {
                             mgr.setWifiEnabled(false);

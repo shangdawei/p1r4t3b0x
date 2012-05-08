@@ -92,7 +92,8 @@ Tests:
 / Start/stop
 / Add widget after starting application
 / Heating / consumption
-- Cyclic scan + notification
+/ Cyclic scan + notification
+- Super user request
 - first notification ringtone pick
 - Low battery shutdown
 - In-app billing
@@ -100,6 +101,9 @@ Tests:
 Known bug:
 - Can only load an http page
 - Unregister the wifi ap state receiver
+
+Possible bug:
+- turn appli on after long time sleeping
 
 ***********           AUTHORISATIONS          ************
 Internet access: Create the server that will manage file access
