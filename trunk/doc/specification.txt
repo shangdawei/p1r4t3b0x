@@ -93,10 +93,10 @@ Tests:
 / Add widget after starting application
 / Heating / consumption
 / Cyclic scan + notification
-- Super user request
-- first notification ringtone pick
-- Low battery shutdown
+/ first notification ringtone pick
 - In-app billing
+- Super user request
+- Low battery shutdown
 
 Known bug:
 - Can only load an http page
