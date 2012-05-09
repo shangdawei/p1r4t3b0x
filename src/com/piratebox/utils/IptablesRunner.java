@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.piratebox.R;
 import com.piratebox.server.ServerConfiguration;
@@ -129,6 +130,7 @@ public class IptablesRunner {
      * @throws InterruptedException if the calling thread is interrupted
      */
     private void runScript(String script) throws IOException, InterruptedException {
+
         File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
 
         File f = new File(tmpFolder, TEMP_SCRIPT);
@@ -147,6 +149,8 @@ public class IptablesRunner {
         out.write("exit\n");
         out.flush();
         out.close();
+
+        Log.d(this.getClass().getSimpleName(), "Requesting file execution");
         Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
         int res = exec.waitFor();
 //        Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();

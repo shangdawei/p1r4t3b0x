@@ -48,7 +48,7 @@
             android:title="@string/settings_notification_vibrate" />
 
         <RingtonePreference
-            android:defaultValue="@string/silent"
+            android:defaultValue=""
             android:key="notification_ringtone"
             android:persistent="true"
             android:ringtoneType="notification"
