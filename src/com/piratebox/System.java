@@ -148,8 +148,22 @@ public class System extends Service {
         return instance.ctx;
     }
     
+    @Override
     protected void onCreate() {
         instance = this;
+    }
+    
+    @Override
+    protected void onDestroy() {
+        if (!ServerState.STATE_OFF.equals(getServerState())) {
+            stop();
+        }
+    }
+    
+    @Override
+    protected int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return Service.START_STICKY;
     }
     
     /**
