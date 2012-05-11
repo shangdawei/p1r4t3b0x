@@ -59,7 +59,7 @@ import com.piratebox.wifiap.WifiApManager;
  * 
  * @author Aylatan
  */
-public class System /*extends Service*/ {
+public class System extends Service {
 
     /**
      * Event dispatched when the state of the server changes.
@@ -111,7 +111,6 @@ public class System /*extends Service*/ {
     private ServerState state;
     private WifiConfiguration config;
     private Server server;
-    private Context ctx;
     private Handler connectedUsersHandler;
     private Handler addStatHandler;
     private IptablesRunner iptablesRunner;
@@ -120,6 +119,7 @@ public class System /*extends Service*/ {
     private Runnable scanTask;
     private BroadcastReceiver scanResultReceiver = null;
 
+    private static Context ctx;
     private static System instance = null;
 
     /**
@@ -129,8 +129,11 @@ public class System /*extends Service*/ {
      */
     public static System getInstance(Context ctx) {
         if (instance == null) {
-            instance = new System(ctx);
+            ctx.startService(new Intent(ctx, System.class));
+            // wait until instance != null
+            instance.setContext(ctx);
         }
+        
         return instance;
     }
     
@@ -145,12 +148,15 @@ public class System /*extends Service*/ {
         return instance.ctx;
     }
     
+    protected void onCreate() {
+        instance = this;
+    }
+    
     /**
-     * Private constructor.
-     * {@link System} is a singleton and should always be accessed by {@code getInstance(Context ctx)} method.
-     * @param ctx
+     * Sets the context and initialize the system.
+     * @param context the context
      */
-    private System(final Context ctx) {
+    private setContext(Context context) {
         this.ctx = ctx;
         
         iptablesRunner = new IptablesRunner(ctx);
