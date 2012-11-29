@@ -94,7 +94,7 @@ Tests:
 / Heating / consumption
 / Cyclic scan + notification
 / first notification ringtone pick
-- Remove market link in generated page
+/ Remove market link in generated page
 - In-app billing
 - Super user request
 - Low battery shutdown
