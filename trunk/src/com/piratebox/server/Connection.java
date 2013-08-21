@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
 import android.content.res.Resources;
 import android.util.Log;
 
-import com.piratebox.System;
+import com.piratebox.PirateService;
 import com.piratebox.utils.ExceptionHandler;
 
 /**
@@ -265,7 +265,7 @@ public class Connection extends Thread {
 	        return null;
 	    }
 	    
-	    Resources resources = System.getContext().getResources();
+	    Resources resources = PirateService.getContext().getResources();
 	    if (resources == null) {
 	        return null;
 	    }

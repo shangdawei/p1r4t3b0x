@@ -78,7 +78,7 @@
         </receiver>
 
         <service android:name="com.piratebox.billing.BillingService" />
-        <service android:name="com.piratebox.System" />
+        <service android:name=".PirateService" />
 
         <receiver android:name="com.piratebox.billing.BillingReceiver" >
             <intent-filter>

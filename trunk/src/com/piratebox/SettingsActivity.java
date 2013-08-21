@@ -18,7 +18,6 @@
 package com.piratebox;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,7 +28,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -87,8 +85,8 @@ public class SettingsActivity extends PreferenceActivity {
                 return;
             }
             
-            System.getInstance(c).stop();
-            System.getInstance(c).setNotificationState(false);
+            PirateService.getInstance().stop();
+            PirateService.getInstance().setNotificationState(false);
         }
     };
     /*
@@ -253,7 +251,7 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
         
-        System.getInstance(this).setNotificationState(checked);
+        PirateService.getInstance().setNotificationState(checked);
 	}
 	
 	/**
@@ -281,7 +279,7 @@ public class SettingsActivity extends PreferenceActivity {
         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             
             public void onClick(DialogInterface dialog, int which) {
-                System.getInstance(SettingsActivity.this).resetAllStats();
+                PirateService.getInstance().resetAllStats();
                 Toast.makeText(SettingsActivity.this, R.string.reset_done, Toast.LENGTH_SHORT).show();
             }
         })

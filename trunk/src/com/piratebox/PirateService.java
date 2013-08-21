@@ -29,6 +29,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -52,6 +54,7 @@ import com.piratebox.utils.PreferencesKeys;
 import com.piratebox.utils.StatUtils;
 import com.piratebox.widget.P1R4T3B0XWidget;
 import com.piratebox.wifiap.WifiApManager;
+import com.stericson.RootTools.RootTools;
 
 /**
  * This class describes the main system of the service.
@@ -59,19 +62,27 @@ import com.piratebox.wifiap.WifiApManager;
  * 
  * @author Aylatan
  */
-public class System extends Service {
+public class PirateService extends Service {
 
     /**
      * Event dispatched when the state of the server changes.
      * The {@link Callback} listener will be passed the new {@link ServerState} as argument.
      */
     public static final String EVENT_STATE_CHANGE = "eventStateChange";
+    
     /**
      * Event dispatched when the statistics change.
      * The {@link Callback} listener will be passed null.
      * The statistics can be accessed by the {@link StatUtils} class.
      */
     public static final String EVENT_STATISTIC_UPDATE = "eventStatisticUpdate";
+    
+    /**
+     * Event dispatched when the service starts.
+     * The {@link Callback} listener will be passed null.
+     */
+    public static final String EVENT_SERVICE_STARTED = "eventServiceStarted";
+    
     /**
      * The id of the "Network found" notification.
      */
@@ -119,60 +130,66 @@ public class System extends Service {
     private Runnable scanTask;
     private BroadcastReceiver scanResultReceiver = null;
 
-    private static Context ctx;
-    private static System instance = null;
+    private Context ctx;
+/*
+    public static void startService(Context context) {
+        
+        if (instance == null) {
+            context.startService(new Intent(context, PirateService.class));
+            ctx = context;
+        }
+    }*/
+    /*
+    public static boolean isServiceStarted() {
+        return instance != null;
+    }*/
 
     /**
-     * {@link System} is a singleton and should always be accessed by this method.
+     * {@link PirateService} is a singleton and should always be accessed by this method.
      * @param ctx the context in which the system will run
-     * @return the unique {@link System} instance for the application
-     */
-    public static System getInstance(Context ctx) {
-        if (instance == null) {
-            ctx.startService(new Intent(ctx, System.class));
-            // wait until instance != null
-            instance.setContext(ctx);
-        }
-        
+     * @return the unique {@link PirateService} instance for the application
+     *//*
+    public static PirateService getInstance() {
         return instance;
-    }
+    }*/
     
     /**
-     * Returns the {@link Context} instance with which {@link System} was initialised.
-     * @return A {@link Context} instance if {@link System} has been initialised, {@code null} otherwise.
-     */
+     * Returns the {@link Context} instance with which {@link PirateService} was initialised.
+     * @return A {@link Context} instance if {@link PirateService} has been initialised, {@code null} otherwise.
+     *//*
     public static Context getContext() {
-        if (instance == null) {
-            return null;
-        }
-        return instance.ctx;
+        return ctx;
+    }*/
+    
+    @Override
+    public void onCreate() {
+        Log.d(this.getClass().getName(), "Service created");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(this.getClass().getName(), "Service destroyed");
     }
     
     @Override
-    protected void onCreate() {
-        instance = this;
-    }
-    
-    @Override
-    protected void onDestroy() {
-        if (!ServerState.STATE_OFF.equals(getServerState())) {
-            stop();
-        }
-    }
-    
-    @Override
-    protected int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(this.getClass().getName(), "Service started");
         super.onStartCommand(intent, flags, startId);
+        dispatchEvent(EVENT_SERVICE_STARTED);
         return Service.START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
     
     /**
      * Sets the context and initialize the system.
      * @param context the context
      */
-    private setContext(Context context) {
-        this.ctx = ctx;
-        
+    private void initialise() {
+        Log.d(this.getClass().getName(), "System initialise");
         iptablesRunner = new IptablesRunner(ctx);
 
         //Sets the specific wifi access point configuration
@@ -181,7 +198,7 @@ public class System extends Service {
 
         setServerState(ServerState.STATE_OFF);
 
-        //Set handlers so that child thread can send messages to this instance
+        //Set handlers so that child thread can send messages to this
         connectedUsersHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -224,6 +241,11 @@ public class System extends Service {
      * Sets the redirection, create and run a new {@link Server}, starts the hotspot, resets the stats for the session.
      */
     public void start() {
+        if (!RootTools.isRootAvailable()) {
+            ExceptionHandler.handle(this, R.string.error_no_root, ctx);
+            return;
+        }
+        
         setServerState(ServerState.STATE_WAITING);
         
         server = new Server();
@@ -251,8 +273,6 @@ public class System extends Service {
         startTime = java.lang.System.currentTimeMillis();
         StatUtils.resetStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
-
-//        ctx.startService(new Intent(ctx, System.class));
     }
 
     /**
@@ -285,8 +305,6 @@ public class System extends Service {
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
-        
-//        stopSelf();
     }
     
     /**
@@ -372,15 +390,15 @@ public class System extends Service {
         scanTask = new Runnable() {
             
             public void run() {
-                Log.d("System", "Running scan task");
+                Log.d(this.getClass().getName(), "Running scan task");
                 final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
                 //Defines the call frequency to the user defined value
                 final int period = 1000 * Integer.parseInt(settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY));
                 
                 try {
                     //If we are currently sending a file, try again later, as we need to disable the wifi access point to perform the scan
-                    if (ServerState.STATE_SENDING.equals(System.this.getServerState())) {
-                        Log.d("System", "Currently sending, do not scan");
+                    if (ServerState.STATE_SENDING.equals(PirateService.this.getServerState())) {
+                        Log.d(this.getClass().getName(), "Currently sending, do not scan");
                         scanHandler.postDelayed(this, period);
                         return;
                     }
@@ -391,7 +409,7 @@ public class System extends Service {
                     //Save the current states to restore them later
                     final boolean wifiEnabled = mgr.isWifiEnabled();
                     final boolean wifiApEnabled = apMgr.isWifiApEnabled();
-                    Log.d("System", "Saved states: " + wifiEnabled + " " + wifiApEnabled);
+                    Log.d(this.getClass().getName(), "Saved states: " + wifiEnabled + " " + wifiApEnabled);
                     
                     //Disable the wifi access point to allow usage of the wifi
                     apMgr.setWifiApEnabled(config, false);
@@ -404,23 +422,23 @@ public class System extends Service {
                             try {
                                 //Hack to let the time for the scan results to be filled
                                 Thread.sleep(1000);
-                                Log.d("System", "Scan result");
+                                Log.d(this.getClass().getName(), "Scan result");
                                 
                                 //If a network is found with the name P1R4T3B0X, send a notification
                                 List<ScanResult> scans = mgr.getScanResults();
                                 if (scans != null) {
-                                    Log.d("System", "Networks found " + scans);
+                                    Log.d(this.getClass().getName(), "Networks found " + scans);
                                     for (ScanResult scan : scans) {
                                         if (ServerConfiguration.WIFI_AP_NAME.equals(scan.SSID)) {
                                             addNetworkNotification();
-                                            Log.d("System", "P1R4T3B0X Network found");
+                                            Log.d(this.getClass().getName(), "P1R4T3B0X Network found");
                                         } else {
                                             removeNetworkNotification();
                                         }
                                     }
                                 }
                                 
-                                Log.d("System", "Restoring states: " + wifiEnabled + " " + wifiApEnabled);
+                                Log.d(this.getClass().getName(), "Restoring states: " + wifiEnabled + " " + wifiApEnabled);
                                 //Restore wifi state
                                 apMgr.setWifiApEnabled(config, wifiApEnabled);
                                 if (!wifiEnabled) {
@@ -438,7 +456,7 @@ public class System extends Service {
                     ctx.registerReceiver(scanResultReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                     
                     //If the wifi cannot be enabled or if the scan does not starts, restore states and try again later
-                    Log.d("System", "Starting wifi for scan");
+                    Log.d(this.getClass().getName(), "Starting wifi for scan");
                     if (!(mgr.setWifiEnabled(true) && mgr.startScan())) {
                         apMgr.setWifiApEnabled(config, wifiApEnabled);
                         if (!wifiEnabled) {
@@ -541,9 +559,9 @@ public class System extends Service {
     }
     
     /**
-     * Dispatch {@code event} and give {@code value} to the listeners.
+     * Dispatch {@code event} and provide the listeners with the object {@code value}.
      * @param event the event to be dispatched
-     * @param value the value to give to listeners
+     * @param value the objects to give to listeners
      */
     private void dispatchEvent(String event, Object value) {
         if (listeners.get(event) == null) {
@@ -556,20 +574,10 @@ public class System extends Service {
     }
     
     /**
-     * Dispatch {@code event} and give {@code null} to the listeners.
+     * Equivalent to {@code dispatchEvent(event, null)}.
      * @param event the event to be dispatched
      */
     private void dispatchEvent(String event) {
         dispatchEvent(event, null);
     }
-    
-//    /**
-//     * No binding allowed, returns null.
-//     *
-//     * @see android.app.Service#onBind(android.content.Intent)
-//     */
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        return null;
-//    }
 }
