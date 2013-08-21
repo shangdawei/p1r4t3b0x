@@ -26,8 +26,8 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import com.piratebox.R;
-import com.piratebox.System;
-import com.piratebox.System.ServerState;
+import com.piratebox.PirateService;
+import com.piratebox.PirateService.ServerState;
 import com.piratebox.utils.Callback;
 
 /**
@@ -48,6 +48,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	
 	private boolean initialized = false;
 	private Callback updateWidgetsCallback;
+	private PirateService system;
 //	private static Handler updateHandler = new Handler();
 //	private int currentImage = 0;
 //	private static Runnable updateImage;
@@ -60,8 +61,22 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 
-		//Initialise the widget if not already done
-        init(context);
+		//Initialise the widget
+	    Callback callback = new Callback() {
+            
+            @Override
+            public void call(Object arg) {
+                system = PirateService.getInstance();
+                init(context);
+            }
+        };
+        
+        if (PirateService.isServiceStarted()) {
+            callback.call(null);
+        } else {
+            PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
+            PirateService.startService(context);
+        }
 	}
 
 	/**
@@ -70,19 +85,47 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	 * @see android.appwidget.AppWidgetProvider#onReceive(android.content.Context, android.content.Intent)
 	 */
 	@Override
-	public void onReceive(Context context, Intent intent) {
+	public void onReceive(final Context context, Intent intent) {
 		super.onReceive(context, intent);
 		if (WIDGET_RECEIVER_CLICK.equals(intent.getAction())) {
 		    //On click, switch the system state
-			System system = System.getInstance(context.getApplicationContext());
-			if (ServerState.STATE_OFF.equals(system.getServerState())) {
-				system.start();
-			} else {
-				system.stop();
-			}
+		    Callback callback = new Callback() {
+                
+                @Override
+                public void call(Object arg) {
+                    system = PirateService.getInstance();
+                    if (ServerState.STATE_OFF.equals(system.getServerState())) {
+                        system.start();
+                    } else {
+                        system.stop();
+                    }
+                }
+            };
+
+            if (PirateService.isServiceStarted()) {
+                callback.call(null);
+            } else {
+                PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
+                PirateService.startService(context);
+            }
+            
 		} else if (WIDGET_RECEIVER_INIT.equals(intent.getAction())) {
 		    //On init, launch the initialisation
-		    init(context);
+		    Callback callback = new Callback() {
+                
+                @Override
+                public void call(Object arg) {
+                    system = PirateService.getInstance();
+                    init(context);
+                }
+            };
+
+            if (PirateService.isServiceStarted()) {
+                callback.call(null);
+            } else {
+                PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
+                PirateService.startService(context);
+            }
 		}
 	}
 
@@ -93,7 +136,6 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	 */
 	private void init(final Context context) {
         if (!initialized) {
-            System system = System.getInstance(context.getApplicationContext());
             
             updateWidgetsCallback = new Callback() {
                 @Override
@@ -142,7 +184,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 //                };
 //            }
             
-            system.addEventListener(System.EVENT_STATE_CHANGE, updateWidgetsCallback);
+            PirateService.addEventListener(PirateService.EVENT_STATE_CHANGE, updateWidgetsCallback);
             
             initialImageSetup(context);
 
@@ -173,7 +215,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	    // the second one will override the first. So we need to add the click listener and to set the image in the same call.
 	    
 	    int imgId = -1;
-        switch(System.getInstance(context).getServerState()) {
+        switch(system.getServerState()) {
         case STATE_OFF:
             imgId = R.drawable.piratebox_off;
             break;

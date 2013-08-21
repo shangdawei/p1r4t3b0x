@@ -21,13 +21,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.piratebox.R;
 import com.piratebox.server.ServerConfiguration;
+import com.stericson.RootTools.RootTools;
+import com.stericson.RootTools.RootToolsException;
 
 /**
  * This class is used to set up and tear down the redirection using iptables.
@@ -46,6 +49,7 @@ public class IptablesRunner {
      * The file name of the iptables executable.
      */
     public static final String IPTABLES = "iptables";
+    private static final int SCRIPT_MAX_TIMEOUT = 2000;
     
     private Context ctx;
     private String iptables = null;
@@ -69,8 +73,10 @@ public class IptablesRunner {
      * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
      * @throws IOException if an error occurs while writing or executing the script file
      * @throws InterruptedException if the calling thread is interrupted
+     * @throws TimeoutException 
+     * @throws RootToolsException 
      */
-    public void setup(String wlanInterfaceName) throws IOException, InterruptedException {
+    public void setup(String wlanInterfaceName) throws IOException, InterruptedException, RootToolsException, TimeoutException {
         if (wlanInterfaceName == null || iptables == null) {
             return;
         }
@@ -86,8 +92,10 @@ public class IptablesRunner {
      * @param wlanInterfaceName The interface name on which the script is to be run. Does nothing if {@code null}.
      * @throws IOException if an error occurs while writing or executing the script file
      * @throws InterruptedException if the calling thread is interrupted
+     * @throws TimeoutException 
+     * @throws RootToolsException 
      */
-    public void teardown(String wlanInterfaceName) throws IOException, InterruptedException {
+    public void teardown(String wlanInterfaceName) throws IOException, InterruptedException, RootToolsException, TimeoutException {
         if (wlanInterfaceName == null || iptables == null) {
             return;
         }
@@ -128,35 +136,43 @@ public class IptablesRunner {
      * @return the exit value of the script
      * @throws IOException if an error occurs while writing or executing the script file
      * @throws InterruptedException if the calling thread is interrupted
+     * @throws TimeoutException 
+     * @throws RootToolsException 
      */
-    private void runScript(String script) throws IOException, InterruptedException {
+    private void runScript(String script) throws IOException, InterruptedException, RootToolsException, TimeoutException {
 
-        File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
-
-        File f = new File(tmpFolder, TEMP_SCRIPT);
-        f.setExecutable(true);
-        f.deleteOnExit();
-
-        // Write the script to be executed
-        PrintWriter out = new PrintWriter(new FileOutputStream(f));
-        if (new File("/system/bin/sh").exists()) {
-            out.write("#!/system/bin/sh\n");
-        }
-        out.write(script);
-        if (!script.endsWith("\n")) {
-            out.write("\n");
-        }
-        out.write("exit\n");
-        out.flush();
-        out.close();
+//        File tmpFolder = ctx.getDir("tmp", Context.MODE_PRIVATE);
+//
+//        File f = new File(tmpFolder, TEMP_SCRIPT);
+//        f.setExecutable(true);
+//        f.deleteOnExit();
+//
+//        // Write the script to be executed
+//        PrintWriter out = new PrintWriter(new FileOutputStream(f));
+//        if (new File("/system/bin/sh").exists()) {
+//            out.write("#!/system/bin/sh\n");
+//        }
+//        out.write(script);
+//        if (!script.endsWith("\n")) {
+//            out.write("\n");
+//        }
+//        out.write("exit\n");
+//        out.flush();
+//        out.close();
 
         Log.d(this.getClass().getSimpleName(), "Requesting file execution");
-        Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
-        int res = exec.waitFor();
+//        Process exec = Runtime.getRuntime().exec("su -c " + f.getAbsolutePath());
+//        int res = exec.waitFor();
 //        Toast.makeText(ctx, "result: " + res, Toast.LENGTH_LONG).show();
         
-        if (res != 0) {
-            ExceptionHandler.handle(this, R.string.error_script_loading, ctx);
+//        if (res != 0) {
+//            ExceptionHandler.handle(this, R.string.error_script_loading, ctx);
+//        }
+        
+
+        if (RootTools.isAccessGiven()) {
+            List<String> output = RootTools.sendShell(script, SCRIPT_MAX_TIMEOUT);
+            Log.d("" + this, "" + output);
         }
     }
 }

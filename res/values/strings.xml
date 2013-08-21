@@ -112,6 +112,7 @@
 
     <!-- Error messages -->
     <string name="error_during_payment">There was an error during the payment. Please try again.</string>
+    <string name="error_no_root">Root application does not seems to be installed, the PirateBox will not be able to start.</string>
     <string name="error_script_loading">The redirection script failed to load and therefore there will be no redirection of incoming traffic.</string>
     <string name="error_creating_folder">Could not create the requested folder.</string>
     <string name="error_ap_start">The Wifi access point could not be started.</string>

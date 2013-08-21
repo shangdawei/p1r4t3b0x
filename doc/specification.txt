@@ -58,7 +58,7 @@ An option should allow the user to specify if the downloaded remote file should 
 - Bluetooth scan + send file "turnWifiOn.html" > Hey, you received that because you are in range of a free wifi connection to a piratebox. A piratebox is a device where you can connect to and download files. To connect to the piratebox, follow those simple steps:
 1- turn your wifi on
 2- connect to a wifi network called P1R4T3B0X
-3- open your navigator and try to go to any website
+3- open your browser and go to any website
 4- you are redirected to the piratebox home page, where you can see the list of the files available for download.
 
 You can turn your android device into a piratebox too ! You just need to download and install the P1R4T3B0X application (link)
@@ -94,17 +94,14 @@ Tests:
 / Heating / consumption
 / Cyclic scan + notification
 / first notification ringtone pick
+/ Super user request
 / Remove market link in generated page
+- Change System to a service
 - In-app billing
-- Super user request
 - Low battery shutdown
 
 Known bug:
-- Can only load an http page
-- Unregister the wifi ap state receiver
-
-Possible bug:
-- turn appli on after long time sleeping
+- Cannot load an https page
 
 ***********           AUTHORISATIONS          ************
 Internet access: Create the server that will manage file access
