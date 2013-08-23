@@ -39,6 +39,7 @@ import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -84,6 +85,18 @@ public class PirateService extends Service {
     public static final String EVENT_SERVICE_STARTED = "eventServiceStarted";
     
     /**
+     * Event dispatched when the web server has started.
+     * The {@link Callback} listener will be passed null.
+     */
+    public static final String EVENT_SERVER_STARTED = "eventServerStarted";
+    
+    /**
+     * Event dispatched when the web server has stopped.
+     * The {@link Callback} listener will be passed null.
+     */
+    public static final String EVENT_SERVER_STOPPED = "eventServerStopped";
+    
+    /**
      * The id of the "Network found" notification.
      */
     public static final int NOTIFICATION_ID_NETWORK = 1;
@@ -118,8 +131,15 @@ public class PirateService extends Service {
             return value;
         }
     }
+    
+    public class ServiceBinder extends Binder {
+        public PirateService getService() {
+            return PirateService.this;
+        }
+    }
 
-    private ServerState state;
+    private static ServerState state;
+    private ServiceBinder serviceBinder = new ServiceBinder();
     private WifiConfiguration config;
     private Server server;
     private Handler connectedUsersHandler;
@@ -164,11 +184,14 @@ public class PirateService extends Service {
     @Override
     public void onCreate() {
         Log.d(this.getClass().getName(), "Service created");
+        ctx = this;
+        initialise();
     }
 
     @Override
     public void onDestroy() {
         Log.d(this.getClass().getName(), "Service destroyed");
+        stop();
     }
     
     @Override
@@ -176,12 +199,23 @@ public class PirateService extends Service {
         Log.d(this.getClass().getName(), "Service started");
         super.onStartCommand(intent, flags, startId);
         dispatchEvent(EVENT_SERVICE_STARTED);
+        
+        // Restart the server if it was started last time the service has stopped
+        if (!ServerState.STATE_OFF.equals(state)) {
+            start();
+        }
+        
         return Service.START_STICKY;
     }
-
+    
+    /**
+     * Returns a binder with a {@code getService()} method, which returns the current instance of {@link PirateService}.
+     * 
+     * @see android.app.Service#onBind(android.content.Intent)
+     */
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return serviceBinder;
     }
     
     /**
@@ -248,7 +282,7 @@ public class PirateService extends Service {
         
         setServerState(ServerState.STATE_WAITING);
         
-        server = new Server();
+        server = new Server(ctx);
         server.setConnectedUsersHandler(connectedUsersHandler);
         server.setAddStatHandler(addStatHandler);
         server.start();
@@ -273,6 +307,8 @@ public class PirateService extends Service {
         startTime = java.lang.System.currentTimeMillis();
         StatUtils.resetStat(ctx, StatUtils.STAT_FILE_DL_SESSION);
         dispatchEvent(EVENT_STATISTIC_UPDATE);
+        
+        dispatchEvent(EVENT_SERVER_STARTED);
     }
 
     /**
@@ -305,6 +341,7 @@ public class PirateService extends Service {
         setServerState(ServerState.STATE_OFF);
         server.stopRun();
         server = null;
+        dispatchEvent(EVENT_SERVER_STOPPED);
     }
     
     /**
@@ -312,7 +349,7 @@ public class PirateService extends Service {
      * @param state the new state to set
      */
     private void setServerState(ServerState state) {
-        this.state = state;
+        PirateService.state = state;
         dispatchEvent(EVENT_STATE_CHANGE, getServerState());
     }
 

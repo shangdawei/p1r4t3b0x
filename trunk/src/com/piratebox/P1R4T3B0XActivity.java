@@ -18,10 +18,13 @@
 package com.piratebox;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.piratebox.PirateService.ServerState;
+import com.piratebox.PirateService.ServiceBinder;
 import com.piratebox.utils.Callback;
 import com.piratebox.utils.StatUtils;
 
@@ -45,7 +49,7 @@ import com.piratebox.utils.StatUtils;
 public class P1R4T3B0XActivity extends Activity {
     private final String CRITTERCISM_APP_ID = "4f30546db093150ce40004a4";
     
-	private PirateService system;
+	public static PirateService pirateService;
 
 	private Button startStopBtn;
 	
@@ -76,11 +80,17 @@ public class P1R4T3B0XActivity extends Activity {
         
 		setContentView(R.layout.main);
 		
-		Callback callback = new Callback() {
+		Intent intent = new Intent(this, PirateService.class);
+		startService(intent);
+		
+		bindService(intent, new ServiceConnection() {
             
-            @Override
-            public void call(Object arg) {
-                system = PirateService.getInstance();
+            public void onServiceDisconnected(ComponentName name) {
+                pirateService = null;
+            }
+            
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                pirateService = ((ServiceBinder) service).getService();
                 
                 startStopBtn = (Button) findViewById(R.id.startStopBtn);
                 startStopBtn.setOnClickListener(startStopBtnListener);
@@ -89,14 +99,7 @@ public class P1R4T3B0XActivity extends Activity {
                 
                 addCallbacks();
             }
-        };
-        
-        if (PirateService.isServiceStarted()) {
-            callback.call(null);
-        } else {
-    		PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
-    		PirateService.startService(this);
-        }
+        }, 0);
     }
 
 	
@@ -109,7 +112,7 @@ public class P1R4T3B0XActivity extends Activity {
             public void run() {
                 Log.d("Main Activity", "Update time task");
                 
-                long milis = java.lang.System.currentTimeMillis() - system.getStartTime();
+                long milis = java.lang.System.currentTimeMillis() - pirateService.getStartTime();
                 int sec = (int)((milis / 1000) % 60);
                 int min = (int)((milis / 1000 / 60) % 60);
                 int hour = (int)((milis / 1000 / 60 / 60) % 24);
@@ -142,8 +145,8 @@ public class P1R4T3B0XActivity extends Activity {
                 }
             }
         };
-        PirateService.addEventListener(PirateService.EVENT_STATE_CHANGE, onStateChange);
-        onStateChange.call(system.getServerState());
+        pirateService.addEventListener(PirateService.EVENT_STATE_CHANGE, onStateChange);
+        onStateChange.call(pirateService.getServerState());
         
 
         onUpdateStatistic = new Callback() { 
@@ -169,7 +172,7 @@ public class P1R4T3B0XActivity extends Activity {
                 topDl5.setText(topDls[4]);
             }
         };
-        PirateService.addEventListener(PirateService.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
+        pirateService.addEventListener(PirateService.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
         onUpdateStatistic.call(null);
         
         callbacksAdded = true;
@@ -197,8 +200,8 @@ public class P1R4T3B0XActivity extends Activity {
 	protected void onPause() {
 	    super.onPause();
         updateHandler.removeCallbacks(updateUptimeTask);
-        PirateService.removeEventListener(PirateService.EVENT_STATE_CHANGE, onStateChange);
-        PirateService.removeEventListener(PirateService.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
+        pirateService.removeEventListener(PirateService.EVENT_STATE_CHANGE, onStateChange);
+        pirateService.removeEventListener(PirateService.EVENT_STATISTIC_UPDATE, onUpdateStatistic);
 	    
 	}
 	
@@ -208,10 +211,10 @@ public class P1R4T3B0XActivity extends Activity {
 	 */
 	private OnClickListener startStopBtnListener = new OnClickListener() {
 		public void onClick(View v) {		    
-	        if (ServerState.STATE_OFF.equals(system.getServerState())) {
-	            system.start();
+	        if (ServerState.STATE_OFF.equals(pirateService.getServerState())) {
+	            pirateService.start();
 	        } else {
-	            system.stop();
+	            pirateService.stop();
 	        }
 		}
 	};
@@ -220,7 +223,7 @@ public class P1R4T3B0XActivity extends Activity {
 	 * Changes the start/stop button text depending on the {@link PirateService} state.
 	 */
 	private void setButtonState() {
-		if (ServerState.STATE_OFF.equals(system.getServerState())) {
+		if (ServerState.STATE_OFF.equals(pirateService.getServerState())) {
 			startStopBtn.setText(getResources().getString(R.string.start));
 		} else {
             startStopBtn.setText(getResources().getString(R.string.stop));

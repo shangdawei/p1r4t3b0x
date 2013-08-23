@@ -20,8 +20,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.piratebox.PirateService;
-
 /**
  * This class handles exceptions.
  * @author Aylatan
@@ -127,7 +125,7 @@ public class ExceptionHandler {
      * @param ctx the context of the application
      */
     public static void handle(String tag, int stringId, Context ctx) {
-        handle(tag, PirateService.getContext().getResources().getString(stringId), ctx);
+        handle(tag, ctx.getResources().getString(stringId), ctx);
     }
     
     /**

@@ -30,10 +30,10 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
-import com.piratebox.PirateService;
 import com.piratebox.utils.ExceptionHandler;
 
 /**
@@ -45,6 +45,7 @@ public class Connection extends Thread {
 
     private final String[] excludeRawFiles = new String[]{"iptables"};
     
+    private Context ctx;
 	private Socket client;
 	private PrintStream out;
 	private DataInputStream in;
@@ -81,9 +82,10 @@ public class Connection extends Thread {
 	 * @param clientSocket the client socket the connection should handle
 	 * @param server the parent server instance that received the client socket
 	 */
-	public Connection(Socket clientSocket, Server server) {
+	public Connection(Socket clientSocket, Server server, Context ctx) {
 		client = clientSocket;
 		this.server = server;
+		this.ctx = ctx;
 
 		//Create input and output streams for conversation with client
 		try {
@@ -265,7 +267,7 @@ public class Connection extends Thread {
 	        return null;
 	    }
 	    
-	    Resources resources = PirateService.getContext().getResources();
+	    Resources resources = ctx.getResources();
 	    if (resources == null) {
 	        return null;
 	    }
