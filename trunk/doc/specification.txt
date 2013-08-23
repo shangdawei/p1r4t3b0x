@@ -38,14 +38,14 @@ The application should be able to reset the parameters to their original value w
 
 - The application is able to look for other P1r4t3b0x networks and add their files to its list. (checkbox option)
 The files located on other devices should be annotated on the webpage (for instance with the mention "remote located")
-If a client ask for a remote located file, the application must download the application from its original source and provide this downloaded file to
+If a client ask for a remote located file, the application must download the file from its original source and provide this downloaded file to
 the client. The application should transfer the file gradually as it is received.
 An option should allow the user to specify if the downloaded remote file should be kept in the shared folder or not.
 - Link to "see what others see on the webpage"
 - Search on page
 - Widget animation
 - Vibrate on widget click
-- File upload
+- File upload with size limitation
 - Config options:
     * add more folder to analyse
     * keep remote downloaded file
