@@ -11,7 +11,7 @@ img.logo {
 }
 
 h1 {
-	background: url('piratebox.png') no-repeat 0 0;
+	# background: url('piratebox.png') no-repeat 0 0;
 	height: 70px;
     padding-left: 144px;
     padding-top: 35px;
@@ -52,22 +52,6 @@ ul {
 	padding-left: 0;
 }
 
-li ul li div {
-	padding-left: 15px;
-}
-
-li ul li ul li div {
-	padding-left: 25px;
-}
-
-li ul li ul li ul li div {
-	padding-left: 35px;
-}
-
-li ul li ul li ul li ul li div {
-	padding-left: 45px;
-}
-
-li ul li ul li ul li ul li ul li div {
-	padding-left: 55px;
+#search-div > input {
+	width: 250px;
 }

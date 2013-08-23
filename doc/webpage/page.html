@@ -1,10 +1,85 @@
 <html>
 <head>
+<script src="../../res/raw/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script>
-  function switchBlockDisplay(a) {
-    content = a.parentNode.getElementsByClassName('folder')[0];
-    content.style.display = content.style.display == 'block' ? 'none' : 'block';
-  }
+    
+    var files = [
+        {"type": "file", "name": "bla1.asd", "size": "2.5MB"},
+        {"type": "file", "name": "bla2.asd", "size": "2.5MB"},
+        {"type": "file", "name": "bla3.asd", "size": "2.5MB"},
+        {"type": "folder", "name": "folder1", "files": [
+            {"type": "file", "name": "bli1.asd", "size": "2.5MB"},
+            {"type": "file", "name": "bli2.asd", "size": "2.5MB"},
+        ]},
+        {"type": "file", "name": "bla4.asd", "size": "2.5MB"},
+        {"type": "folder", "name": "folder2", "files": [
+            {"type": "file", "name": "blo1.asd", "size": "2.5MB"},
+            {"type": "file", "name": "blo2.asd", "size": "2.5MB"},
+            {"type": "folder", "name": "folderblo", "files": [
+                {"type": "file", "name": "blo11.asd", "size": "2.5MB"},
+                {"type": "file", "name": "blo22.asd", "size": "2.5MB"},
+            ]},
+        ]},
+        {"type": "file", "name": "bla5.asd", "size": "2.5MB"}
+    ];
+
+    $(function() {
+        $(document).on("click", ".folderLink", function() {
+            $(this).siblings(".folder").toggle();
+        });
+        
+        $("#search-div > input").keypress(function() {
+            var element = $(this);
+            setTimeout(function() {
+                var newFiles = getFilteredList(files, element.val());
+                $("#file-list").empty();
+                generateListFromFiles($("#file-list"), newFiles);
+            }, 1);
+        }).keypress();
+    });
+    
+    function generateListFromFiles(root, files, level) {
+        level = level || 0;
+        var padding = 15 + level * 10;
+        
+        if (files.length) {
+            $.each(files, function(i, e) {
+                if (e.type == "file") {
+                    root.append("<li><a href='"+e.name+"'><div style='padding-left: "+padding+"px;'><span>"+e.name+" <font size=2>("+e.size+")</font></span></div></a></li>");
+                }
+                if (e.type == "folder") {
+                    var li = $("<li><a class='folderLink' href='javascript:void(0);'><div style='padding-left: "+padding+"px;'><span>"+e.name+"</span></div></a></li>");
+                    var folder = $("<ul class='folder'></ul>");
+                    li.append(folder);
+                    root.append(li);
+                    generateListFromFiles(folder, e.files, level+1);
+                }
+            });
+        } else {
+            root.append("<li><div style='padding-left: "+padding+"px;'><span>No files</span></div></li>");
+        }
+    }
+    
+    function getFilteredList(files, searchStr) {
+        var result = [];
+        $.each(files, function(i, e) {
+            if (e.type == "file" && e.name.search(searchStr) >= 0) {
+                result.push(e);
+            }
+            if (e.type == "folder") {
+                var folder = {
+                    "type": e.type,
+                    "name": e.name,
+                    "files": getFilteredList(e.files, searchStr)
+                };
+                if (folder.files.length) {
+                    result.push(folder);
+                }
+            }
+        });
+        
+        return result;
+    }
 </script>
 
 <link rel='stylesheet' type='text/css' href='../../res/raw/desktop.css' />
@@ -17,37 +92,16 @@
 
 <p class='intro'>
   Welcome on this PirateBox.<br />
-  PirateBox is a free Android application that let you share all the files you want with anybody.<br />
-  It is available in the Google Play store.
+  A PirateBox is a device used to freely share all the files you want with anybody.<br />
+  You can turn your Android device into a PirateBox too! You just need to download and install the PirateBox application from the Google Play store.
 </p>
 
 <h2>Here are the files shared on this PirateBox:</h2>
+<div id="search-div">
+    <input type="text" placeholder="Search files..." />
+</div>
 
-<ul>
-<li><a href='bla1.asd'><div><span>bla1blablab lablabalblablablabl ablablablablablablab blabalbabl blablabal blablabalbablablablablablab albablaba lbablablabla blabl.asd <font size=2>(2.5MB)</font></span></div></a></li>
-<li><a href='bla2.asd'><div><span>bla2.asd <font size=2>(2.5MB)</font></span></div></a></li>
-<li><a href='bla3.asd'><div><span>bla3.asd <font size=2>(2.5MB)</font></span></div></a></li>
-<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
-  <ul class='folder'>
-    <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
-    <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
-  </ul>
-</li>
-<li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
-  <ul class='folder'>
-    <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
-    <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
-    <li><a class='folderLink' onclick=switchBlockDisplay(this) href='javascript:void(0);'><div><span>folder</span></div></a>
-      <ul class='folder'>
-        <li><a href='bli1.asd'><div><span>bli1.asd <font size=2>(2.5MB)</font></span></div></a></li>
-        <li><a href='bli2.asd'><div><span>bli2.asd <font size=2>(2.5MB)</font></span></div></a></li>
-      </ul>
-    </li>
-  </ul>
-</li>
-<li><a href='bla4.asd'><div><span>bla2.asd <font size=2>(2.5MB)</font></span></div></a></li>
-<li><a href='bla5.asd'><div><span>bla3.asd <font size=2>(2.5MB)</font></span></div></a></li>
-</ul>
+<ul id="file-list"></ul>
 
 </body>
 </html>
