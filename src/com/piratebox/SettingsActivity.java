@@ -70,6 +70,9 @@ public class SettingsActivity extends PreferenceActivity {
 //    private static final String BEER_ID = "android.test.refunded";
 //    private static final String LARGE_BEER_ID = "android.test.canceled";
 //    private static final String BEER_BARREL_ID = "android.test.purchased";
+    
+    private PirateService pirateService;
+    
 	
 	private BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -85,8 +88,8 @@ public class SettingsActivity extends PreferenceActivity {
                 return;
             }
             
-            PirateService.getInstance().stop();
-            PirateService.getInstance().setNotificationState(false);
+            pirateService.stop();
+            pirateService.setNotificationState(false);
         }
     };
     /*
@@ -111,6 +114,8 @@ public class SettingsActivity extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		pirateService = P1R4T3B0XActivity.pirateService;
+		
 		startService(new Intent(this, BillingService.class));
 
 		addPreferencesFromResource(R.xml.settings);
@@ -119,7 +124,7 @@ public class SettingsActivity extends PreferenceActivity {
 		
         CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
         if (lowBatPref.isChecked()) {
-            registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+            //registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
         }
 
 		
@@ -251,7 +256,7 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
         getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
         
-        PirateService.getInstance().setNotificationState(checked);
+        pirateService.setNotificationState(checked);
 	}
 	
 	/**
@@ -279,7 +284,7 @@ public class SettingsActivity extends PreferenceActivity {
         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             
             public void onClick(DialogInterface dialog, int which) {
-                PirateService.getInstance().resetAllStats();
+                pirateService.resetAllStats();
                 Toast.makeText(SettingsActivity.this, R.string.reset_done, Toast.LENGTH_SHORT).show();
             }
         })

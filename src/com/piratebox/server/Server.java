@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
@@ -35,7 +36,8 @@ import com.piratebox.utils.ExceptionHandler;
  */
 public class Server extends Thread {
 
-	private ServerSocket listenSocket;
+    private Context ctx;
+    private ServerSocket listenSocket;
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	private int connectedUsers = 0;
 
@@ -47,7 +49,8 @@ public class Server extends Thread {
 	 * Creates a new server.
 	 * Initialises the listenning socket.
 	 */
-	public Server() {
+	public Server(Context ctx) {
+	    this.ctx = ctx;
 		try {
 			listenSocket = new ServerSocket(ServerConfiguration.PORT);
 			//Set a timeout so that the socket stops listening when the server stops
@@ -66,7 +69,7 @@ public class Server extends Thread {
 		{
 			try{
 				Socket clientSocket = listenSocket.accept();
-                connections.add(new Connection (clientSocket, this));
+                connections.add(new Connection (clientSocket, this, ctx));
 			} catch (SocketTimeoutException e) {
 			    
 			} catch(IOException e) {

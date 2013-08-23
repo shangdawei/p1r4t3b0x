@@ -23,11 +23,14 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.widget.RemoteViews;
 
-import com.piratebox.R;
 import com.piratebox.PirateService;
 import com.piratebox.PirateService.ServerState;
+import com.piratebox.PirateService.ServiceBinder;
+import com.piratebox.R;
 import com.piratebox.utils.Callback;
 
 /**
@@ -48,7 +51,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	
 	private boolean initialized = false;
 	private Callback updateWidgetsCallback;
-	private PirateService system;
+	private PirateService pirateService;
 //	private static Handler updateHandler = new Handler();
 //	private int currentImage = 0;
 //	private static Runnable updateImage;
@@ -62,21 +65,20 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 			int[] appWidgetIds) {
 
 		//Initialise the widget
-	    Callback callback = new Callback() {
+        Intent intent = new Intent(context, PirateService.class);
+        context.startService(intent);
+        
+        context.bindService(intent, new ServiceConnection() {
             
-            @Override
-            public void call(Object arg) {
-                system = PirateService.getInstance();
+            public void onServiceDisconnected(ComponentName name) {
+                pirateService = null;
+            }
+            
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                pirateService = ((ServiceBinder) service).getService();
                 init(context);
             }
-        };
-        
-        if (PirateService.isServiceStarted()) {
-            callback.call(null);
-        } else {
-            PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
-            PirateService.startService(context);
-        }
+        }, 0);
 	}
 
 	/**
@@ -87,45 +89,47 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(final Context context, Intent intent) {
 		super.onReceive(context, intent);
+		
+		Intent startServiceintent;
+		
 		if (WIDGET_RECEIVER_CLICK.equals(intent.getAction())) {
 		    //On click, switch the system state
-		    Callback callback = new Callback() {
-                
-                @Override
-                public void call(Object arg) {
-                    system = PirateService.getInstance();
-                    if (ServerState.STATE_OFF.equals(system.getServerState())) {
-                        system.start();
+		    startServiceintent = new Intent(context, PirateService.class);
+	        context.startService(startServiceintent);
+	        
+	        context.bindService(intent, new ServiceConnection() {
+	            
+	            public void onServiceDisconnected(ComponentName name) {
+	                pirateService = null;
+	            }
+	            
+	            public void onServiceConnected(ComponentName name, IBinder service) {
+	                pirateService = ((ServiceBinder) service).getService();
+	                
+	                if (ServerState.STATE_OFF.equals(pirateService.getServerState())) {
+                        pirateService.start();
                     } else {
-                        system.stop();
+                        pirateService.stop();
                     }
-                }
-            };
-
-            if (PirateService.isServiceStarted()) {
-                callback.call(null);
-            } else {
-                PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
-                PirateService.startService(context);
-            }
+	            }
+	        }, 0);
             
 		} else if (WIDGET_RECEIVER_INIT.equals(intent.getAction())) {
 		    //On init, launch the initialisation
-		    Callback callback = new Callback() {
+		    startServiceintent = new Intent(context, PirateService.class);
+            context.startService(startServiceintent);
+            
+            context.bindService(intent, new ServiceConnection() {
                 
-                @Override
-                public void call(Object arg) {
-                    system = PirateService.getInstance();
+                public void onServiceDisconnected(ComponentName name) {
+                    pirateService = null;
+                }
+                
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    pirateService = ((ServiceBinder) service).getService();
                     init(context);
                 }
-            };
-
-            if (PirateService.isServiceStarted()) {
-                callback.call(null);
-            } else {
-                PirateService.addEventListener(PirateService.EVENT_SERVICE_STARTED, callback);
-                PirateService.startService(context);
-            }
+            }, 0);
 		}
 	}
 
@@ -184,7 +188,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 //                };
 //            }
             
-            PirateService.addEventListener(PirateService.EVENT_STATE_CHANGE, updateWidgetsCallback);
+            pirateService.addEventListener(PirateService.EVENT_STATE_CHANGE, updateWidgetsCallback);
             
             initialImageSetup(context);
 
@@ -215,7 +219,7 @@ public class P1R4T3B0XWidget extends AppWidgetProvider {
 	    // the second one will override the first. So we need to add the click listener and to set the image in the same call.
 	    
 	    int imgId = -1;
-        switch(system.getServerState()) {
+        switch(pirateService.getServerState()) {
         case STATE_OFF:
             imgId = R.drawable.piratebox_off;
             break;
