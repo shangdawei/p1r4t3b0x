@@ -35,9 +35,9 @@
     <string name="none">None</string>
     <string name="silent">Silent</string>
 
-    <!-- System -->
-    <string name="notification_network">P1R4T3B0X network found!</string>
-    <string name="notification_network_title">A P1R4T3B0X network has been found around you!</string>
+    <!-- Service -->
+    <string name="notification_network_title">P1R4T3B0X network found!</string>
+    <string name="notification_network">A P1R4T3B0X network has been found around you!</string>
 
     <!-- Main activity -->
     <string name="app_name">P1R4T3B0X</string>

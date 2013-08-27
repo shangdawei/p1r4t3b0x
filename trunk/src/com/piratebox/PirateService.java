@@ -518,7 +518,7 @@ public class PirateService extends Service {
     /**
      * Creates a dispatch a notification to tell the user that a P1R4T3B0X network is in range.
      */
-    private void addNetworkNotification() {
+    private void addNetworkNotification() {/*
         Notification notification = new Notification(R.drawable.piratebox_ico,
                 ctx.getResources().getString(R.string.notification_network),
                 java.lang.System.currentTimeMillis());
@@ -541,7 +541,7 @@ public class PirateService extends Service {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         
         NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        mgr.notify(NOTIFICATION_ID_NETWORK, notification);
+        mgr.notify(NOTIFICATION_ID_NETWORK, notification);*/
     }
     
     /**
