@@ -51,14 +51,6 @@ import com.piratebox.utils.PreferencesKeys;
  * 
  * @author Aylatan
  */
-/**
- * @author Aylatan
- *
- */
-/**
- * @author Aylatan
- *
- */
 public class DirectoryChooserActivity extends ListActivity {
 
 	private File currentFolder;
