@@ -86,19 +86,27 @@ $50 -> Buy me a beer barrel
 
 / Add general exception handling system
 
-Prepare EULA
-TEST MORE AND MORE !!!
+- Prepare EULA
+
+- Use handlers to communicate between server and connections
+- Set default value for settings
+- Change notification to SwitchPreference
+- Check if OnPreferenceChange implementation is needed
+- Use android's way to access preferences, not ServerConfiguration
+- Change System to a service
+- Make help icon
+
 Tests:
-/ Start/stop
-/ Add widget after starting application
 / Heating / consumption
 / Cyclic scan + notification
 / first notification ringtone pick
 / Super user request
 / Remove market link in generated page
-- Change System to a service
+- Start/stop
+- Add widget after starting application
 - In-app billing
 - Low battery shutdown
+
 
 Known bug:
 - Cannot load an https page
