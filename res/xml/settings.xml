@@ -24,7 +24,11 @@
         android:summary=""
         android:title="@string/settings_set_dir" />
 
-    <PreferenceScreen android:title="@string/settings_notification" >
+    <PreferenceScreen
+        android:key="settings_notification"
+        android:title="@string/settings_notification"
+        android:defaultValue="false" >
+        
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="notification"
@@ -60,13 +64,15 @@
     <CheckBoxPreference
         android:key="low_bat"
         android:persistent="true"
-        android:title="@string/settings_low_bat" />
+        android:title="@string/settings_low_bat_title"
+        android:summaryOn="@string/settings_low_bat_summary_on"
+        android:summaryOff="@string/settings_low_bat_summary_off" />
 
     <Preference
         android:key="reset_stat"
         android:title="@string/settings_reset_stats" />
 
-    <PreferenceCategory android:title="@string/other" >
+    <!--PreferenceCategory android:title="@string/other" >
         <Preference
             android:key="help"
             android:title="@string/settings_help" />
@@ -85,6 +91,6 @@
                 android:key="beer_barrel"
                 android:title="@string/settings_beer_barrel" />
         </PreferenceScreen>
-    </PreferenceCategory>
+    </PreferenceCategory-->
 
 </PreferenceScreen>

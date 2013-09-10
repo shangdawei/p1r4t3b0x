@@ -22,5 +22,9 @@
         android:id="@+id/settings"
         android:icon="@drawable/settings"
         android:title="@string/settings"/>
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/help"
+        android:title="@string/help"/>
 
 </menu>

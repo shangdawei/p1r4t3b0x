@@ -59,7 +59,9 @@
     <string name="settings_set_dir">Set shared folder</string>
     <string name="settings_notification">Notification</string>
     <string name="settings_notification_summary">Notify when P1R4T3B0X network found</string>
-    <string name="settings_low_bat">Turn off when low battery</string>
+    <string name="settings_low_bat_title">Check battery</string>
+    <string name="settings_low_bat_summary_on">Turn off when battery is low</string>
+    <string name="settings_low_bat_summary_off">Keep running when battery is low</string>
     <string name="settings_reset_stats">Reset statistics</string>
     <string name="settings_help">Help</string>
     <string name="settings_beer">Buy me a beer!</string>

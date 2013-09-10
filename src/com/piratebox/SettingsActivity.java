@@ -18,6 +18,7 @@
 package com.piratebox;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,7 +32,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
@@ -46,12 +47,11 @@ import com.piratebox.utils.Utils;
  * This class describes the {@link Activity} for the settings.
  * From this {@link Activity} the user can define his preferences.
  * This includes:
- * <li>Changing the current shared directory</li>
+ * <li>Change the current shared directory</li>
  * <li>Change the notifications settings</li>
  * <li>Change the low battery behaviour</li>
  * <li>Reset all statistics</li>
- * <li>Show the help</li>
- * <li>Access to the "Donate" version</li>
+ * <li>Access to in-app billing for beers</li>
  * 
  * @author Aylatan
  */
@@ -59,7 +59,7 @@ import com.piratebox.utils.Utils;
  * @author Aylatan
  *
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends Activity {
 	
 	private static final int DIRECTORY_CHOOSE_ACTIVITY_ID = 0;
     private static final String SHOOTER_ID = "beer.one";
@@ -71,10 +71,9 @@ public class SettingsActivity extends PreferenceActivity {
 //    private static final String LARGE_BEER_ID = "android.test.canceled";
 //    private static final String BEER_BARREL_ID = "android.test.purchased";
     
-    private PirateService pirateService;
+    private static PirateService pirateService;
     
-	
-	private BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
+	private static BroadcastReceiver batteryBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c, Intent i){
             //Get the charging status
@@ -104,7 +103,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
     
     using Intent.ACTION_BATTERY_CHANGE for the IntentFilter
-	
+	*/
 	/**
 	 * Initialises the {@link Activity}.
 	 * 
@@ -114,263 +113,223 @@ public class SettingsActivity extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		pirateService = P1R4T3B0XActivity.pirateService;
-		
-		startService(new Intent(this, BillingService.class));
+		// Set the main content fragment.
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
 
-		addPreferencesFromResource(R.xml.settings);
-		
-		setSelectDirSummary();
-		
-        CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
-        if (lowBatPref.isChecked()) {
-            //registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
-        }
-
-		
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        //Get the currently selected frequency value.
-        String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
-		setNotificationsFrequencySummaryFromValue(value);
-		
-
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                setNotificationsFrequencySummaryFromValue((String)newValue);
-                return true;
-            }
-        });
-
-        
-        //Get the current ringtone URI.
-        String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, "");
-		setNotificationsRingtoneSummaryFromRingtoneURI(ringtone);
-		
-		setNotificationMenusStates();
-        
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                setNotificationsRingtoneSummaryFromRingtoneURI((String)newValue);
-                return true;
-            }
-        });
+        startService(new Intent(this, BillingService.class));
 	}
 	
-	/**
-	 * Defines the actions to be performed when the user clicks an item of the preferences.
-	 * 
-	 * @see android.preference.PreferenceActivity#onPreferenceTreeClick(android.preference.PreferenceScreen, android.preference.Preference)
-	 */
-	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-			Preference preference) {
-		
-		if (preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR))) {
-			openSelectDir();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT))) {
-            onLowBatterychange();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.RESET_STAT))) {
-            resetStats();
-		} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
-			openHelp();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION))) {
-            setNotificationMenusStates();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_SHOOTER))) {
-            buyAShooter();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER))) {
-            buyABeer();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_LARGE))) {
-            buyALargeBeer();
-        } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_BARREL))) {
-            buyABeerBarrel();
-        }
-		        
-		return true;
-	}
-	
-	/**
-	 * Sets the summary of the list item for the directory selection.
-	 * The summary shows the current selected directory.
-	 */
-	private void setSelectDirSummary() {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		String summary = getResources().getString(R.string.current);
-		summary += " " + settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR);
-		getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR).setSummary(summary);
-	}
-    
-    /**
-     * Sets the summary of the list item for the notification frequency.
-     * The summary shows the current set frequency.
-     */
-    private void setNotificationsFrequencySummaryFromValue(String value) {
-        CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
-        CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
-        //Get its index in the R.array.notification_frequency array.
-        int index = Utils.indexOf(value, array);
-        //Retrieve the readable value from the index in the R.array.notification_frequency_readable array.
-        CharSequence readable = arrayReadable[index];
-        
-        String summary = getResources().getString(R.string.current);
-        summary += " " + readable;
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setSummary(summary);
-    }
+	public static class SettingsFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-    /**
-     * Sets the summary of the list item for the notification ringtone.
-     * The summary shows the current set ringtone name.
-     */
-    private void setNotificationsRingtoneSummaryFromRingtoneURI(String ringtoneUri) {
-        
-        String ringtone;
-        //If the ringtone is "Silent" then the URI is "Silent" or "".
-        if ("Silent".equals(ringtoneUri) || "".equals(ringtoneUri)) {
-            ringtone = getResources().getString(R.string.silent);
-        } else {
-            //Else get the ringtone name.
-            ringtone = RingtoneManager.getRingtone(this, Uri.parse(ringtoneUri)).getTitle(this);
-        }
-        
-        
-        String summary = getResources().getString(R.string.current);
-        summary += " " + ringtone;
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setSummary(summary);
-    }
-	
-	/**
-	 * Opens the {@link DirectoryChooserActivity}.
-	 */
-	private void openSelectDir() {
-		startActivityForResult(new Intent(this, DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_ID);
-	}
-	
-	/**
-	 * Sets the state of the list items of the notification menu according to the state of the main item.
-	 */
-	private void setNotificationMenusStates() {
-	    CheckBoxPreference pref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION);
-	    boolean checked = pref.isChecked();
+            addPreferencesFromResource(R.xml.settings);
 
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setEnabled(checked);
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
-        getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
-        
-        pirateService.setNotificationState(checked);
-	}
-	
-	/**
-	 * Registers or unregisters the broadcast receiver for the low battery event, depending on the preference status.
-	 */
-	private void onLowBatterychange() {
-        CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
-	    if (lowBatPref.isChecked()) {
-	        registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
-	    } else {
-	        unregisterReceiver(batteryBroadcastReceiver);
-	    }
-	}
-	
-	/**
-	 * Opens a dialog to confirm the user action.
-	 * If the action is confirmed, all the statistics are deleted.
-	 */
-	private void resetStats() {
-        AlertDialog.Builder confirm = new AlertDialog.Builder(this);
-        confirm.setTitle(getResources().getString(R.string.confirm_title))
-        .setMessage(getResources().getString(R.string.reset_confirm))
-        .setCancelable(true)
-        .setNegativeButton(R.string.no, null)
-        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            pirateService = P1R4T3B0XActivity.pirateService;
             
-            public void onClick(DialogInterface dialog, int which) {
-                pirateService.resetAllStats();
-                Toast.makeText(SettingsActivity.this, R.string.reset_done, Toast.LENGTH_SHORT).show();
+            setSelectDirSummary();
+            
+            CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
+            if (lowBatPref.isChecked()) {
+                //registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
             }
-        })
-        .show();
-	}
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            //Get the currently selected frequency value.
+            String value = settings.getString(PreferencesKeys.NOTIFICATION_FREQUENCY, PreferencesKeys.NOTIFICATION_DEFAULT_FREQUENCY);
+            setNotificationsFrequencySummaryFromValue(value);
+            
+
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    setNotificationsFrequencySummaryFromValue((String)newValue);
+                    return true;
+                }
+            });
+
+            
+            //Get the current ringtone URI.
+            String ringtone = settings.getString(PreferencesKeys.NOTIFICATION_RINGTONE, "");
+            setNotificationsRingtoneSummaryFromRingtoneURI(ringtone);
+            
+            setNotificationMenusStates();
+            
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    setNotificationsRingtoneSummaryFromRingtoneURI((String)newValue);
+                    return true;
+                }
+            });
+        }
 	
-	/**
-	 * Opens the help content in a dialog box.
-	 */
-	private void openHelp() {
-	    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.help))
-        .setMessage(getResources().getString(R.string.help_content))
-        .setPositiveButton(R.string.close, null)
-        .setCancelable(true)
-        .show();
-	}
-	
-	/**
-	 * Opens the in app billing feature for the shooter item.
-	 */
-    private void buyAShooter() {
-        try {
-            if (BillingService.isInAppBillingSupported()) {
-                BillingService.requestPurchase(SHOOTER_ID, this);
+    	/**
+    	 * Defines the actions to be performed when the user clicks an item of the preferences.
+    	 * 
+    	 * @see android.preference.PreferenceActivity#onPreferenceTreeClick(android.preference.PreferenceScreen, android.preference.Preference)
+    	 */
+    	@Override
+    	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+    			Preference preference) {
+    		
+    		if (preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR))) {
+    			openSelectDir();
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT))) {
+                onLowBatterychange();
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.RESET_STAT))) {
+                resetStats();
+    		/*} else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.HELP))) {
+    			openHelp();*/
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION))) {
+                setNotificationMenusStates();
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_SHOOTER))) {
+                proceedWithPurchase(SHOOTER_ID);
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER))) {
+                proceedWithPurchase(BEER_ID);
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_LARGE))) {
+                proceedWithPurchase(LARGE_BEER_ID);
+            } else if(preference.equals(getPreferenceScreen().findPreference(PreferencesKeys.Beer.BEER_BARREL))) {
+                proceedWithPurchase(BEER_BARREL_ID);
             }
-        } catch (Exception e) {
-            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
+    		
+    		return true;
+    	}
+        
+        /**
+         * Sets the summary of the list item for the directory selection.
+         * The summary shows the current selected directory.
+         */
+        private void setSelectDirSummary() {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            
+            String summary = getResources().getString(R.string.current);
+            summary += " " + settings.getString(PreferencesKeys.SELECT_DIR, ServerConfiguration.DEFAULT_ROOT_DIR);
+            getPreferenceScreen().findPreference(PreferencesKeys.SELECT_DIR).setSummary(summary);
         }
-    }
-    
-    /**
-     * Opens the in app billing feature for the beer item.
-     */
-    private void buyABeer() {
-        try {
-            if (BillingService.isInAppBillingSupported()) {
-                BillingService.requestPurchase(BEER_ID, this);
+        
+        /**
+         * Sets the summary of the list item for the notification frequency.
+         * The summary shows the current set frequency.
+         */
+        private void setNotificationsFrequencySummaryFromValue(String value) {
+            CharSequence[] array = getResources().getTextArray(R.array.notification_frequency);
+            CharSequence[] arrayReadable = getResources().getTextArray(R.array.notification_frequency_readable);
+            //Get its index in the R.array.notification_frequency array.
+            int index = Utils.indexOf(value, array);
+            //Retrieve the readable value from the index in the R.array.notification_frequency_readable array.
+            CharSequence readable = arrayReadable[index];
+            
+            String summary = getResources().getString(R.string.current);
+            summary += " " + readable;
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setSummary(summary);
+        }
+
+        /**
+         * Sets the summary of the list item for the notification ringtone.
+         * The summary shows the current set ringtone name.
+         */
+        private void setNotificationsRingtoneSummaryFromRingtoneURI(String ringtoneUri) {
+            
+            String ringtone;
+            //If the ringtone is "Silent" then the URI is "Silent" or "".
+            if ("Silent".equals(ringtoneUri) || "".equals(ringtoneUri)) {
+                ringtone = getResources().getString(R.string.silent);
+            } else {
+                //Else get the ringtone name.
+                ringtone = RingtoneManager.getRingtone(getActivity(), Uri.parse(ringtoneUri)).getTitle(getActivity());
             }
-        } catch (Exception e) {
-            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
+            
+            
+            String summary = getResources().getString(R.string.current);
+            summary += " " + ringtone;
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setSummary(summary);
         }
-    }
-    
-    /**
-     * Opens the in app billing feature for the large beer item.
-     */
-    private void buyALargeBeer() {
-        try {
-            if (BillingService.isInAppBillingSupported()) {
-                BillingService.requestPurchase(LARGE_BEER_ID, this);
+        
+        /**
+         * Opens the {@link DirectoryChooserActivity}.
+         */
+        private void openSelectDir() {
+            startActivityForResult(new Intent(getActivity(), DirectoryChooserActivity.class), DIRECTORY_CHOOSE_ACTIVITY_ID);
+        }
+        
+        /**
+         * Sets the state of the list items of the notification menu according to the state of the main item.
+         */
+        private void setNotificationMenusStates() {
+            CheckBoxPreference pref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION);
+            boolean checked = pref.isChecked();
+
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_FREQUENCY).setEnabled(checked);
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_RINGTONE).setEnabled(checked);
+            getPreferenceScreen().findPreference(PreferencesKeys.NOTIFICATION_VIBRATE).setEnabled(checked);
+            
+            pirateService.setNotificationState(checked);
+        }
+        
+        /**
+         * Registers or unregisters the broadcast receiver for the low battery event, depending on the preference status.
+         */
+        private void onLowBatterychange() {
+            CheckBoxPreference lowBatPref = (CheckBoxPreference) getPreferenceScreen().findPreference(PreferencesKeys.LOW_BAT);
+            if (lowBatPref.isChecked()) {
+                getActivity().registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+            } else {
+                getActivity().unregisterReceiver(batteryBroadcastReceiver);
             }
-        } catch (Exception e) {
-            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
-    }
-    
-    /**
-     * Opens the in app billing feature for the beer barrel  item.
-     */
-    private void buyABeerBarrel() {
-        try {
-            if (BillingService.isInAppBillingSupported()) {
-                BillingService.requestPurchase(BEER_BARREL_ID, this);
+        
+        /**
+         * Opens a dialog to confirm the user action.
+         * If the action is confirmed, all the statistics are deleted.
+         */
+        private void resetStats() {
+            AlertDialog.Builder confirm = new AlertDialog.Builder(getActivity());
+            confirm.setTitle(getResources().getString(R.string.confirm_title))
+            .setMessage(getResources().getString(R.string.reset_confirm))
+            .setCancelable(true)
+            .setNegativeButton(R.string.no, null)
+            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                
+                public void onClick(DialogInterface dialog, int which) {
+                    pirateService.resetAllStats();
+                    Toast.makeText(getActivity(), R.string.reset_done, Toast.LENGTH_SHORT).show();
+                }
+            })
+            .show();
+        }
+        
+        /**
+         * Opens the in app billing feature for the shooter item.
+         */
+        private void proceedWithPurchase(String elementId) {
+            try {
+                if (BillingService.isInAppBillingSupported()) {
+                    BillingService.requestPurchase(elementId, getActivity());
+                }
+            } catch (Exception e) {
+                ExceptionHandler.handle(this, R.string.error_during_payment, getActivity().getApplicationContext());
             }
-        } catch (Exception e) {
-            ExceptionHandler.handle(this, R.string.error_during_payment, getApplicationContext());
         }
-    }
-	
-	/**
-	 * Manages the result of the {@link DirectoryChooserActivity} and store it to the preferences.
-	 * 
-	 * @see android.preference.PreferenceActivity#onActivityResult(int, int, android.content.Intent)
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_ID && resultCode == RESULT_OK) {
-			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-			Editor edit = settings.edit();
-			edit.putString(PreferencesKeys.SELECT_DIR, data.getAction());
-			edit.commit();
-	        ServerConfiguration.setRootDir(data.getAction());
-			setSelectDirSummary();
-		}
+        
+        /**
+         * Handles the result of the {@link DirectoryChooserActivity} and store it to the preferences.
+         * 
+         * @see android.preference.PreferenceActivity#onActivityResult(int, int, android.content.Intent)
+         */
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            
+            if (requestCode == DIRECTORY_CHOOSE_ACTIVITY_ID && resultCode == RESULT_OK) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                Editor edit = settings.edit();
+                edit.putString(PreferencesKeys.SELECT_DIR, data.getAction());
+                edit.commit();
+                ServerConfiguration.setRootDir(data.getAction());
+                setSelectDirSummary();
+            }
+        }
 	}
 }

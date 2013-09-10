@@ -17,17 +17,19 @@
 
 package com.piratebox.server;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import android.content.Context;
@@ -43,12 +45,14 @@ import com.piratebox.utils.ExceptionHandler;
  */
 public class Connection extends Thread {
 
+    public boolean continueRunning = true;
+    
     private final String[] excludeRawFiles = new String[]{"iptables"};
     
     private Context ctx;
 	private Socket client;
 	private PrintStream out;
-	private DataInputStream in;
+	private BufferedReader in;
 	private String requestedFile;
 	private File rootDir;
 	private Server server;
@@ -89,7 +93,7 @@ public class Connection extends Thread {
 
 		//Create input and output streams for conversation with client
 		try {
-			in = new DataInputStream(client.getInputStream());
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			out = new PrintStream(client.getOutputStream());
 		} catch (IOException e) {
             ExceptionHandler.handle(this, e);
@@ -150,8 +154,7 @@ public class Connection extends Thread {
 	            requestedFile = st.nextToken();
 	            Log.d("file", requestedFile);
 	            
-	            String filePath = URLDecoder.decode(ServerConfiguration.getRootDir()
-	                    + requestedFile);
+	            String filePath = URLDecoder.decode(ServerConfiguration.getRootDir() + requestedFile,  "UTF-8");
 	            f = new File(filePath);
 
 	            fis = getLocalFileStream(extractName(requestedFile));
@@ -228,7 +231,7 @@ public class Connection extends Thread {
 	private String getMIMEType(File f) {
 		String mime = null;
 		int index = f.getPath().lastIndexOf('.');
-		String ext = f.getPath().substring(index + 1).toLowerCase();
+		String ext = f.getPath().substring(index + 1).toLowerCase(Locale.getDefault());
 		
 		if (ext != null) {
 			mime = mimeTypes.get(ext);

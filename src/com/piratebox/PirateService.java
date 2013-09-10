@@ -18,6 +18,7 @@
 package com.piratebox;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -35,7 +35,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -137,13 +136,60 @@ public class PirateService extends Service {
             return PirateService.this;
         }
     }
+    
+    /**
+     * Handler used by sub thread to give information about the number of connected users.
+     */
+    private static class ConnectedUserHandler extends Handler {
+    	private final WeakReference<PirateService> serviceRef;
+    	
+    	public ConnectedUserHandler(PirateService service) {
+			this.serviceRef = new WeakReference<PirateService>(service);
+		}
+    	
+        @Override
+        public void handleMessage(Message msg) {
+        	PirateService service = serviceRef.get();
+        	if (service == null) {
+        		return;
+        	}
+        	
+            if ((Integer) msg.obj <= 0) {
+                service.setServerState(ServerState.STATE_WAITING);
+            } else {
+            	service.setServerState(ServerState.STATE_SENDING);
+            }
+        }
+    }
+    
+    /**
+     * Handler used by sub thread to update the stats for a given file.
+     */
+    private static class AddStatHandler extends Handler {
+    	private final WeakReference<PirateService> serviceRef;
+    	
+    	public AddStatHandler(PirateService service) {
+			this.serviceRef = new WeakReference<PirateService>(service);
+		}
+    	
+        @Override
+        public void handleMessage(Message msg) {
+        	PirateService service = serviceRef.get();
+        	if (service == null) {
+        		return;
+        	}
+        	
+            StatUtils.addStatForFile(service.ctx, (File) msg.obj);
+            service.dispatchEvent(EVENT_STATISTIC_UPDATE);
+        }
+    };
 
     private static ServerState state;
     private ServiceBinder serviceBinder = new ServiceBinder();
     private WifiConfiguration config;
     private Server server;
-    private Handler connectedUsersHandler;
-    private Handler addStatHandler;
+    private ConnectedUserHandler connectedUsersHandler = new ConnectedUserHandler(this);
+    private AddStatHandler addStatHandler = new AddStatHandler(this);
     private IptablesRunner iptablesRunner;
     private long startTime = 0L;
     private final Handler scanHandler = new Handler();
@@ -151,35 +197,6 @@ public class PirateService extends Service {
     private BroadcastReceiver scanResultReceiver = null;
 
     private Context ctx;
-/*
-    public static void startService(Context context) {
-        
-        if (instance == null) {
-            context.startService(new Intent(context, PirateService.class));
-            ctx = context;
-        }
-    }*/
-    /*
-    public static boolean isServiceStarted() {
-        return instance != null;
-    }*/
-
-    /**
-     * {@link PirateService} is a singleton and should always be accessed by this method.
-     * @param ctx the context in which the system will run
-     * @return the unique {@link PirateService} instance for the application
-     *//*
-    public static PirateService getInstance() {
-        return instance;
-    }*/
-    
-    /**
-     * Returns the {@link Context} instance with which {@link PirateService} was initialised.
-     * @return A {@link Context} instance if {@link PirateService} has been initialised, {@code null} otherwise.
-     *//*
-    public static Context getContext() {
-        return ctx;
-    }*/
     
     @Override
     public void onCreate() {
@@ -231,25 +248,6 @@ public class PirateService extends Service {
         config.SSID = ServerConfiguration.WIFI_AP_NAME;
 
         setServerState(ServerState.STATE_OFF);
-
-        //Set handlers so that child thread can send messages to this
-        connectedUsersHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if ((Integer) msg.obj <= 0) {
-                    setServerState(ServerState.STATE_WAITING);
-                } else {
-                    setServerState(ServerState.STATE_SENDING);
-                }
-            }
-        };
-        addStatHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                StatUtils.addStatForFile(ctx, (File) msg.obj);
-                dispatchEvent(EVENT_STATISTIC_UPDATE);
-            }
-        };
 
         //Initialises the widgets
         Intent intent = new Intent(ctx, P1R4T3B0XWidget.class);

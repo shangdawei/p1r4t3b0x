@@ -18,6 +18,7 @@
 package com.piratebox;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -47,7 +48,8 @@ import com.piratebox.utils.StatUtils;
  * @author Aylatan
  */
 public class P1R4T3B0XActivity extends Activity {
-    private final String CRITTERCISM_APP_ID = "4f30546db093150ce40004a4";
+    @SuppressWarnings("unused")
+	private final String CRITTERCISM_APP_ID = "4f30546db093150ce40004a4";
     
 	public static PirateService pirateService;
 
@@ -248,9 +250,14 @@ public class P1R4T3B0XActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-		    case R.id.settings:
-		        openSettings();
-		        return true;
+            case R.id.settings:
+                openSettings();
+                return true;
+                
+            case R.id.help:
+                openHelp();
+                return true;
+                
 		    default:
 		        return super.onOptionsItemSelected(item);
 	    }
@@ -261,5 +268,17 @@ public class P1R4T3B0XActivity extends Activity {
 	 */
 	private void openSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
-	}	
+	}
+    
+    /**
+     * Opens the help content in a dialog box.
+     */
+    private void openHelp() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(getResources().getString(R.string.help))
+        .setMessage(getResources().getString(R.string.help_content))
+        .setPositiveButton(R.string.close, null)
+        .setCancelable(true)
+        .show();
+    }
 }

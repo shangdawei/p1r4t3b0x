@@ -31,7 +31,7 @@ import android.os.Message;
 import com.piratebox.utils.ExceptionHandler;
 
 /**
- * This class describes the server that will handle request.
+ * This class describes the server that will handle requests.
  * @author Aylatan
  */
 public class Server extends Thread {
@@ -42,12 +42,12 @@ public class Server extends Thread {
 	private int connectedUsers = 0;
 
 	//Use handlers as this is the way to give information about drawing in a separate thread
-    private Handler connectedUsersHandler = new Handler();
-    private Handler addStatHandler = new Handler();
+    private Handler connectedUsersHandler;
+    private Handler addStatHandler;
 	
 	/**
 	 * Creates a new server.
-	 * Initialises the listenning socket.
+	 * Initialises the listening socket.
 	 */
 	public Server(Context ctx) {
 	    this.ctx = ctx;
@@ -71,7 +71,7 @@ public class Server extends Thread {
 				Socket clientSocket = listenSocket.accept();
                 connections.add(new Connection (clientSocket, this, ctx));
 			} catch (SocketTimeoutException e) {
-			    
+			    // Do nothing if the socket has timed out
 			} catch(IOException e) {
                 ExceptionHandler.handle(this, e);
 			}
@@ -83,7 +83,7 @@ public class Server extends Thread {
 	 */
 	public void stopRun() {
 		for (Connection conn : connections) {
-			conn.stop();
+			conn.continueRunning = false;
 			conn = null;
 		}
 		
