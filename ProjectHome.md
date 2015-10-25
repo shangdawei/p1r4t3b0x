@@ -1,0 +1,1 @@
+This application allows a user to share some of his files on his Android phone with anyone who want to see them.
